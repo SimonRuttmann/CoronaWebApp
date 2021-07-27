@@ -17,6 +17,8 @@ services:
     mysql:
         build:
             context: ./mysql
+        environment:
+            MYSQL_ROOT_PASSWORD: 123456
         ports:
             - "3306:3306"
             - "33060:33060"
