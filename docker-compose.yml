@@ -1,22 +1,22 @@
 version: "3.3"
 services:
-    nodeCollect:
+    nodecollect:
         build:
-            context: ./nodeCollect
+            context: ./nodecollect
 
-    nodeExpressApi:
+    nodeexpressapi:
         build:
-            context: ./nodeExpressApi
+            context: ./nodeexpressapi
         ports: 
             - "6969:6969"    
 
-    nodeMqttBackend:
+    nodemqttbackend:
         build:
-            context: ./nodeMqttBackend    
+            context: ./nodemqttbackend    
 
-    nodeWebsocketBackend: 
+    nodewebsocketbackend: 
         build:
-            context: ./nodeWebsocketBackend
+            context: ./nodewebsocketbackend
         ports:
             - "8888:8888"               
 
