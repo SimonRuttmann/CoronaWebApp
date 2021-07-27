@@ -1,27 +1,47 @@
 version: "3.3"
 services:
-    node:
+    nodeCollect:
         build:
-            context: ./node
+            context: ./nodeCollect
+
+    nodeExpressApi:
+        build:
+            context: ./nodeExpressApi
+        ports: 
+            - "6969:6969"    
+
+    nodeMqttBackend:
+        build:
+            context: ./nodeMqttBackend    
+
+    nodeWebsocketBackend: 
+        build:
+            context: ./nodeWebsocketBackend
+        ports:
+            - "8888:8888"               
+
     nginx:
         build:
             context: ./nginx
         ports:
             - "80:80"
+            - "8080:8080"
+
     mqtt:
         build:
             context: ./mqtt
         ports:
             - "1884:1884"
             - "1883:1883"
+
     mysql:
         build:
             context: ./mysql
         environment:
-            MYSQL_ROOT_PASSWORD: 123456
+            MYSQL_ROOT_PASSWORD: 123456    
         ports:
             - "3306:3306"
-            - "33060:33060"
+            
     mongodb:
         build:
             context: ./mongodb

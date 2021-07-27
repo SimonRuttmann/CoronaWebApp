@@ -1,0 +1,58 @@
+# Please see /usr/share/doc/nginx-doc/examples/ for more detailed examples.
+##
+
+# Default server configuration
+#
+server {
+
+        
+ 
+	root /nginx/html;
+	server_name IbsNginxServer;
+	index index.html;
+
+#	Connections:
+#	HTTP					Port 80
+#	HTTPS					Port 8080
+#	Mqtt Over Websockets			Port 1884
+#	Mqtt					Port 1883		
+#		Keine Weiterleitung erforderlich. 
+#		Erfolgt intern MosquittoServer <-> Mosquitto Backend
+#	Websockets				Port 8888
+
+
+#HTTP
+	listen 80 default_server;
+	listen [::]:80 default_server;
+
+
+#HTTPS
+	listen 8080 default_server;
+	listen [::]:80 default_server;
+
+
+	location / {
+		# First attempt to serve request as file, then
+		# as directory, then fall back to displaying a 404.
+		try_files $uri $uri/ =404;
+	}
+
+#Mqtt Over Websockets
+    location /mqtt/ {
+                proxy_pass http://127.0.0.1:1884;
+                proxy_http_version 1.1;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection "upgrade";
+                proxy_read_timeout 36000s;
+ 	}
+ 	
+ #Websockets	
+         location ~ /ws/ {
+                proxy_pass http://127.0.0.1:9003;
+                proxy_http_version 1.1;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection "upgrade";
+                proxy_read_timeout 36000s;
+        }
+        
+}
