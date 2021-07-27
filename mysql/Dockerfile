@@ -1,0 +1,6 @@
+FROM mysql
+
+EXPOSE 3306
+EXPOSE 33060
+
+CMD ["mysql"]
