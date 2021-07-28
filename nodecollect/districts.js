@@ -37,22 +37,6 @@ async function getDistricts(saveToDB) {
     return data;
 }
 
-/* async function saveHistory() {
-    var data = await getDistricts(false);
-    db.insertMany(data, "historyBW");
-} */
-
-function helper(arr, newData) {
-    var tmp = [];
-    for (var i = 0; i < arr.length; i++) {
-        tmp.push(arr[i]);
-    }
-
-    tmp.push(newData);
-
-    return tmp;
-}
-
 async function saveHistory() {
     var data = await getDistricts(false);
     var history = await db.find({}, "historyBW");
@@ -65,16 +49,16 @@ async function saveHistory() {
             if (data[i].ags == history[j].ags) {
                 found = true;
 
-                history[j].population = helper(history[j].population, data[i].population);
-                history[j].cases = helper(history[j].cases, data[i].cases);
-                history[j].deaths = helper(history[j].deaths, data[i].deaths);
-                history[j].casesPerWeek = helper(history[j].casesPerWeek, data[i].casesPerWeek);
-                history[j].deathsPerWeek = helper(history[j].deathsPerWeek, data[i].deathsPerWeek);
-                history[j].recovered = helper(history[j].recovered, data[i].recovered);
-                history[j].weekIncidence = helper(history[j].weekIncidence, data[i].weekIncidence);
-                history[j].casesPer100k = helper(history[j].casesPer100k, data[i].casesPer100k);
-                history[j].delta = helper(history[j].delta, data[i].delta);
-                history[j].date = helper(history[j].date, data[i].date);
+                history[j].population.push(data[i].population);
+                history[j].cases.push(data[i].cases);
+                history[j].deaths.push(data[i].deaths);
+                history[j].casesPerWeek.push(data[i].casesPerWeek);
+                history[j].deathsPerWeek.push(data[i].deathsPerWeek);
+                history[j].recovered.push(data[i].recovered);
+                history[j].weekIncidence.push(data[i].weekIncidence);
+                history[j].casesPer100k.push(data[i].casesPer100k);
+                history[j].delta.push(data[i].delta);
+                history[j].date.push(data[i].date);
             }
         }
 
