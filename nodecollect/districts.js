@@ -3,7 +3,7 @@ const db = require('./db');
 
 module.exports = { getDistricts, saveHistory };
 
-async function getDistricts(saveToDB) {
+async function getDistricts(saveToDB, mqttClient) {
     var data = [];
 
     var requestOptions = {
@@ -30,6 +30,27 @@ async function getDistricts(saveToDB) {
     }
 
     if (saveToDB) {
+        var oldData = await db.find({}, "districtsBW");
+
+        if (oldData.length == 0) {
+            mqttClient.publish("refresh", "districtsBW");
+        } else {
+            var change = false;
+            for (var i = 0; i < data.length; i++) {
+                for (var j = 0; j < oldData.length; j++) {
+                    if (data[i].ags == oldData[j].ags) {
+                        if (data[i].population != oldData[j].population || data[i].cases != oldData[j].cases || data[i].deaths != oldData[j].deaths || data[i].casesPerWeek != oldData[j].casesPerWeek || data[i].deathsPerWeek != oldData[j].deathsPerWeek || data[i].recovered != oldData[j].recovered || data[i].weekIncidence != oldData[j].weekIncidence || data[i].casesPer100k != oldData[j].casesPer100k || data[i].delta.cases != oldData[j].delta.cases || data[i].delta.deaths != oldData[j].delta.deaths || data[i].delta.recovered != oldData[j].delta.recovered) {
+                            mqttClient.publish("refresh", "districtsBW");
+                            change = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (change) break;
+            }
+        }
+
         await db.dropCollection("districtsBW");
         await db.insertMany(data, "districtsBW");
     }

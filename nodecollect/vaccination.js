@@ -4,7 +4,7 @@ const fs = require('fs');
 
 module.exports = { getVaccinationPlaces, getVaccinationDates, saveHistoryPlaces, saveHistoryDates };
 
-async function getVaccinationPlaces(saveToDB) {
+async function getVaccinationPlaces(saveToDB, mqttClient) {
     var data = [];
 
     var requestOptions = {
@@ -29,6 +29,12 @@ async function getVaccinationPlaces(saveToDB) {
     }
 
     if (saveToDB) {
+        var oldData = await db.find({}, "vaccinationPlacesBW");
+
+        if (oldData.length == 0 || data.length != oldData.length) {
+            mqttClient.publish("refresh", "vaccinationPlacesBW");
+        }
+
         await db.dropCollection("vaccinationPlacesBW");
         await db.insertMany(data, "vaccinationPlacesBW");
     }
@@ -36,7 +42,7 @@ async function getVaccinationPlaces(saveToDB) {
     return data;
 }
 
-async function getVaccinationDates(saveToDB) {
+async function getVaccinationDates(saveToDB, mqttClient) {
     var data = [];
     var places = await getVaccinationPlaces(false);
 
@@ -69,6 +75,27 @@ async function getVaccinationDates(saveToDB) {
     }
 
     if (saveToDB) {
+        var oldData = await db.find({}, "vaccinationDatesBW");
+
+        if (oldData.length == 0) {
+            mqttClient.publish("refresh", "vaccinationDatesBW");
+        } else {
+            var change = false;
+            for (var i = 0; i < data.length; i++) {
+                for (var j = 0; j < oldData.length; j++) {
+                    if (data[i].Slug == oldData[j].Slug) {
+                        if (data[i].Available != oldData[j].Available || data[i].NoBooking != oldData[j].NoBooking) {
+                            mqttClient.publish("refresh", "vaccinationDatesBW");
+                            change = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (change) break;
+            }
+        }
+
         await db.dropCollection("vaccinationDatesBW");
         await db.insertMany(data, "vaccinationDatesBW");
     }
@@ -106,7 +133,7 @@ async function saveHistoryDates() {
 
                 history[j].Available.push(data[i].Available);
                 history[j].NoBooking.push(data[i].NoBooking);
-                history[j].date.push(data[i].date);
+                history[j].Time.push(data[i].Time);
             }
         }
 
@@ -115,7 +142,7 @@ async function saveHistoryDates() {
 
             tmp.Available = [data[i].Available];
             tmp.NoBooking = [data[i].NoBooking];
-            tmp.date = [data[i].date];
+            tmp.Time = [data[i].Time];
 
             history.push(tmp);
         }
