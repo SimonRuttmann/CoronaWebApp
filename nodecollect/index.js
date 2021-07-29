@@ -22,10 +22,10 @@ const intervalMin = setInterval(() => {
     districts.getDistricts(true, mqttClient);
 }, 60000);
 
-// alle impftermine jede 10 minuten aktualisieren
-const interval10Min = setInterval(() => {
+// alle impftermine 5 mal am tag aktualisieren
+const interval5TimesPerDay = setInterval(() => {
     vaccination.getVaccinationDates(true, mqttClient);
-}, 600000);
+}, 17280000);
 
 // alle distrikte jeden tag speichern
 const intervalDay = setInterval(() => {
