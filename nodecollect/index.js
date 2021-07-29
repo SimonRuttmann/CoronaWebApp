@@ -5,8 +5,11 @@ const vaccination = require('./vaccination');
 function init() {
     districts.getDistricts(true);
     districts.saveHistory();
+
     vaccination.getVaccinationPlaces(true);
-    vaccination.getVaccinationDates();
+    vaccination.getVaccinationDates(true);
+    vaccination.saveHistoryPlaces();
+    vaccination.saveHistoryDates();
 }
 
 // alle distrikte jede minute aktualisieren
@@ -16,12 +19,15 @@ const intervalMin = setInterval(() => {
 
 // alle impftermine jede 10 minuten aktualisieren
 const interval10Min = setInterval(() => {
-    vaccination.getVaccinationDates();
+    vaccination.getVaccinationDates(true);
 }, 600000);
 
 // alle distrikte jeden tag speichern
 const intervalDay = setInterval(() => {
     districts.saveHistory();
+
+    vaccination.saveHistoryPlaces();
+    vaccination.saveHistoryDates();
 }, 86400000);
 
 // alle impforte jede woche speichern

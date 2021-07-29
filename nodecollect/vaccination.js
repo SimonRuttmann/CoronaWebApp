@@ -2,7 +2,7 @@ const fetch = require('node-fetch');
 const db = require('./db');
 const fs = require('fs');
 
-module.exports = { getVaccinationPlaces, getVaccinationDates };
+module.exports = { getVaccinationPlaces, getVaccinationDates, saveHistoryPlaces, saveHistoryDates };
 
 async function getVaccinationPlaces(saveToDB) {
     var data = [];
@@ -36,7 +36,7 @@ async function getVaccinationPlaces(saveToDB) {
     return data;
 }
 
-async function getVaccinationDates() {
+async function getVaccinationDates(saveToDB) {
     var data = [];
     var places = await getVaccinationPlaces(false);
 
@@ -68,6 +68,59 @@ async function getVaccinationDates() {
         }
     }
 
-    await db.dropCollection("vaccinationDatesBW");
-    await db.insertMany(data, "vaccinationDatesBW");
+    if (saveToDB) {
+        await db.dropCollection("vaccinationDatesBW");
+        await db.insertMany(data, "vaccinationDatesBW");
+    }
+
+    return data;
+}
+
+async function saveHistoryPlaces() {
+    var data = await getVaccinationPlaces(false);
+    var places = [];
+
+    for (var i = 0; i < data.length; i++) {
+        places.push(data[i].Slug);
+    }
+
+    var save = {};
+    save.date = Date.now();
+    save.places = places;
+    save.data = data;
+
+    await db.insertOne(save, "historyVaccinationPlacesBW");
+}
+
+async function saveHistoryDates() {
+    var data = await getVaccinationDates(false);
+    var history = await db.find({}, "historyVaccinationDatesBW");
+
+    if (history == undefined) history = [];
+
+    for (var i = 0; i < data.length; i++) {
+        var found = false;
+        for (var j = 0; j < history.length; j++) {
+            if (data[i].Slug == history[j].Slug) {
+                found = true;
+
+                history[j].Available.push(data[i].Available);
+                history[j].NoBooking.push(data[i].NoBooking);
+                history[j].date.push(data[i].date);
+            }
+        }
+
+        if (!found) {
+            var tmp = data[i];
+
+            tmp.Available = [data[i].Available];
+            tmp.NoBooking = [data[i].NoBooking];
+            tmp.date = [data[i].date];
+
+            history.push(tmp);
+        }
+    }
+
+    await db.dropCollection("historyVaccinationDatesBW");
+    await db.insertMany(history, "historyVaccinationDatesBW");
 }

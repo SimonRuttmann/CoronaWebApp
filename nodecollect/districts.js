@@ -39,7 +39,7 @@ async function getDistricts(saveToDB) {
 
 async function saveHistory() {
     var data = await getDistricts(false);
-    var history = await db.find({}, "historyBW");
+    var history = await db.find({}, "historyDistrictsBW");
 
     if (history == undefined) history = [];
 
@@ -80,6 +80,6 @@ async function saveHistory() {
         }
     }
 
-    await db.dropCollection("historyBW");
-    await db.insertMany(history, "historyBW");
+    await db.dropCollection("historyDistrictsBW");
+    await db.insertMany(history, "historyDistrictsBW");
 }
