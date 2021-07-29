@@ -1,6 +1,6 @@
 const fetch = require('node-fetch');
-const db = require('./db');
 const fs = require('fs');
+const db = require('./db');
 
 module.exports = { getVaccinationPlaces, getVaccinationDates, saveHistoryPlaces, saveHistoryDates };
 

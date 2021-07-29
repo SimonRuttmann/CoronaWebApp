@@ -1,6 +1,6 @@
 const mongodb = require('mongodb');
 
-module.exports = { insertOne, insertMany, dropCollection, connectToDB, find };
+module.exports = { deleteOne, deleteMany, insertOne, insertMany, dropCollection, connectToDB, find };
 
 async function find(data, collection) {
     var res = await connectToDB(async (db) => {
@@ -27,6 +27,22 @@ function insertOne(data, collection) {
     });
 
     console.log("Insert Data");
+}
+
+function deleteOne(data, collection) {
+    connectToDB(async (db) => {
+        await db.collection(collection).deleteOne(data);
+    });
+
+    console.log("Delete Data");
+}
+
+function deleteMany(data, collection) {
+    connectToDB(async (db) => {
+        await db.collection(collection).deleteMany(data);
+    });
+
+    console.log("Delete Data");
 }
 
 function dropCollection(collection) {
