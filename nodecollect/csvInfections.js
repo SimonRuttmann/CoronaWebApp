@@ -106,25 +106,28 @@ async function getDataFromCSVInfections(saveToDB, mqttClient) {
             sumAnzahlFall = sumAnzahlFall + Number(tmp.anzahlfall[j]);
         }
 
-        sumAnzahlFall = sumAnzahlFall / tmp.anzahlfall.length;
+        var schnittSumAnzahlFall = sumAnzahlFall / tmp.anzahlfall.length;
 
         var sumAnzahlTodesFall = 0;
         for (var j = 0; j < tmp.anzahltodesfall.length; j++) {
             sumAnzahlTodesFall = sumAnzahlTodesFall + Number(tmp.anzahltodesfall[j]);
         }
 
-        sumAnzahlTodesFall = sumAnzahlTodesFall / tmp.anzahltodesfall.length;
+        var schnittSumAnzahlTodesFall = sumAnzahlTodesFall / tmp.anzahltodesfall.length;
 
         var sumAnzahlGenesen = 0;
         for (var j = 0; j < tmp.anzahlgenesen.length; j++) {
             sumAnzahlGenesen = sumAnzahlGenesen + Number(tmp.anzahlgenesen[j]);
         }
 
-        sumAnzahlGenesen = sumAnzahlGenesen / tmp.anzahlgenesen.length;
+        var schnittSumAnzahlGenesen = sumAnzahlGenesen / tmp.anzahlgenesen.length;
 
         json.anzahlfall = sumAnzahlFall;
         json.anzahltodesfall = sumAnzahlTodesFall;
         json.anzahlgenesen = sumAnzahlGenesen;
+        json.schnittanzahlfall = schnittSumAnzahlFall;
+        json.schnitttodesfall = schnittSumAnzahlTodesFall;
+        json.schnittanzahlgenesen = schnittSumAnzahlGenesen;
         json.date = Date.now();
 
         calculateData.push(json);
@@ -141,7 +144,7 @@ async function getDataFromCSVInfections(saveToDB, mqttClient) {
         } else {
             for (var i = 0; i < calculateData.length; i++) {
                 var found = false;
-                
+
                 for (var j = 0; j < oldData.length; j++) {
                     if (calculateData[i].ags == oldData[j].ags && calculateData[i].altersgruppe == oldData[j].altersgruppe && calculateData[i].geschlecht == oldData[j].geschlecht) {
                         found = true;
