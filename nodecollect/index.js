@@ -2,12 +2,17 @@ const districts = require('./districts');
 const vaccination = require('./vaccination');
 const mqtt = require('./mqtt');
 const news = require('./news');
+const csvInfections = require('./csvInfections');
+const csvVaccinations = require('./csvVaccinations');
+const agsBW = require('./ags');
 
 var mqttClient;
 
 //am anfang ausführen
 async function init() {
     mqttClient = await mqtt.initMQTT();
+
+    await agsBW.getAGSBW();
 
     districts.getDistricts(true, mqttClient);
     districts.saveHistory();
@@ -18,6 +23,12 @@ async function init() {
     vaccination.saveHistoryDates();
 
     news.getCoronaNewsToday(mqttClient);
+
+    csvInfections.getDataFromCSVInfections(true, mqttClient);
+    csvInfections.saveHistoryCSVInfections();
+
+    csvVaccinations.getDataFromCSVVaccinationsAll(true, mqttClient);
+    csvVaccinations.getDataFromCSVVaccinations(true, mqttClient);
 }
 
 // alle distrikte jede minute aktualisieren
@@ -33,6 +44,11 @@ const intervalHour = setInterval(() => {
 // alle impftermine 5 mal am tag aktualisieren
 const interval5TimesPerDay = setInterval(() => {
     vaccination.getVaccinationDates(true, mqttClient);
+
+    csvInfections.getDataFromCSVInfections(true, mqttClient);
+
+    csvVaccinations.getDataFromCSVVaccinationsAll(true, mqttClient);
+    csvVaccinations.getDataFromCSVVaccinations(true, mqttClient);
 }, 17280000);
 
 // alle distrikte jeden tag speichern
@@ -41,6 +57,8 @@ const intervalDay = setInterval(() => {
 
     vaccination.saveHistoryPlaces();
     vaccination.saveHistoryDates();
+
+    csvInfections.saveHistoryCSVInfections();
 }, 86400000);
 
 // alle impforte jede woche speichern

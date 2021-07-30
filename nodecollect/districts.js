@@ -29,30 +29,37 @@ async function getDistricts(saveToDB, mqttClient) {
         }
     }
 
+    if (data.length == 0) return undefined;
+
     if (saveToDB) {
         var oldData = await db.find({}, "districtsBW");
 
         if (oldData.length == 0) {
             mqttClient.publish("refresh", "districtsBW");
+            await db.insertMany(data, "districtsBW");
         } else {
-            var change = false;
             for (var i = 0; i < data.length; i++) {
+                var found = false;
+
                 for (var j = 0; j < oldData.length; j++) {
                     if (data[i].ags == oldData[j].ags) {
+                        found = true;
+
                         if (data[i].population != oldData[j].population || data[i].cases != oldData[j].cases || data[i].deaths != oldData[j].deaths || data[i].casesPerWeek != oldData[j].casesPerWeek || data[i].deathsPerWeek != oldData[j].deathsPerWeek || data[i].recovered != oldData[j].recovered || data[i].weekIncidence != oldData[j].weekIncidence || data[i].casesPer100k != oldData[j].casesPer100k || data[i].delta.cases != oldData[j].delta.cases || data[i].delta.deaths != oldData[j].delta.deaths || data[i].delta.recovered != oldData[j].delta.recovered) {
                             mqttClient.publish("refresh", "districtsBW");
-                            change = true;
-                            break;
+
+                            await db.deleteOne({ ags: oldData[j].ags }, "districtsBW");
+                            await db.insertOne(data[i], "districtsBW");
                         }
                     }
                 }
 
-                if (change) break;
+                if (!found) {
+                    mqttClient.publish("refresh", "districtsBW");
+                    await db.insertOne(data[i], "districtsBW");
+                }
             }
         }
-
-        await db.dropCollection("districtsBW");
-        await db.insertMany(data, "districtsBW");
     }
 
     return data;
@@ -62,6 +69,7 @@ async function saveHistory() {
     var data = await getDistricts(false);
     var history = await db.find({}, "historyDistrictsBW");
 
+    if (data == undefined) return undefined;
     if (history == undefined) history = [];
 
     for (var i = 0; i < data.length; i++) {

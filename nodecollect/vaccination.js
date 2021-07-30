@@ -79,25 +79,30 @@ async function getVaccinationDates(saveToDB, mqttClient) {
 
         if (oldData.length == 0) {
             mqttClient.publish("refresh", "vaccinationDatesBW");
+            await db.insertMany(data, "vaccinationDatesBW");
         } else {
-            var change = false;
             for (var i = 0; i < data.length; i++) {
+                var found = false;
+
                 for (var j = 0; j < oldData.length; j++) {
                     if (data[i].Slug == oldData[j].Slug) {
+                        found = true;
+
                         if (data[i].Available != oldData[j].Available || data[i].NoBooking != oldData[j].NoBooking) {
                             mqttClient.publish("refresh", "vaccinationDatesBW");
-                            change = true;
-                            break;
+
+                            await db.deleteOne({ Slug: oldData[j].Slug }, "vaccinationDatesBW");
+                            await db.insertOne(data[i], "vaccinationDatesBW");
                         }
                     }
                 }
 
-                if (change) break;
+                if (!found) {
+                    mqttClient.publish("refresh", "vaccinationDatesBW");
+                    await db.insertOne(data[i], "vaccinationDatesBW");
+                }
             }
         }
-
-        await db.dropCollection("vaccinationDatesBW");
-        await db.insertMany(data, "vaccinationDatesBW");
     }
 
     return data;

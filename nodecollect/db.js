@@ -14,6 +14,8 @@ async function find(data, collection) {
 }
 
 function insertMany(data, collection) {
+    if (data.length == 0) return;
+
     connectToDB(async (db) => {
         await db.collection(collection).insertMany(data);
     });
@@ -38,6 +40,8 @@ function deleteOne(data, collection) {
 }
 
 function deleteMany(data, collection) {
+    if (data.length == 0) return;
+
     connectToDB(async (db) => {
         await db.collection(collection).deleteMany(data);
     });
