@@ -39,6 +39,8 @@ const intervalMin = setInterval(() => {
 // alle corona news des tages jede stunde aktualisieren
 const intervalHour = setInterval(() => {
     news.getCoronaNewsToday(mqttClient);
+
+    vaccination.saveHistoryDates();
 }, 3600000);
 
 // alle impftermine 5 mal am tag aktualisieren
@@ -55,15 +57,14 @@ const interval5TimesPerDay = setInterval(() => {
 const intervalDay = setInterval(() => {
     districts.saveHistory();
 
-    vaccination.saveHistoryPlaces();
-    vaccination.saveHistoryDates();
-
     csvInfections.saveHistoryCSVInfections();
 }, 86400000);
 
 // alle impforte jede woche speichern
 const intervalWeek = setInterval(() => {
     vaccination.getVaccinationPlaces(true, mqttClient);
+
+    vaccination.saveHistoryPlaces();
 }, 604800000);
 
 // clearInterval(interval);
