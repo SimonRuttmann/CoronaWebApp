@@ -144,9 +144,37 @@ app.get('/profile', (req,res) =>{
     res.render('profile.ejs')
 })
 
+//Get Credentials
+app.get('/user/getSessionInfo',getSessionInfo);
 
-
-
+/*
+{
+    authenticated: "true"
+    name: "albert"
+    email: "albert@albert.com"
+}
+*/
+function getSessionInfo(req, res){
+    if(req.isAuthenticated()){
+        console.log("session:");
+        console.log(req.session);
+        console.log("user:");
+        console.log(req.user);
+        res.json(
+        {
+            authenticated: true,
+            name: req.user.name,
+            email: req.user.email
+        });    
+    }
+    else{
+        res.json(
+            {
+                authenticated: false
+            });    
+        
+    }
+}
   //        Post Requests
   app.post('/login', checkNotAuthenticated, passport.authenticate('local', {
     successRedirect: '/',
