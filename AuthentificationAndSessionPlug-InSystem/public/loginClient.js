@@ -1,1 +1,1 @@
-alert("hallo");
+alert("loginjs");

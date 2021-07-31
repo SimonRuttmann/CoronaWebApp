@@ -2,134 +2,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-<style>
-.navigationbar {
-	text-align: center;
-	list-style-type: none;
-
-	padding: 10px;
-	overflow: hidden;
-	background-color:#222;
-
-}
-
-.navigationbar li{
-	display:inline;
-    
-}
-
-.navigationbar a:hover {
-	background-color: #111;
-}
-
-.navigationbar a{
-	margin: 10px;
-	color: white;
-	padding: 14px 16px;
-	text-decoration: none;
-	font-size: large;
-	font-weight: bold;
-}
-
-#active{
-	  text-decoration: underline;
-    text-underline-position: under;
-    text-decoration-thickness: 3px;
-}
-ul {
-padding: 0px;
-}
-body {
-    background: #333;
-    font-family: 'Roboto', sans-serif;
-}
-
-.register-box {
-	margin-left: auto;
-    margin-right: auto;
-	width: 1000px;
-    margin-top: 30px;
-    height: auto;
-    background: #222;
-    text-align: center;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-}
-
-.profile-title {
-    text-align: center;
-    font-size: 40px;
-    letter-spacing: 2px;
-    padding: 20px;
-    margin-bottom: 20px;
-    font-weight: bold;
-    color: #ECF0F5;
-}
-
-.inputfield{
-	
-	width: 800px;
-	display:block;
-	background-color: #222;
-    padding: 15px;
-    border: none;
-    border-bottom: 3px solid #0DB8DE;
-   	margin-left: 100px;
-    margin-right:100px;
-    color: white;
-    text-align:left;
-    font-size: 17px;
-    font-weight: bold;
-    box-sizing: border-box;
-}
-
-
-.formlabel {
-	display: block;
-    margin-left: 100px;
-    margin-top: 30px;
-    text-align: left;
-    font-size: 22px;
-    color: #999999;
-    font-weight: bold;
-    letter-spacing: 1px;
-}
-
-.profilebutton {
-	margin: 30px;
-	width: 500px;
-	height: 40px;
-	background-color: #111;
-	color: white;
-	box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-	border: none;
-  	cursor: pointer;
-    font-size: 20px;
-    font-weight: bold;
-    letter-spacing: 1px;
-}
-
-.profilebutton:hover{
-	background-color: #333;
-}
-
-input[type="text"][disabled] {
-   font-size: 20px;
-}
-
-
-option{
-text-indent: 5px;
-font-size: 16px;
-font-weight: bold;
-}
-</style>
+    <link rel = "stylesheet" href = "./profile.css" type="text/css"> </link>
+    <script type = "text/javascript" src = "./profileClient.js"> </script>
 </head>
 <body>
 
 <div class="navigationbar">
   <ul>
     <li><a href="/index">Startseite</a></li>
-    <li><a href="/login">Anmelden</a></li>
+    <li><a href="/login" id="RefToLogin">Anmelden</a></li>
     <li><a href="/statistic">Statistik</a></li>
     <li><a href="/coronaChat">Corona-Chat</a></li>
     <li><a href="/vaccination">Impfangebote</a></li>
@@ -261,10 +142,15 @@ font-weight: bold;
      
     	
         <button type="submit" class="profilebutton">Aktualisieren</button> 
-        <button href="/index" class="profilebutton">Abbruch</button>
-           
-	</form>
-        
+    </form>
+    <form action="/index" method="GET">
+        <button type="submit" class= "profilebutton"> Abbruch </button>
+    </form>
+               
+</div>
+
+<div class="footer-box">
+    <p class="description" id="loginStatus">Sie sind momentan nicht angemeldet. </p>
 </div>
 
 </body>

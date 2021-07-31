@@ -1,15 +1,15 @@
 <html>
     <head>
         <title>Corona-Chat</title>
-        <link rel = "stylesheet" href = "/Projekt/public/coronaChat.css"
-        <script type = "text/javascript" src = "/Projekt/public/coronaChatClient.js"> </script>
+        <link rel = "stylesheet" href = "./coronaChat.css" type="text/css"> </link>
+        <script type = "text/javascript" src = "./coronaChatClient.js"> </script>
     </head>
     <body>
 
         <div class="navigationbar">
             <ul>
                 <li><a href="/index">Startseite</a></li>
-                <li><a href="/login">Anmelden</a></li>
+                <li><a href="/login" id="RefToLogin">Anmelden</a></li>
                 <li><a href="/statistic">Statistik</a></li>
                 <li><a id="active" href="#">Corona-Chat</a></li>
                 <li><a href="/vaccination">Impfangebote</a></li>
@@ -93,5 +93,10 @@
             <button onClick="sendMessage()" class="sendButton">Senden</button>
     
         </div>
+
+        <div class="footer-box">
+            <p class="description" id="loginStatus">Sie sind momentan nicht angemeldet. </p>
+        </div>
+
     </body>
 </html>

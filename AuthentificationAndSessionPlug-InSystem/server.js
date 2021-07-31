@@ -78,16 +78,34 @@ const users = []
       (id, done) => { return done(null, getUserById(id)) } )
 
 
+/* Seiten:
+    index.ejs
+    login.ejs       // logout
+    register.ejs
+    statistic.ejs
+    coronaChat.ejs
+    vaccination.ejs
+    news.ejs
+    profile.ejs
+*/
 
   //Routes
   //        Get Requests
-  app.get('/', checkAuthenticated, (req, res) => {
+  /*app.get('/', checkAuthenticated, (req, res) => {
     console.log(req.session)
     console.log(req.user)
     res.render('index.ejs', { name: req.user.name })
 
   })
+  */
+ app.get('/', (req,res) => {
+     res.render('index.ejs')
+ })
   
+  app.get('/index', (req,res) => {
+      res.render('index.ejs');
+  })
+
   app.get('/login', checkNotAuthenticated, (req, res) => {
     res.render('login.ejs')
   })
@@ -105,22 +123,28 @@ const users = []
   //  successRedirect: "/chat/Authenticated",
   //  failureRedirect: "/chat/Unauthenticated"
   //}))
-  
-app.get('/coronaChat', (req,res) =>{
-    res.render('coronaChat.ejs')
-})
 
 app.get('/statistic', (req,res) =>{
     res.render('statistic.ejs')
 })
 
-app.get('/userprofile', (req,res) =>{
-    res.render('userprofile.ejs')
+app.get('/coronaChat', (req,res) =>{
+    res.render('coronaChat.ejs')
 })
 
 app.get('/vaccination', (req,res) =>{
     res.render('vaccination.ejs')
 })
+
+app.get('/news', (req,res)=>{
+    res.render('news.ejs')
+})
+
+app.get('/profile', (req,res) =>{
+    res.render('profile.ejs')
+})
+
+
 
 
   //        Post Requests
