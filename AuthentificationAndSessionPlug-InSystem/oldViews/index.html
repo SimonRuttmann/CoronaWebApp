@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link id = "indexstylesheet" rel="stylesheet" href="indexstylesheet.css" type = text/css>
+        <title> Corona-App </title>
+        <meta charset = "utf-8">
+        <script type = "text/javascript" src="client.js"></script>
+
+        <!-- jQuery. Notwendig um richtig Post-Request zu schicken -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    </head>
+
+
+    <body>
+        <!-- Zeigt abwechselnd den Login oder die Registrierung -->
+        <div id = "authenticationContainer">
+
+
+            <div id = "loginContainer">
+                <h1>Login</h1>
+                <form action="/login" name="registerform" method="POST">
+        
+                    <div>
+                        <label for = "email"> E-Mail </label>
+                        <input type = "email", id = "email", name = "email">
+                    </div>
+        
+                    <div>
+                        <label for = "password"> Passwort </label>
+                        <input type = "password", id = "password", name = "password">
+                 </div>
+        
+                    <button id="Login" onclick="login()"> Anmelden </button>
+                    <button id="ToRegister" onclick ="showRegister()"> Zur Registrierung </button>
+                </form>
+            </div>
+
+
+        </div>
+    </body>
+</html>
