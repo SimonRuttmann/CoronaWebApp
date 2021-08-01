@@ -217,7 +217,105 @@ function getSessionInfo(req, res){
       res.redirect('/register')
     }
   })
+
+  //Update User
+  app.post('/user/updateUser', checkAuthenticated, async(req, res) => {
+      var updateQuery = 
+      `UPDATE Account
+       SET 
+       gender = ${req.body.gender}, 
+       priority = ${req.body.priority}, 
+       prefVaccine = ${req.body.prefVaccine},
+       district = ${req.body.district},
+       radius = ${req.body.radius},
+       WHERE  id = ${req.body.id};`
+
+       let promise = await updateUserByStatement(updateQuery);
+
+        if(promise){
+            res.json(
+                {
+                    updated: true
+                });  
+        }
+        else{
+            res.json(
+                {
+                    updated: false
+                }); 
+        }
+  })
+
+
+function  updateUserByStatement(updateQuery){
+    con.on("error", error => { con.connect(); });
+    
+    return new Promise( ( resolve, reject) => {
+        con.query(updateQuery, function(err, resultrows, fields){
+            if(err){
+                reject(err);
+            }
+            else if(resultrows.length == 0){
+                resolve(false)
+            }
+            else{
+                resolve(true)
+            }
+        });
+    });
+}
+
+
+app.get('/user/getUserdata', checkAuthenticated, async(req, res) => {
+    
+    var selectQuery = 
+    `SELECT name, email, gender, priority, prefVaccine, district, radius 
+     FROM Account 
+     WHERE id = ${req.user.id}`
+     
+     let user = await getUserDataByStatement(selectQuery);
+     if(user){
+         res.json(JSON.parse(user))
+     }
+     else{
+         res.json({valid: false})
+     }
+
+})
   
+function getUserDataByStatement(selectQuery){
+
+    return new Promise( (resolve, reject) => {
+        con.on("error", error => { con.connect(); });
+        var user;
+        
+            con.query(selectQuery, function (err, resultrows, fields) {
+                if (err){ 
+                    reject(err);
+                }
+                else if (resultrows.length == 0){
+                    resolve(null);
+                }
+                else{     
+                    user = {
+                        valid: true,
+                        name: resultrows[0].name,
+                        email: resultrows[0].email,
+                        gender: resultrows[0].gender,
+                        priority: resultrows[0].priority,
+                        prefVaccine: resultrows[0].prefVaccine,
+                        district: resultrows[0].district,
+                        radius: resultrows[0].radius
+                    };
+                    resolve(user);
+                }
+            });
+        
+    })
+}
+
+
+ 
 //Tabelle User:                                         Default
 //  id              11021998                            notnull         PRIMARY KEY
 //  name            Albert                              notnull         unique
