@@ -1,29 +1,67 @@
 window.onload = init();
 
-function init(){
-    getSessionData([setLoginStatus, setSession]);
+async function init(){
+    await getSessionData([setLoginStatus, setSession]);
+    getUserData();
 };
 
-async function getSessionData(callbacks){
+async function getUserData(){
+    
     let result;
     try{
-        let response = await fetch('/user/getSessionInfo');
+        let response = await fetch('/user/getUserData');
         if(response.status != 200) {
             console.log("Received status: " + response.status);
             return;
         }
-    
+        
         //reads response stream to completion
         result = await response.text();
+        console.log(result);
         result = JSON.parse(result);
+        
     }
     catch(e){
         console.log("Server is not responing");
     }
     if (result != undefined){
-        callbacks.forEach( callback => callback(result))
+        profile.gender = result.gender;
+        profile.priority = result.priority;
+        profile.prefVaccine = result.prefVaccine;
+        profile.district = result.district;
+        profile.radius = result.radius;
+        session.name = result.name;
+        session.email = result.name;
+        updateProfileDOM();
     }
 
+}
+
+
+
+async function getSessionData(callbacks){
+    return new Promise( async(resolve, reject) => {
+        let result;
+        try{
+            let response = await fetch('/user/getSessionInfo');
+            if(response.status != 200) {
+                console.log("Received status: " + response.status);
+                return;
+            }
+    
+            //reads response stream to completion
+            result = await response.text();
+            result = JSON.parse(result);
+        }
+        catch(e){
+            console.log("Server is not responing");
+            reject(e);
+        }
+        if (result != undefined){
+            callbacks.forEach( callback => callback(result))
+        }
+        resolve(true);
+    })
 }
 
 function setLoginStatus(data){
@@ -51,34 +89,56 @@ function sendProfile(){
 }
 
 function updateProfileDOM(){
-    Document.getElementById("nameOutput").value = session.name;
-    Document.getElementById("emailOutput").value = session.email;
+    document.getElementById("nameOutput").value = session.name;
+    document.getElementById("emailOutput").value = session.email;
 
     let genderTranslated;
     switch(profile.gender){
-        case male:      genderTranslated = "Männlich"; break;
-        case female:    genderTranslated = "Weiblich"; break;
-        case diverse:   genderTranslated = "Divers"; break;
-        default:        genderTranslated = "Keine Angabe"; break;
+        case "male":      genderTranslated = "Männlich";      break;
+        case "female":    genderTranslated = "Weiblich";      break;
+        case "diverse":   genderTranslated = "Divers";        break;
+        case "unknown":   genderTranslated = "Keine Angabe";  break;
     }
-    Document.getElementById("genderOutput").value = genderTranslated;
+    document.getElementById("genderOutput").value = genderTranslated;
     
-    
-  /*  
-    Document.getElementById("priorityOutput").value
-    Document.getElementById("vaccineOutput").value
-    Document.getElementById("districtOutput").value
-    Document.getElementById("radiusOutput").value
-*/
+    let priorityTranslated;
+    switch(profile.priority){
+        case "priority1": priorityTranslated = "Gruppe 1 - Höchste Priorität";    break;
+        case "priority2": priorityTranslated = "Gruppe 2 - Hohe Priorität";       break;
+        case "priority3": priorityTranslated = "Gruppe 3 - Erhöhte Priorität";    break;
+        case "priority4": priorityTranslated = "Gruppe 4 - Keine Priorität";      break          
+    }    
+    document.getElementById("priorityOutput").value = priorityTranslated;
+
+    let vaccineTranslated;
+    switch(profile.prefVaccine){
+        case "everything":    vaccineTranslated = "Alle zug. Impfstoffe"; break;
+        case "biontech":      vaccineTranslated = "Biontech/Pfizer";      break;
+        case "moderna":       vaccineTranslated = "Moderna";              break;
+        case "astra":         vaccineTranslated = "AstraZeneca";          break;
+        case "johnsen":       vaccineTranslated = "Johnson&amp;Johnson";  break;              
+    }
+    document.getElementById("vaccineOutput").value = vaccineTranslated;
+    document.getElementById("districtOutput").value = profile.district;
+
+    let radiusTranslated;
+    switch(profile.radius){
+        case "all":   radiusTranslated = "Ganz Baden-Württemberg";   break;
+        case "one":   radiusTranslated = "Mein Landkreis";   break;
+        case "surr":  radiusTranslated = "Main und alle umliegenden Landkreise";  break;
+    }
+    document.getElementById("radiusOutput").value = radiusTranslated;
+
 }
 
-function sendToServer(){
+async function sendToServer(){
     let result;
+    console.log(profile);
     try{
-        let response = await fetch('/user/getSessionInfo',{
+        let response = await fetch('/user/updateUser',{
             method: 'POST',
-            header:{'Content-Type': 'text/plain'},
-            body: JSON.parse(profile)
+            headers:{'Content-Type': 'application/json'},
+            body: JSON.stringify(profile)
         });
 
         if(response.status != 200) {
@@ -89,8 +149,8 @@ function sendToServer(){
         //reads response stream to completion
         result = await response.text();
         result = JSON.parse(result);
-        
-        if(!result.valid){
+        console.log(result);
+        if(!result.updated){
             console.log("Serverside error at handling update")
         }
         
@@ -98,17 +158,14 @@ function sendToServer(){
     catch(e){
         console.log("Server is not responing");
     }
-    if (result != undefined){
-        callbacks.forEach( callback => callback(result))
-    }
 };
 
 function getProfile(){
-    profile.gender = document.getElementById("gender").value();
-    profile.priority = document.getElementById("priority").value();
-    profile.prefVaccine = document.getElementById("prefVaccine").value();
-    profile.district = document.getElementById("district").value();
-    profile.radius = document.getElementById("radius").value();
+    profile.gender = document.getElementById("gender").value;
+    profile.priority = document.getElementById("priority").value;
+    profile.prefVaccine = document.getElementById("vaccine").value;
+    profile.district = document.getElementById("district").value;
+    profile.radius = document.getElementById("radius").value;
 }
 
 var profile = {
@@ -139,10 +196,10 @@ CREATE TABLE IF NOT EXISTS Account (
     email       VARCHAR(255) NOT NULL UNIQUE,
     password    VARCHAR(255) NOT NULL,
     gender      ENUM('unkown', 'male', 'female', 'diverse')  DEFAULT 'unknown', 
-    priortiy    VARCHAR(30)  DEFAULT 'priority4',
+    prioritiy    VARCHAR(30)  DEFAULT 'priority4',
     prefVaccine VARCHAR(50)  DEFAULT 'everything',
     district    VARCHAR(255) DEFAULT 'unkown',
-    radius      ENUM('all', 'surrounding', 'one')  DEFAULT 'all',   
+    radius      ENUM('all', 'surr', 'one')  DEFAULT 'all',   
     PRIMARY KEY (id)
 );
 */

@@ -220,15 +220,17 @@ function getSessionInfo(req, res){
 
   //Update User
   app.post('/user/updateUser', checkAuthenticated, async(req, res) => {
+      console.log(req.body);
+      //JSON.parse(req.body);
       var updateQuery = 
       `UPDATE Account
        SET 
-       gender = ${req.body.gender}, 
-       priority = ${req.body.priority}, 
-       prefVaccine = ${req.body.prefVaccine},
-       district = ${req.body.district},
-       radius = ${req.body.radius},
-       WHERE  id = ${req.body.id};`
+       gender = "${req.body.gender}", 
+       priority = "${req.body.priority}", 
+       prefVaccine = "${req.body.prefVaccine}",
+       district = "${req.body.district}",
+       radius = "${req.body.radius}"
+       WHERE  id = "${req.user.id}";`
 
        let promise = await updateUserByStatement(updateQuery);
 
@@ -266,7 +268,7 @@ function  updateUserByStatement(updateQuery){
 }
 
 
-app.get('/user/getUserdata', checkAuthenticated, async(req, res) => {
+app.get('/user/getUserData', checkAuthenticated, async(req, res) => {
     
     var selectQuery = 
     `SELECT name, email, gender, priority, prefVaccine, district, radius 
@@ -274,8 +276,10 @@ app.get('/user/getUserdata', checkAuthenticated, async(req, res) => {
      WHERE id = ${req.user.id}`
      
      let user = await getUserDataByStatement(selectQuery);
+     console.log("Sending Data:")
+     console.log(user);
      if(user){
-         res.json(JSON.parse(user))
+         res.json(user)
      }
      else{
          res.json({valid: false})
@@ -333,10 +337,10 @@ CREATE TABLE IF NOT EXISTS Account (
     email       VARCHAR(255) NOT NULL UNIQUE,
     password    VARCHAR(255) NOT NULL,
     gender      ENUM('unkown', 'male', 'female', 'diverse')  DEFAULT 'unknown', 
-    priortiy    VARCHAR(30)  DEFAULT 'priority4',
+    prioritiy    VARCHAR(30)  DEFAULT 'priority4',
     prefVaccine VARCHAR(50)  DEFAULT 'everything',
     district    VARCHAR(255) DEFAULT 'unkown',
-    radius      ENUM('all', 'surrounding', 'one')  DEFAULT 'all',   
+    radius      ENUM('all', 'surr', 'one')  DEFAULT 'all',   
     PRIMARY KEY (id)
 );
 
@@ -350,10 +354,10 @@ CREATE TABLE IF NOT EXISTS Account (
         email       VARCHAR(255) NOT NULL UNIQUE,
         password    VARCHAR(255) NOT NULL,
         gender      ENUM('unknown', 'male', 'female', 'diverse')  DEFAULT 'unknown', 
-        priortiy    VARCHAR(30)  DEFAULT 'priority4',
+        prioritiy    VARCHAR(30)  DEFAULT 'priority4',
         prefVaccine VARCHAR(50)  DEFAULT 'everything',
         district    VARCHAR(255) DEFAULT 'unkown',
-        radius      ENUM('all', 'surrounding', 'one')  DEFAULT 'all',   
+        radius      ENUM('all', 'surr', 'one')  DEFAULT 'all',   
         PRIMARY KEY (id)
     )`
     con.query(tableQuery);
