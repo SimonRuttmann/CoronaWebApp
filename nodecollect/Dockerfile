@@ -1,7 +1,7 @@
 FROM node
 
-COPY . /node
+COPY . /node/
 
 WORKDIR /node
 
-# CMD ["node", "index.js"]
+CMD ["node", "index.js"]

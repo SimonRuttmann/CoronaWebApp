@@ -52,3 +52,4 @@ services:
           - ./mongodb:/data/db    
       ports: 
           - "27017:27017"
+# remove volumes if error
