@@ -82,6 +82,8 @@ async function getDataFromCSVVaccinationsAll(saveToDB, mqttClient) {
 async function getDataFromCSVVaccinations(saveToDB, mqttClient) {
     var data = await getDataFromCSVVaccinationsAll(false, mqttClient);
 
+    if (data == undefined) return undefined;
+
     var combineData = [];
 
     for (var i = 0; i < data.length; i++) {

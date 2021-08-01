@@ -185,6 +185,7 @@ async function saveHistoryCSVInfections() {
                 history[j].anzahlfall.push(data[i].anzahlfall);
                 history[j].anzahltodesfall.push(data[i].anzahltodesfall);
                 history[j].anzahlgenesen.push(data[i].anzahlgenesen);
+                history[j].date.push(data[i].date);
             }
         }
 
@@ -194,6 +195,7 @@ async function saveHistoryCSVInfections() {
             tmp.anzahlfall = [data[i].anzahlfall];
             tmp.anzahltodesfall = [data[i].anzahltodesfall];
             tmp.anzahlgenesen = [data[i].anzahlgenesen];
+            tmp.date = [data[i].date];
 
             history.push(tmp);
         }
