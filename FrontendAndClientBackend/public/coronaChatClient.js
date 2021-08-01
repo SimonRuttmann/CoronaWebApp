@@ -1,14 +1,14 @@
 window.onload = init();
 
 var session = {
-    authenticate: false,
+    authenticated: false,
     name: "",
     email: "",
 }
 
 
 function init(){
-    getSessionData([setLoginStatus, setSession]);
+    getSessionData([setLoginStatus, setSession, toggleSendButton]);
 };
 
 
@@ -37,7 +37,7 @@ async function getSessionData(callbacks){
 function setLoginStatus(data){
     if(data.authenticated){
         //Display feedback at footer
-        document.getElementById("loginStatus").textContent="Sie sind angemeldet als: " + data.name;     
+        document.getElementById("loginStatus").textContent=`Sie sind angemeldet als: ${data.name}`;     
         //Modify Navigationbar to Logout    
         document.getElementById("RefToLogin").textContent="Abmelden";
         document.getElementById("RefToLogin").setAttribute("href", "/logout");
@@ -50,4 +50,24 @@ function setSession(data){
         session.name = data.name;
         session.email = data.email;
     }
+}
+
+function toggleSendButton(data){
+    var sendElements = document.getElementsByClassName("send");
+    if(data.authenticated){
+        for (let element of sendElements) {
+            element.style.visibility = "visible";
+            element.removeAttribute("disabled");
+        }
+    }
+    else{
+        for (let element of sendElements) {
+			element.style.visibility = "hidden";
+            element.setAttribute("disabled", true);
+        }
+    }
+}
+
+function sendMessage(){
+    console.log("should send message")
 }

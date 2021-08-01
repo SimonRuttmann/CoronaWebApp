@@ -10,18 +10,28 @@
   const flash = require('express-flash')        //Displays messages, if we fail to login. (wrong password, wrong email)
   const expresssession = require('express-session')    //Stores and persists session across different pages
                                                 //Render Engine
-  
+const mysql = require('mysql');
 const app = express()
 app.use(express.json());
 //hier sind alle user drin -> DB
 const users = []
+
+//DB-Connection
+var con = mysql.createConnection({
+    host: "sql11.freemysqlhosting.net",
+    user: "sql11428172",
+    password: "E6Yk3KiNmZ",
+    database: "sql11428172"
+});
+
 
 //Doku: http://www.passportjs.org/docs/authenticate/
   //Configuration
 
   //1. Authentification Strategy
   const passport = require('passport')
-  const LocalStrategy = require('passport-local').Strategy
+  const LocalStrategy = require('passport-local').Strategy;
+
 
   
   passport.use(new LocalStrategy({
@@ -29,7 +39,7 @@ const users = []
       passwordField: 'password'},
 
       async function (email, password, done){
-          const user = getUserByEmail(email);
+          const user = await getUserByEmail(email);
                                                                         //done (param1 = Error, param2 = UserFound, param3 = DisplayingMessage)
                                                                         console.log("User:" );console.log(user);
           //No User found
@@ -75,7 +85,10 @@ const users = []
 
   //logout request -> deserialize User    
   passport.deserializeUser(
-      (id, done) => { return done(null, getUserById(id)) } )
+      async(id, done) => {
+          var user = await getUserById(id); 
+          return done(null, user) 
+    } )
 
 
 /* Seiten:
@@ -156,10 +169,6 @@ app.get('/user/getSessionInfo',getSessionInfo);
 */
 function getSessionInfo(req, res){
     if(req.isAuthenticated()){
-        console.log("session:");
-        console.log(req.session);
-        console.log("user:");
-        console.log(req.user);
         res.json(
         {
             authenticated: true,
@@ -172,7 +181,6 @@ function getSessionInfo(req, res){
             {
                 authenticated: false
             });    
-        
     }
 }
   //        Post Requests
@@ -187,6 +195,15 @@ function getSessionInfo(req, res){
     console.log(req.body);
     try {
       const hashedPassword = await bcrypt.hash(req.body.password, 10)
+      var user = {
+        id: Date.now().toString(),
+        name: req.body.name,
+        email: req.body.email,
+        password: hashedPassword
+      };
+      console.log("t1")
+      console.log(user)
+      insertUser(user);    
       users.push({
         id: Date.now().toString(),
         name: req.body.name,
@@ -201,7 +218,63 @@ function getSessionInfo(req, res){
     }
   })
   
+//Tabelle User:                                         Default
+//  id              11021998                            notnull         PRIMARY KEY
+//  name            Albert                              notnull         unique
+//  email           alber@albert.com                    notnull         unique
+//  password        3243jjk2lj3r3lk2rjl2rjd             notnull
+//  gender          m                                   unkown,         male, female, diverse
+//  priority        1                                   priority4,      priority3, priority2, priority1
+//  prefVaccine     bioentech                           everything,     biontech, moderna, astra, johnson
+//  district        heidenheim                          unknown         --
+//  radius          all, surrounding, one               all             one, surrounding
+/*
+CREATE TABLE IF NOT EXISTS Account (
+    id          VARCHAR(255),
+    name        VARCHAR(255) NOT NULL UNIQUE,
+    email       VARCHAR(255) NOT NULL UNIQUE,
+    password    VARCHAR(255) NOT NULL,
+    gender      ENUM('unkown', 'male', 'female', 'diverse')  DEFAULT 'unknown', 
+    priortiy    VARCHAR(30)  DEFAULT 'priority4',
+    prefVaccine VARCHAR(50)  DEFAULT 'everything',
+    district    VARCHAR(255) DEFAULT 'unkown',
+    radius      ENUM('all', 'surrounding', 'one')  DEFAULT 'all',   
+    PRIMARY KEY (id)
+);
 
+*/
+
+  function createTable(){
+    var tableQuery = 
+    `CREATE TABLE IF NOT EXISTS Account (                                                  
+        id          VARCHAR(255),
+        name        VARCHAR(255) NOT NULL UNIQUE,
+        email       VARCHAR(255) NOT NULL UNIQUE,
+        password    VARCHAR(255) NOT NULL,
+        gender      ENUM('unknown', 'male', 'female', 'diverse')  DEFAULT 'unknown', 
+        priortiy    VARCHAR(30)  DEFAULT 'priority4',
+        prefVaccine VARCHAR(50)  DEFAULT 'everything',
+        district    VARCHAR(255) DEFAULT 'unkown',
+        radius      ENUM('all', 'surrounding', 'one')  DEFAULT 'all',   
+        PRIMARY KEY (id)
+    )`
+    con.query(tableQuery);
+  }
+  //createTable();
+
+  function insertUser(user){
+    con.on("error", error => { con.connect(); });
+    var insertQuery = 
+    `INSERT INTO Account(id, name, email, password) VALUES ("${user.id}", "${user.name}", "${user.email}", "${user.password}");`;
+
+    try{
+        con.query(insertQuery);
+    }
+    catch(e){
+        console.log("Error at inserting User: " + user);
+        console.log(e);
+    }
+  }
   //Hilfsfunktionen
   function checkAuthenticated(req, res, next) {
     if (req.isAuthenticated()) {
@@ -217,15 +290,70 @@ function getSessionInfo(req, res){
     }
     next()
   }
-  
+    
+ // var user = {
+ //   id: Date.now().toString(),
+ //   name: req.body.name,
+ //   email: req.body.email,
+ //   password: hashedPassword
+ // };
+async function getUserByEmail(email){
+    
+    var user;
+    var selectQuery = 
+    `SELECT id, name, email, password 
+     FROM Account WHERE email = "${email}";`;
+    user = await getUserFromMySql(selectQuery);
+    console.log("Get User by Email: ");
+    console.log(user)
 
-function getUserByEmail(email){
-    return users.find(user => user.email === email)
+
+    return user;
+    //users.find(user => user.email === email)
+}
+//User
+async function getUserById(id){
+    var user;
+    var selectQuery = 
+    `SELECT id, name, email, password 
+     FROM Account WHERE id = "${id}";`;
+    // await bcrypt.compare("123","23")
+    user = await getUserFromMySql(selectQuery);
+    console.log("sollte später sein");
+    console.log("Get User by Id: ");
+    console.log(user)
+
+
+    return user;
+   // return users.find(
+   //     (user) => user.id === id)
 }
 
-function getUserById(id){
-    return users.find(
-        (user) => user.id === id)
+function getUserFromMySql(selectQuery){
+
+    return new Promise( (resolve, reject) => {
+        con.on("error", error => { con.connect(); });
+        var user;
+        
+            con.query(selectQuery, function (err, resultrows, fields) {
+                if (err)                        reject(err);
+                if (resultrows.length == 0)     resolve(null);
+                user = {
+                    id: resultrows[0].id,
+                    name: resultrows[0].name,
+                    email: resultrows[0].email,
+                    password: resultrows[0].password
+                };
+                                                resolve(user);
+            });
+        
+    })
+    
+   
+  
+    console.log(user)
+    console.log("sollte mitte sein")
+    return user;
 }
 
 
