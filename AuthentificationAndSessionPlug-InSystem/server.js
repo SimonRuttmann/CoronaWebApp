@@ -244,7 +244,7 @@ CREATE TABLE IF NOT EXISTS Account (
 
 */
 
-  function createTable(){
+  function createAccountTable(){
     var tableQuery = 
     `CREATE TABLE IF NOT EXISTS Account (                                                  
         id          VARCHAR(255),
@@ -260,7 +260,7 @@ CREATE TABLE IF NOT EXISTS Account (
     )`
     con.query(tableQuery);
   }
-  //createTable();
+  //createAccountTable();
 
   function insertUser(user){
     con.on("error", error => { con.connect(); });
@@ -304,10 +304,6 @@ async function getUserByEmail(email){
     `SELECT id, name, email, password 
      FROM Account WHERE email = "${email}";`;
     user = await getUserFromMySql(selectQuery);
-    console.log("Get User by Email: ");
-    console.log(user)
-
-
     return user;
     //users.find(user => user.email === email)
 }
@@ -317,16 +313,8 @@ async function getUserById(id){
     var selectQuery = 
     `SELECT id, name, email, password 
      FROM Account WHERE id = "${id}";`;
-    // await bcrypt.compare("123","23")
     user = await getUserFromMySql(selectQuery);
-    console.log("sollte später sein");
-    console.log("Get User by Id: ");
-    console.log(user)
-
-
     return user;
-   // return users.find(
-   //     (user) => user.id === id)
 }
 
 function getUserFromMySql(selectQuery){
@@ -336,24 +324,24 @@ function getUserFromMySql(selectQuery){
         var user;
         
             con.query(selectQuery, function (err, resultrows, fields) {
-                if (err)                        reject(err);
-                if (resultrows.length == 0)     resolve(null);
-                user = {
-                    id: resultrows[0].id,
-                    name: resultrows[0].name,
-                    email: resultrows[0].email,
-                    password: resultrows[0].password
-                };
-                                                resolve(user);
+                if (err){ 
+                    reject(err);
+                }
+                else if (resultrows.length == 0){
+                    resolve(null);
+                }
+                else{     
+                    user = {
+                        id: resultrows[0].id,
+                        name: resultrows[0].name,
+                        email: resultrows[0].email,
+                        password: resultrows[0].password
+                    };
+                    resolve(user);
+                }
             });
         
     })
-    
-   
-  
-    console.log(user)
-    console.log("sollte mitte sein")
-    return user;
 }
 
 
