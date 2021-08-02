@@ -1,8 +1,8 @@
 <html>
     <head>
         <title>Anmeldung</title>
-        <link rel = "stylesheet" href = "./login.css" type="text/css"> </link>
-        <script type = "text/javascript" src = "./loginClient.js"> </script>
+        <link rel = "stylesheet" href = "./stylesheets/login.css" type="text/css"> </link>
+        <script type = "text/javascript" src = "./clientjs/loginClient.js"> </script>
     </head>
     
     <body>
@@ -20,9 +20,11 @@
         <!-- Renders error messages, e.g. E-Mail does not exist, Passwort incorrect-->  
         <div class = "errormessage" > 
             <h1>
-            <%      if (messages.error) {       %>
-            <%=     messages.error              %>
-            <%      }                           %>  
+<!--        -->
+<%      if (messages.error) {       %>
+    <%=     messages.error              %>
+    <%      }                           %> 
+
             </h1>
         </div>
 
