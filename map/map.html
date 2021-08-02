@@ -10,20 +10,28 @@
 <body>
     <div class="container">
         <div class="content">
+            <br />
             <b>Aktuelle Zahlen in Baden-Württemberg</b>
+            <br />
+            <br />
             <p id="replaceContentBW"></p>
         </div>
         <div class="content">
+            <br />
             <b id="replaceHeader">Wähle einen Landkreis aus!</b>
+            <br />
+            <br />
             <p id="replaceContent"></p>
         </div>
         <div class="content">
-            <b>Graph</b>
+            <canvas id="myChart"></canvas>
         </div>
     </div>
     <div id="map"></div>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"> </script>
     <script src="map.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src='statistic.js'></script>
 </body>
 
 </html>
