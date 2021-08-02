@@ -29,7 +29,7 @@ async function getDataFromCSVInfections(saveToDB, mqttClient) {
         var rows = tmp.split(",");
 
         var json = {};
-        json.ags = rows[0];
+        json.ags = "0" + rows[0];
 
         for (var j = 0; j < landkreise.length; j++) {
             if (Number(landkreise[j].ags) == Number(json.ags)) {
