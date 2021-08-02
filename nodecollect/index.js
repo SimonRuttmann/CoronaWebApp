@@ -24,8 +24,8 @@ async function init() {
 
     news.getCoronaNewsToday(mqttClient);
 
+    csvInfections.getDataFromCSVInfectionsAll(true, mqttClient);
     csvInfections.getDataFromCSVInfections(true, mqttClient);
-    csvInfections.saveHistoryCSVInfections();
 
     csvVaccinations.getDataFromCSVVaccinationsAll(true, mqttClient);
     csvVaccinations.getDataFromCSVVaccinations(true, mqttClient);
@@ -47,6 +47,7 @@ const intervalHour = setInterval(() => {
 const interval5TimesPerDay = setInterval(() => {
     vaccination.getVaccinationDates(true, mqttClient);
 
+    csvInfections.getDataFromCSVInfectionsAll(true, mqttClient);
     csvInfections.getDataFromCSVInfections(true, mqttClient);
 
     csvVaccinations.getDataFromCSVVaccinationsAll(true, mqttClient);
@@ -56,8 +57,6 @@ const interval5TimesPerDay = setInterval(() => {
 // alle distrikte jeden tag speichern
 const intervalDay = setInterval(() => {
     districts.saveHistory();
-
-    csvInfections.saveHistoryCSVInfections();
 }, 86400000);
 
 // alle impforte jede woche speichern

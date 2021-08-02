@@ -1,9 +1,9 @@
 const fetch = require('node-fetch');
 const db = require('./db');
 
-module.exports = { getDataFromCSVInfections, saveHistoryCSVInfections }
+module.exports = { getDataFromCSVInfections, getDataFromCSVInfectionsAll }
 
-async function getDataFromCSVInfections(saveToDB, mqttClient) {
+async function getDataFromCSVInfectionsAll(saveToDB, mqttClient) {
     var data = [];
 
     var requestOptions = {
@@ -35,7 +35,7 @@ async function getDataFromCSVInfections(saveToDB, mqttClient) {
             if (Number(landkreise[j].ags) == Number(json.ags)) {
                 json.altersgruppe = rows[1];
                 json.geschlecht = rows[2];
-                // json.meldedatum = rows[3];
+                json.meldedatum = rows[3];
                 // json.refdatum = rows[4];
                 // json.isterkrankungsbeginn = rows[5];
                 // json.neuerfall = rows[6];
@@ -52,11 +52,48 @@ async function getDataFromCSVInfections(saveToDB, mqttClient) {
 
     // console.log(data.length);
 
+    if (saveToDB) {
+        var oldData = await db.find({}, "infectionsCSVBWAll");
+
+        if (oldData.length == 0) {
+            mqttClient.publish("refresh", "infectionsCSVBWAll");
+            await db.insertMany(data, "infectionsCSVBWAll");
+        } else {
+            for (var i = 0; i < data.length; i++) {
+                var found = false;
+
+                for (var j = 0; j < oldData.length; j++) {
+                    if (data[i].ags == oldData[j].ags && data[i].altersgruppe == oldData[j].altersgruppe && data[i].impfdatum == oldData[j].impfdatum && data[i].impfschutz == oldData[j].impfschutz && data[i].meldedatum == oldData[j].meldedatum) {
+                        found = true;
+
+                        if (data[i].anzahl != oldData[j].anzahl) {
+                            mqttClient.publish("refresh", "infectionsCSVBWAll");
+
+                            await db.deleteOne({ ags: oldData[j].ags, altersgruppe: oldData[j].altersgruppe, impfdatum: oldData[j].impfdatum, impfschutz: oldData[j].impfschutz, meldedatum: oldData[j].meldedatum }, "infectionsCSVBWAll");
+                            await db.insertOne(data[i], "infectionsCSVBWAll");
+                        }
+                    }
+                }
+
+                if (!found) {
+                    mqttClient.publish("refresh", "infectionsCSVBWAll");
+                    await db.insertOne(data[i], "infectionsCSVBWAll");
+                }
+            }
+        }
+    }
+
+    return data;
+}
+
+async function getDataFromCSVInfections(saveToDB, mqttClient) {
+    var data = await getDataFromCSVInfectionsAll(false, mqttClient);
     var combineData = [];
 
     for (var i = 0; i < data.length; i++) {
         var tmp = data.pop();
         i--;
+        delete tmp.meldedatum;
 
         if (combineData.length == 0) {
             combineData.push(tmp);
@@ -167,40 +204,4 @@ async function getDataFromCSVInfections(saveToDB, mqttClient) {
     }
 
     return calculateData;
-}
-
-async function saveHistoryCSVInfections() {
-    var data = await getDataFromCSVInfections(false);
-    var history = await db.find({}, "historyinfectionsCSVBW");
-
-    if (data == undefined) return undefined;
-    if (history == undefined) history = [];
-
-    for (var i = 0; i < data.length; i++) {
-        var found = false;
-        for (var j = 0; j < history.length; j++) {
-            if (data[i].ags == history[j].ags && data[i].altersgruppe == history[j].altersgruppe && data[i].geschlecht == history[j].geschlecht) {
-                found = true;
-
-                history[j].anzahlfall.push(data[i].anzahlfall);
-                history[j].anzahltodesfall.push(data[i].anzahltodesfall);
-                history[j].anzahlgenesen.push(data[i].anzahlgenesen);
-                history[j].date.push(data[i].date);
-            }
-        }
-
-        if (!found) {
-            var tmp = data[i];
-
-            tmp.anzahlfall = [data[i].anzahlfall];
-            tmp.anzahltodesfall = [data[i].anzahltodesfall];
-            tmp.anzahlgenesen = [data[i].anzahlgenesen];
-            tmp.date = [data[i].date];
-
-            history.push(tmp);
-        }
-    }
-
-    await db.dropCollection("historyinfectionsCSVBW");
-    await db.insertMany(history, "historyinfectionsCSVBW");
 }
