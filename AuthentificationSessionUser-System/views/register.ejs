@@ -1,0 +1,54 @@
+<html>
+    <head>
+        <title>Registrierung</title>
+        <link rel = "stylesheet" href = "./stylesheets/register.css" type="text/css"> </link>
+        <script type = "text/javascript" src = "./clientjs/registerClient.js"> </script>
+    </head>
+    
+    <body>
+
+        <div class="navigationbar">
+            <ul>
+                <li><a href="/index">Startseite</a></li>
+                <li><a href="/login">Anmelden</a></li>
+                <li><a href="/statistic">Statistik</a></li>
+                <li><a href="/coronaChat">Corona-Chat</a></li>
+                <li><a href="/vaccination">Impfangebote</a></li>
+                <li><a href="/news">News</a></li>
+                <li><a href="/profile">Profil</a></li>
+            </ul>
+        </div>
+
+        <div class = "errormessage" > 
+            <h1>
+                <% if(locals.existingMessage) {%>
+                <%= existingMessage %>
+                <% } %>
+            </h1>
+        </div>
+
+        <div class="register-box">
+
+    	    <div class="register-title"> Registrierung </div>
+            <form action="/register" method="POST">
+    
+            	<label for="name"class="formlabel">Benutzername</label>
+                <input type="text" class="inputfield" id="name" name= "name" placeholder="Bitte Benutzernamen eingeben" required>
+    	
+   	    	    <label for="email"class="formlabel">E-Mail</label>
+                <input type="text" class="inputfield" id="email" name="email" placeholder="Bitte E-Mail eingeben"required>
+    	
+                <label for="password" class="formlabel">Passwort</label> 
+                <input type="password" class="inputfield" id="password" name="password" placeholder="Bitte Passwort eingeben" required>
+        
+                <button type="submit" class="registerbutton">Registrieren</button> 
+                
+           
+	        </form>
+            <form action="/login" method="GET">
+                <button type="submit" class= "registerbutton"> Zur Anmeldung </button>
+            </form>
+        </div>
+
+    </body>
+</html>
