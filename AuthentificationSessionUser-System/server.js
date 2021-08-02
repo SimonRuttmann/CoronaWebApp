@@ -4,7 +4,7 @@ const expresssession = require('express-session')    //Stores and persists sessi
 const passport = require('passport')
 const routes = require("./routes.js")
 const authentificationSetup = require("./authentificationSetup");
-
+const dataRoute = require("./routes/data.js")
 const app = express()
 
 // This order must be ensured
@@ -41,6 +41,7 @@ app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 app.use("", routes);
+app.use('/data/',dataRoute);
   
 app.listen(3000, () => {
    console.log("Server listens at Port 3000")
