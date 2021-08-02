@@ -153,20 +153,15 @@ app.get('/news', (req,res)=>{
     res.render('news.ejs')
 })
 
-app.get('/profile', (req,res) =>{
+app.get('/profile',checkAuthenticated, (req,res) =>{
     res.render('profile.ejs')
 })
+
 
 //Get Credentials
 app.get('/user/getSessionInfo',getSessionInfo);
 
-/*
-{
-    authenticated: "true"
-    name: "albert"
-    email: "albert@albert.com"
-}
-*/
+
 function getSessionInfo(req, res){
     if(req.isAuthenticated()){
         res.json(
@@ -201,18 +196,43 @@ function getSessionInfo(req, res){
         email: req.body.email,
         password: hashedPassword
       };
-      console.log("t1")
-      console.log(user)
-      insertUser(user);    
-      users.push({
-        id: Date.now().toString(),
-        name: req.body.name,
-        email: req.body.email,
-        password: hashedPassword
-      })
-      console.log("Added new User, all Users: ")
-      console.log(users)
-      res.redirect('/login')
+
+      var selectquery =
+       `SELECT name, email, gender, priority, prefVaccine, district, radius 
+       FROM Account 
+       WHERE name = "${user.name}"`
+
+      console.log("1")
+      let existingUserByName = await getUserDataByStatement(selectquery);
+      console.log("2")
+      selectquery = 
+      `SELECT name, email, gender, priority, prefVaccine, district, radius 
+      FROM Account 
+      WHERE email = "${user.email}"`
+      
+      let existingUserByEmail = await getUserDataByStatement(selectquery);
+      console.log("3")
+      let existingMessage = null;
+      if(existingUserByName && existingUserByEmail) existingMessage = 'Die Email und der Benutzername sind bereits vergeben';
+      else if(existingUserByEmail) existingMessage = 'Die Email ist bereits vergeben';
+      else if(existingUserByName) existingMessage = 'Der Benutzername ist bereits vergeben';
+      console.log(existingMessage);
+      if(! existingMessage){
+        insertUser(user);
+        users.push({
+            id: Date.now().toString(),
+            name: req.body.name,
+            email: req.body.email,
+            password: hashedPassword
+          })
+          console.log("Added new User, all Users: ")
+          console.log(users)
+          res.redirect('/login');     
+      }
+      else{
+          res.render('register.ejs', { existingMessage: existingMessage });
+          //res.render('index.ejs', { name: req.user.name })
+      }
     } catch {
       res.redirect('/register')
     }
@@ -288,13 +308,19 @@ app.get('/user/getUserData', checkAuthenticated, async(req, res) => {
 })
   
 function getUserDataByStatement(selectQuery){
+    console.log("Select query:")
+    console.log(selectQuery)
 
     return new Promise( (resolve, reject) => {
         con.on("error", error => { con.connect(); });
         var user;
-        
+        console.log("D1")
             con.query(selectQuery, function (err, resultrows, fields) {
+                console.log("tt")
+                console.log(resultrows)
+                console.log(err)
                 if (err){ 
+                    console.log("t")
                     reject(err);
                 }
                 else if (resultrows.length == 0){
@@ -311,6 +337,7 @@ function getUserDataByStatement(selectQuery){
                         district: resultrows[0].district,
                         radius: resultrows[0].radius
                     };
+                    console.log("D2")
                     resolve(user);
                 }
             });
@@ -370,7 +397,9 @@ CREATE TABLE IF NOT EXISTS Account (
     `INSERT INTO Account(id, name, email, password) VALUES ("${user.id}", "${user.name}", "${user.email}", "${user.password}");`;
 
     try{
-        con.query(insertQuery);
+        con.query(insertQuery, function(error, resultrows, fields){
+            console.log("insertUser -> InsertStatement bei insertQuery: " + insertQuery)
+        });
     }
     catch(e){
         console.log("Error at inserting User: " + user);

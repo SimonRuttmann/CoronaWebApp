@@ -19,6 +19,14 @@
             </ul>
         </div>
 
+        <div class = "errormessage" > 
+            <h1>
+                <% if(locals.existingMessage) {%>
+                <%= existingMessage %>
+                <% } %>
+            </h1>
+        </div>
+
         <div class="register-box">
 
     	    <div class="register-title"> Registrierung </div>
