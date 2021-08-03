@@ -90,6 +90,8 @@ async function getDataFromCSVInfections(saveToDB, mqttClient) {
     var data = await getDataFromCSVInfectionsAll(false, mqttClient);
     var combineData = [];
 
+    if (data == undefined) return undefined;
+
     for (var i = 0; i < data.length; i++) {
         var tmp = data.pop();
         i--;
