@@ -1,3 +1,4 @@
 
 */node_modules/.bin/
 */mongodb/
+*/node_modules/*/node_modules/.bin/

@@ -10,4 +10,5 @@ WORKDIR /node
 #
 
 EXPOSE 6969
-# CMD ["node", "index.js"]
+EXPOSE 3000
+CMD ["node", "server.js"]

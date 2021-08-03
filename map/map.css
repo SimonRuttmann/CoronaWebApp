@@ -1,0 +1,23 @@
+.content {
+    height: 11rem;
+    width: 20%;
+    border: 2px solid;
+    background-color: rgb(46, 46, 46);
+    float: left;
+    margin-right: 5rem;
+    padding: 1rem;
+}
+
+.container {
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+#map {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

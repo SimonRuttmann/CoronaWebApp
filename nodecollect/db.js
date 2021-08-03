@@ -73,7 +73,7 @@ function dropCollection(collection) {
 
 async function connectToDB(exec) {
     const mongodbClient = mongodb.MongoClient;
-    const mongodbUrl = "mongodb://root:rootpassword@mongodb:27017";
+    const mongodbUrl = "mongodb://mongodb:27017";
 
     var client = await mongodbClient.connect(mongodbUrl, { useUnifiedTopology: true })
     if (client == undefined) return;
