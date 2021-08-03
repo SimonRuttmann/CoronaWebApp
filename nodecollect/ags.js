@@ -27,6 +27,18 @@ async function getAGSBW() {
         }
     }
 
+    for (var i = 0; i < data.length; i++) {
+        if (data[i].ags == "08125") {
+            data[i].name = "LK Heilbronn";
+        } else if (data[i].ags == "08121") {
+            data[i].name = "SK Heilbronn";
+        } else if (data[i].ags == "08215") {
+            data[i].name = "LK Karlsruhe";
+        } else if (data[i].ags == "08212") {
+            data[i].name = "SK Karlsruhe";
+        }
+    }
+
     if (data.length == 0) return false;
 
     await db.deleteMany({}, "agsBW");

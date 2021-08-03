@@ -9,7 +9,7 @@ function initMQTT() {
         clientId: "nodecollect"
     };
 
-    const url = "tcp://localhost:1883";
+    const url = "tcp://mqtt:1883";
     const client = mqtt.connect(url, options);
 
     client.on("connect", () => {
