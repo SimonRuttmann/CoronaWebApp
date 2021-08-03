@@ -11,7 +11,7 @@ const env = require('dotenv').config({path: '../.env', encoding:'utf8'});
 
 //MongoDb
 const { MongoClient } = require("mongodb");
-const uri = env.MONGO_CONNECTION_STRING;
+const uri = process.env.MONGO_CONNECTION_STRING;
 const ourDb = "ibs_ss21";
 const client = new MongoClient(uri);
 
@@ -20,10 +20,10 @@ const client = new MongoClient(uri);
 const mysql = require('mysql');
 var mysqlPool = mysql.createPool({
     connectionLimit: 10,
-    host: env.MYSQL_HOST,
-    user: env.MYSQL_USER,
-    password: env.MYSQL_PASSWORD,
-    database: env.MYSQL_DATABASE
+    host: process.env.MYSQL_HOST,
+    user: process.env.MYSQL_USER,
+    password: process.env.MYSQL_PASSWORD,
+    database: process.env.MYSQL_DATABASE
 });
 
 

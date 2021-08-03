@@ -32,7 +32,7 @@ function insertOne(data, collection) {
 
 async function connectToDB(exec) {
     const mongodbClient = mongodb.MongoClient;
-    const mongodbUrl= env.MONGO_CONNECTION_STRING;
+    const mongodbUrl= process.env.MONGO_CONNECTION_STRING;
     // 'mongodb+srv://'+env.MONGO_USERNAME+':'+env.MONGO_PASSWORD+'@env.MONGO_CONNECTION_STRING';
 
     var client = await mongodbClient.connect(mongodbUrl, { useUnifiedTopology: true })

@@ -23,13 +23,13 @@ const env = require('dotenv').config({ encoding:'utf8'});
 //DB-Connection
 var mysqlPool = mysql.createPool({
     connectionLimit: 10,
-    host: env.MYSQL_HOST,
-    user: env.MYSQL_USER,
-    password: env.MYSQL_PASSWORD,
-    database: env.MYSQL_DATABASE
+    host: process.env.MYSQL_HOST,
+    user: process.env.MYSQL_USER,
+    password: process.env.MYSQL_PASSWORD,
+    database: process.env.MYSQL_DATABASE
 });
 
-//createAccountTable();
+createAccountTable();
 
 
 exports.getAllUserData = 
