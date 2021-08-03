@@ -28,6 +28,8 @@ async function getVaccinationPlaces(saveToDB, mqttClient) {
         }
     }
 
+    if (data.length == 0) return undefined;
+
     if (saveToDB) {
         var oldData = await db.find({}, "vaccinationPlacesBW");
 
@@ -45,6 +47,8 @@ async function getVaccinationPlaces(saveToDB, mqttClient) {
 async function getVaccinationDates(saveToDB, mqttClient) {
     var data = [];
     var places = await getVaccinationPlaces(false);
+
+    if (places == undefined) return undefined;
 
     var jsonData = await fs.readFileSync("./raw.json", "utf8");
     var raw = JSON.parse(JSON.stringify(jsonData));
@@ -73,6 +77,8 @@ async function getVaccinationDates(saveToDB, mqttClient) {
             }
         }
     }
+
+    if (data.length == 0) return undefined;
 
     if (saveToDB) {
         var oldData = await db.find({}, "vaccinationDatesBW");
@@ -112,6 +118,8 @@ async function saveHistoryPlaces() {
     var data = await getVaccinationPlaces(false);
     var places = [];
 
+    if (data == undefined) return undefined;
+
     for (var i = 0; i < data.length; i++) {
         places.push(data[i].Slug);
     }
@@ -128,6 +136,7 @@ async function saveHistoryDates() {
     var data = await getVaccinationDates(false);
     var history = await db.find({}, "historyVaccinationDatesBW");
 
+    if (data == undefined) return undefined;
     if (history == undefined) history = [];
 
     for (var i = 0; i < data.length; i++) {
@@ -152,6 +161,8 @@ async function saveHistoryDates() {
             history.push(tmp);
         }
     }
+
+    if (history.length == 0) return undefined;
 
     await db.dropCollection("historyVaccinationDatesBW");
     await db.insertMany(history, "historyVaccinationDatesBW");

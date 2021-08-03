@@ -21,6 +21,8 @@ async function getCoronaNewsToday(mqttClient) {
 
     data = response.articles;
 
+    if (data.length == 0) return undefined;
+
     var save = {};
     save.date = today;
     save.articles = data;
