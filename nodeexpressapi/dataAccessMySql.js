@@ -20,16 +20,42 @@ the remaining are used for the vaccination search
 const mysql = require('mysql');
 const env = require('dotenv').config({ encoding:'utf8'});
 
+
+var con = mysql.createConnection({
+    host: process.env.MYSQL_HOST,
+    user: process.env.MYSQL_USER,
+    password: process.env.MYSQL_PASSWORD
+  });
+  
+  con.connect(function(err) {
+    if (err) throw err;
+    console.log("Connected!");
+    con.query("CREATE DATABASE mydb", function (err, result) {
+      if (err) throw err;
+      console.log("Database created");
+    });
+  });
+
 //DB-Connection
 var mysqlPool = mysql.createPool({
     connectionLimit: 10,
     host: process.env.MYSQL_HOST,
     user: process.env.MYSQL_USER,
-    password: process.env.MYSQL_PASSWORD,
-    database: process.env.MYSQL_DATABASE
+    password: process.env.MYSQL_PASSWORD
 });
 
-createAccountTable();
+
+initDB();
+async function initDB (){
+    await createDatabase();
+
+
+    mysqlPool.changeUser({database: process.env.MYSQL_DATABASE}, function(err) {
+        if (err) throw err;
+    })
+
+    await createAccountTable();
+};
 
 
 exports.getAllUserData = 
@@ -118,6 +144,7 @@ function getUserDataForSession(selectQuery){
         
             mysqlPool.query(selectQuery, function (err, resultrows, fields) {
                 if (err){ 
+                    console.log("FDKSFJLDSJFLDSJFSJFLKDSJLFJLSDJLKF")
                     reject(err);
                 }
                 else if (resultrows.length == 0){
@@ -138,7 +165,7 @@ function getUserDataForSession(selectQuery){
 }
 
 
-exports.createAccountTable = 
+
 function createAccountTable(){
     var tableQuery = 
     `CREATE TABLE IF NOT EXISTS Account (                                                  
@@ -153,6 +180,33 @@ function createAccountTable(){
         radius      ENUM('all', 'surr', 'one')  DEFAULT 'all',   
         PRIMARY KEY (id)
     )`
-    mysqlPool.query(tableQuery);
+    return new Promise( (resolve,reject) => {
+        mysqlPool.query(tableQuery, (err, resultrows, fields) => {
+            if (err){ 
+                reject(false);
+            }
+            else if (resultrows.length == 0){
+                resolve(true);
+            }
+        });
+    }) 
+  }
+
+  
+  
+function createDatabase(){
+    var createDBQuery = 
+    `CREATE DATABASE ${process.env.MYSQL_DATABASE}`;
+    console.log(createDBQuery);
+    return new Promise( (resolve,reject) => {
+        mysqlPool.query(createDBQuery, (err, resultrows, fields) => {
+            if (err){ 
+                reject(false);
+            }
+            else if (resultrows.length == 0){
+                resolve(true);
+            }
+        });
+    }) 
   }
   
