@@ -18,7 +18,7 @@ the remaining are used for the vaccination search
 */
 
 const mysql = require('mysql');
-const dotenv = require('dotenv').config({ encoding:'utf8'});
+const env = require('dotenv').config({ encoding:'utf8'});
 
 //DB-Connection
 var mysqlPool = mysql.createPool({

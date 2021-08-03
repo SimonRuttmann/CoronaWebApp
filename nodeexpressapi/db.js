@@ -1,17 +1,13 @@
 const mongodb = require('mongodb');
+const env = require('dotenv').config({encoding:'utf8'});
 
 module.exports = {insertOne,find};
-
-var mongoUserName="root";
-var mongoPassword="rootpassword";
 
 async function find(data, collection) {
     var res = await connectToDB(async (db) => {
         var resInner = await db.collection(collection).find(data).toArray();
         return resInner;
     });
-
-    //console.log("Find Data");
 
     return res;
 }
@@ -36,8 +32,8 @@ function insertOne(data, collection) {
 
 async function connectToDB(exec) {
     const mongodbClient = mongodb.MongoClient;
-    const mongodbUrl= "mongodb://mongodb:27017"
-    // 'mongodb+srv://'+mongoUserName+':'+mongoPassword+'@modernedatentechnologie.rfnxd.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
+    const mongodbUrl= env.MONGO_CONNECTION_STRING;
+    // 'mongodb+srv://'+env.MONGO_USERNAME+':'+env.MONGO_PASSWORD+'@env.MONGO_CONNECTION_STRING';
 
     var client = await mongodbClient.connect(mongodbUrl, { useUnifiedTopology: true })
     if (client == undefined) return;

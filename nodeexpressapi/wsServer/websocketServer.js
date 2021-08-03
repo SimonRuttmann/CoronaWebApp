@@ -5,20 +5,19 @@ const ws = require('ws');
 const app = express();
 const server = http.createServer(app);
 const wsServer = new ws.Server(server) //{server}
-const dotenv = require('dotenv').config({path: '../.env', encoding:'utf8'});
+const env = require('dotenv').config({path: '../.env', encoding:'utf8'});
 
 //<---------- Configuration ------------>//
 
 //MongoDb
 const { MongoClient } = require("mongodb");
 const uri = env.MONGO_CONNECTION_STRING;
-const ourDb = ibs_ss21;
+const ourDb = "ibs_ss21";
 const client = new MongoClient(uri);
 
 
 //MySql-Pool
 const mysql = require('mysql');
-const { result } = require('lodash');
 var mysqlPool = mysql.createPool({
     connectionLimit: 10,
     host: env.MYSQL_HOST,
