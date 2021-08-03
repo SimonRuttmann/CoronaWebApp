@@ -6,6 +6,7 @@ const routes = require("./routes.js")
 const authentificationSetup = require("./authentificationSetup");
 const dataRoute = require("./routes/data.js")
 const app = express()
+const dotenv = require('dotenv').config({ encoding: 'utf8' });
 
 // This order must be ensured
 //1. passport Strategy
@@ -31,7 +32,7 @@ authentificationSetup.initializePassport(passport);
 //if the sessionobject was modified 
 //(session will only created at log-in)
 app.use(expresssession({
-    secret: "SuperSecretValueToSignSessions",
+    secret: env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false    
     }))

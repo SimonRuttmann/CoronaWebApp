@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const MongoDB = require('../db.js');
+const dotenv = require('dotenv').config({path: '../.env', encoding:'utf8'});
 
 
 //Alternativ Databaseaccess for /overview
@@ -108,7 +109,7 @@ router.get('/district', async (req, res) => {
 });
 
 router.get('/news',async (req,res)=>{
-	data = await MongoDB.find({},"newsCoronaBW",{"articles":{$slice: 5}});
+	data = await MongoDB.find({},"newsCoronaBW",{"articles":{$slice: 10}});
 	res.send(data)
 })
 

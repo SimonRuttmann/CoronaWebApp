@@ -18,14 +18,15 @@ the remaining are used for the vaccination search
 */
 
 const mysql = require('mysql');
+const dotenv = require('dotenv').config({ encoding:'utf8'});
 
 //DB-Connection
 var mysqlPool = mysql.createPool({
     connectionLimit: 10,
-    host: "sql11.freemysqlhosting.net",
-    user: "sql11428172",
-    password: "E6Yk3KiNmZ",
-    database: "sql11428172"
+    host: env.MYSQL_HOST,
+    user: env.MYSQL_USER,
+    password: env.MYSQL_PASSWORD,
+    database: env.MYSQL_DATABASE
 });
 
 //createAccountTable();
