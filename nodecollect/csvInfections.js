@@ -52,6 +52,8 @@ async function getDataFromCSVInfectionsAll(saveToDB, mqttClient) {
 
     // console.log(data.length);
 
+    if (data.length == 0) return undefined;
+
     if (saveToDB) {
         var oldData = await db.find({}, "infectionsCSVBWAll");
 
@@ -173,6 +175,8 @@ async function getDataFromCSVInfections(saveToDB, mqttClient) {
     }
 
     // console.log(calculateData.length);
+
+    if (calculateData.length == 0) return undefined;
 
     if (saveToDB) {
         var oldData = await db.find({}, "infectionsCSVBW");
