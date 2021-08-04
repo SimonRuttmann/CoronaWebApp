@@ -10,8 +10,19 @@
     "mongodb": "^4.0.1",
     "mqtt": "^4.2.8",
     "mysql2": "^2.2.5",
+    "nodemon": "^2.0.12",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
     "ws": "^7.5.3"
-  }
+  },
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "name": "nodeexpressapi",
+  "version": "1.0.0",
+  "main": "authentificationSetup.js",
+  "devDependencies": {},
+  "author": "",
+  "license": "ISC",
+  "description": ""
 }
