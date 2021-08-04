@@ -8,17 +8,7 @@ services:
         build:
             context: ./nodeexpressapi
         ports: 
-            - "6969:6969"    
-
-    nodemqttbackend:
-        build:
-            context: ./nodemqttbackend    
-
-    nodewebsocketbackend: 
-        build:
-            context: ./nodewebsocketbackend
-        ports:
-            - "8888:8888"               
+            - "6969:6969"     
 
     nginx:
         build:
@@ -35,12 +25,12 @@ services:
             - "1883:1883"
 
     mysql:
-        build:
-            context: ./mysql
+        container_name: mysql
+        image: mysql
         environment:
-            MYSQL_ROOT_PASSWORD: 123456    
+            MYSQL_ROOT_PASSWORD: a   
         ports:
-            - "3306:3306"
+            - "3306:3306"  
             
     mongodb:
       container_name: mongodb

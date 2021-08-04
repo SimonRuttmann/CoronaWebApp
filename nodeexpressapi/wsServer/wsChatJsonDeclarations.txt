@@ -1,0 +1,85 @@
+ 
+Clientside Jsons
+
+topic = general
+{
+    "type":   "topic",
+    "topic":  "general"
+}
+
+authorize
+{
+    "type":     "authorize"
+    "credentials": 
+    {
+        "email":      "albert@albert",
+        "name":       "albert"
+        "password":   "djsklfjsd=32jr?w2kjljelJ$..."
+    }
+
+}
+
+message
+{
+    "type":       "message"
+    "meta":
+        {
+            "username":   "albert",
+            "time":       "12.01.2021/21:58:24",
+            "topic":      "general"
+        },
+    "message":     "Hello there"
+}
+
+
+
+Serverside Jsons
+
+sendPrevMessages
+{
+    "type":       "prevMessages"
+    "messages":
+    [
+        {
+            "meta":
+            {
+            "username":   "albert",
+            "time":       "12.01.2021/21:58:24",
+            "topic":      "general"
+            },
+            "message":     "Hello there" 
+        },
+        {
+            "meta":
+            {
+            "username":   "albert",
+            "time":       "12.01.2021/21:58:24",
+            "topic":      "general"
+            },
+            "message":     "Hello there" 
+        },
+        {...}, {...}
+    ]
+
+}
+
+sendUsers
+{
+    "type":     "activeUsers"
+    "users":    ["albert", "harald", "gustar homel"]
+}
+
+sendMessage equivalent to clients message
+{
+    "type":       "message"
+    "meta":
+        {
+            "username":   "albert",
+            "time":       "12.01.2021/21:58:24",
+            "topic":      "general"
+        },
+    "message":     "Hello there"
+}
+
+*/
+

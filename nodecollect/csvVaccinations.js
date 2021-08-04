@@ -45,6 +45,8 @@ async function getDataFromCSVVaccinationsAll(saveToDB, mqttClient) {
 
     // console.log(data.length);
 
+    if (data.length == 0) return undefined;
+
     if (saveToDB) {
         var oldData = await db.find({}, "vaccinationsCSVBWAll");
 
@@ -111,6 +113,8 @@ async function getDataFromCSVVaccinations(saveToDB, mqttClient) {
     }
 
     // console.log(combineData.length);
+
+    if (combineData.length == 0) return undefined;
 
     if (saveToDB) {
         var oldData = await db.find({}, "vaccinationsCSVBWCombined");

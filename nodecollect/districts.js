@@ -109,6 +109,8 @@ async function saveHistory() {
         }
     }
 
+    if (history.length == 0) return undefined;
+
     await db.dropCollection("historyDistrictsBW");
     await db.insertMany(history, "historyDistrictsBW");
 }
