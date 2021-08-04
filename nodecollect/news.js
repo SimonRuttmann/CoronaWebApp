@@ -27,13 +27,22 @@ async function getCoronaNewsToday(mqttClient) {
     save.date = today;
     save.articles = data;
 
-    var found = await db.find({ date: today }, "newsCoronaBW");
+    date.setDate(date.getDate() - 3);
+    var ttlDate = date.getUTCFullYear() + "-" + (date.getUTCMonth() + 1) + "-" + date.getUTCDate();
 
-    if (found.length != 0) {
-        db.deleteMany({ date: today }, "newsCoronaBW");
+    var removeNews = [];
+    var dbNews = await db.find({}, "newsCoronaBW");
+    for (var i = 0; i < dbNews.length; i++) {
+        if (dbNews[i].date == today || new Date(dbNews[i].date) <= new Date(ttlDate)) {
+            removeNews.push(dbNews[i]);
+        }
     }
 
-    db.insertOne(save, "newsCoronaBW");
+    for (var i = 0; i < removeNews.length; i++) {
+        await db.deleteOne(removeNews[i], "newsCoronaBW");
+    }
+
+    await db.insertOne(save, "newsCoronaBW");
     mqttClient.publish("refresh", "newsCoronaBW");
 
     return data;

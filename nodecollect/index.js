@@ -5,6 +5,7 @@ const news = require('./news');
 const csvInfections = require('./csvInfections');
 const csvVaccinations = require('./csvVaccinations');
 const agsBW = require('./ags');
+const csvRKI = require('./csvRKI');
 
 var mqttClient;
 
@@ -29,6 +30,8 @@ async function init() {
 
     csvVaccinations.getDataFromCSVVaccinationsAll(true, mqttClient);
     csvVaccinations.getDataFromCSVVaccinations(true, mqttClient);
+
+    csvRKI.getDataCombined(true, mqttClient);
 }
 
 // alle distrikte jede minute aktualisieren
@@ -57,6 +60,8 @@ const interval5TimesPerDay = setInterval(() => {
 // alle distrikte jeden tag speichern
 const intervalDay = setInterval(() => {
     districts.saveHistory();
+
+    csvRKI.getDataCombined(true, mqttClient);
 }, 86400000);
 
 // alle impforte jede woche speichern
