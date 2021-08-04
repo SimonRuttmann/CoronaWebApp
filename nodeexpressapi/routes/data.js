@@ -73,13 +73,16 @@ router.get('/district', async (req, res) => {
 	else {
 		//Noch nicht funktionsfähig, ist unbekannt wie ich daten formatieren muss
 		//param =JSON.parse('{"ags":"' + param + '"}'); //Anpassen an DB-Form
-		const recperWeek = await getGenesenProWoche(param);
+		const historyDeathsDB = await MongoDB.find({"ags": param }, "csvRKI",{"historyDeathsRKI":1,"_id":0});
+		const historyCasesDB = await MongoDB.find({"ags": param }, "csvRKI",{"historyCasesRKI":1,"_id":0});
+		console.log(historyDeathsDB)
+		const recperWeek = undefined;
 		const deaths_female = undefined;
 		const deaths_male = undefined;
 		const deaths_agegroup1 = undefined;
 		const deaths_agegroup2 = undefined;
-		const deathsPerWeek = undefined;
-		const casesPerWeek = undefined;
+		const deathsPerWeek = await getDeathsPerWeek(historyDeathsDB);
+		const casesPerWeek = await getCasesPerWeek(historyCasesDB);
 		const idk = undefined;
 		const vaccinationOffersPerWeek = undefined;
 		const vaccinatedPerWeek = undefined;
@@ -113,19 +116,32 @@ router.get('/news',async (req,res)=>{
 	res.send(data)
 })
 
-async function getGenesenProWoche(ags) {
-	let response;
-	param = JSON.parse('{"ags":"' + ags + '"}');
-	const data = await MongoDB.find(param, "infectionsCSVBWAll");
-	response = "[{";
-	var wochenSortiert = {
-		"weeks": [{
-			"startDatum": undefined,			//Montag der Woche
-			"docs": [{}]
-		}]
+async function getDeathsPerWeek(data) {
+	data=data[0].historyDeathsRKI;
+	let response = [];
+	var aufaddieren=0;
+	for(let i in data){
+		aufaddieren+=Number(data[i].deaths);
+		if((i % 7)==6){
+			response.push({"date":data[i].date,"deaths":aufaddieren})
+			aufaddieren=0;
+		}
+		if(i==data.length-1) response.push({"date":data[i].date,"deaths":aufaddieren})
 	}
-	for (let i in data) {
-		console.log(data[i].meldedatum)
+	return response;
+}
+async function getCasesPerWeek(data) {
+	//date ist immer das startdatum der woche, die aktuelle Woche kann weniger als 7 Tage beinhalten
+	data=data[0].historyCasesRKI;
+	let response = [];
+	var aufaddieren=0;
+	for(let i in data){
+		aufaddieren+=Number(data[i].cases);
+		if((i % 7)==6){
+			response.push({"date":data[i].date,"cases":aufaddieren})
+			aufaddieren=0;
+		}
+		if(i==data.length-1) response.push({"date":data[i].date,"cases":aufaddieren})
 	}
 	return response;
 }
