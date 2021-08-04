@@ -24,7 +24,7 @@ async function getCoronaNewsToday(mqttClient) {
     var save = {};
     save.date = today;
     save.articles = data;
-
+    
     var found = await db.find({ date: today }, "newsCoronaBW");
 
     if (found.length != 0) {
@@ -32,7 +32,9 @@ async function getCoronaNewsToday(mqttClient) {
     }
 
     db.insertOne(save, "newsCoronaBW");
-    mqttClient.publish("refresh", "newsCoronaBW");
+    // geändert weil response sagt dann gleich bescheid sagt
+    // mqttClient.publish("refresh", "newsCoronaBW");
+    mqttClient.publish("refresh", data);
 
     return data;
 }

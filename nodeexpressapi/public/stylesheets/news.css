@@ -52,6 +52,15 @@ body {
     background: #333;
     font-family: 'Roboto', sans-serif;
 }
+
+.error{
+    background: #222;
+    padding: 0.25em 1em;
+    margin-bottom: 15px;
+    color:red; 
+    text-align: center;
+}
+
 .newsBlock{
     border: 1px solid #222;
     margin-left: auto;
@@ -63,12 +72,63 @@ body {
     text-align: left;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 }
+.buttonBox{
+    padding-top: 10px;
+    border: 1px solid #222;
+    margin-left: auto;
+    margin-right: auto;
+    width: 1000px;
+    margin-top: 30px;
+    height: auto;
+    background: #222;
+    text-align: left;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+
+
+button {
+    background-color: #666666;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 5px 5px 5px 5px;
+    box-shadow: 0 5px 5px #313131, 0 9px 0 #393939, 0 9px 10px rgba(0, 0, 0, 0.4), 0 2px 9px rgba(255, 255, 255, 0.2) inset, 0 -2px 9px rgba(0, 0, 0, 0.2) inset;
+    color: #FFFFFF;
+    display: inline-block;
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0px 20px;
+    margin-bottom: 40px;
+    padding: 12px 20px;
+    position: relative;
+    text-decoration: none;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.2);
+}
+
+button:hover {
+    box-shadow: 0 5px 5px #313131, 0 9px 0 #393939, 0 9px 10px rgba(0, 0, 0, 0.4), 0 2px 15px rgba(255, 255, 255, 0.4) inset, 0 -2px 9px rgba(0, 0, 0, 0.2) inset;
+}
+
+button:active {
+    box-shadow: 0 2px 0 #393939, 0 4px 4px rgba(0, 0, 0, 0.4), 0 2px 5px rgba(0, 0, 0, 0.2) inset;
+    top: 7px;
+}
+button:disabled {
+    box-shadow: 0 2px 0 #393939, 0 4px 4px rgba(0, 0, 0, 0.4), 0 2px 5px rgba(0, 0, 0, 0.2) inset;
+    top: 7px;
+    background-color: #979595;
+    border-bottom: 1px solid #979595;
+    border-radius: 5px 5px 5px 5px;
+    
+}
+
+
+
 details {
    
     background: #222;
     padding: 0.25em 1em;
     margin-bottom: 15px;
     color:#A8A8A8; 
+    
 }
     
 summary {
@@ -82,6 +142,10 @@ summary {
     
 details[open] summary {
     margin-bottom: 0.5em;
+}
+details[open] {
+    margin-bottom: 0.5em;
+    border-bottom: 3px solid #777;
 }
 
 .footer-box{

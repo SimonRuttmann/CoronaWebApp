@@ -2,6 +2,8 @@
     <head>
         <title>Impfangebote</title>
         <link rel = "stylesheet" href = "./stylesheets/news.css" type="text/css"> </link>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.2/mqttws31.min.js"
+        type="text/javascript"></script>
        
     </head>
     
@@ -19,37 +21,13 @@
         </div>
         
         <section class="newsBlock">
-            <details>
-                <summary id="US1"> erste überschrift  <br> <p >  Zusammenfassung Punkt 1</p> </summary>
-                <p id ="IN1">Inhalt</p>
-                <p id="A1">Author</p>
-                <p id="U1">Uri</p>
-            </details>
-            <details>
-                <summary id="US2"> erste überschrift  <br> <p id ="BE2">  Zusammenfassung Punkt 1</p> </summary>
-                <p id ="IN2">Inhalt</p>
-                <p id="A2">Author</p>
-                <p id="U2">Uri</p>
-            </details>
-            <details>
-                <summary id="US3"> erste überschrift  <br> <p id ="BE3">  Zusammenfassung Punkt 1</p> </summary>
-                <p id ="IN3">Inhalt</p>
-                <p id="A3">Author</p>
-                <p id="U3">Uri</p>
-            </details>
-            <details>
-                <summary id="US4"> erste überschrift  <br> <p id ="BE4">  Zusammenfassung Punkt 1</p> </summary>
-                <p id ="IN4">Inhalt</p>
-                <p id="A4">Author</p>
-                <p id="U4">Uri</p>
-            </details>
-            <details>
-                <summary id="US5"> erste überschrift  <br> <p id ="BE5">  Zusammenfassung Punkt 1</p> </summary>
-                <p id ="IN5">Inhalt</p>
-                <p id="A5">Author</p>
-                <p id="U5">Uri</p>
-            </details>
+            
+            
         </section>
+        <div class="buttonBox">
+            <button  id="zuruck" onclick="aufSeite1()" type="button">Zurück</button> 
+            <button id="seite2" onclick="aufSeite2()" type="button">Weiter</button>
+        </div>
         
     
 
