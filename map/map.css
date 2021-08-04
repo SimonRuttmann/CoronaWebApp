@@ -1,8 +1,8 @@
 .content {
-    height: 11rem;
-    width: 20%;
-    border: 2px solid;
-    background-color: rgb(46, 46, 46);
+    /* height: 11rem; */
+    width: 25%;
+    /* border: 2px solid; */
+    /* background-color: rgb(46, 46, 46); */
     float: left;
     margin-right: 5rem;
     padding: 1rem;
@@ -20,4 +20,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+body {
+    background-color: rgb(46, 46, 46);
 }
