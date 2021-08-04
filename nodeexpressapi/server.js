@@ -7,7 +7,7 @@ const authentificationSetup = require("./authentificationSetup");
 const dataRoute = require("./routes/data.js")
 const app = express()
 const env = require('dotenv').config({ encoding: 'utf8' });
-var mysql = require('mysql');
+var mysql = require('mysql2');
 
 // This order must be ensured
 //1. passport Strategy

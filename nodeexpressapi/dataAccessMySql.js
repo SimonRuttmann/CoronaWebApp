@@ -17,7 +17,7 @@ the remaining are used for the vaccination search
 );
 */
 
-const mysql = require('mysql');
+const mysql = require('mysql2');
 const env = require('dotenv').config({ encoding:'utf8'});
 
 
@@ -31,7 +31,7 @@ var con = mysql.createConnection({
     if (err) throw err;
     console.log("Connected!");
     con.query("CREATE DATABASE mydb", function (err, result) {
-      if (err) throw err;
+       if (err) throw err;
       console.log("Database created");
     });
   });
