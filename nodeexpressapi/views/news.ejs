@@ -1,0 +1,40 @@
+<html>
+    <head>
+        <title>Impfangebote</title>
+        <link rel = "stylesheet" href = "./stylesheets/news.css" type="text/css"> </link>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.2/mqttws31.min.js"
+        type="text/javascript"></script>
+       
+    </head>
+    
+    <body>
+        <div  class="navigationbar" id="kopf" >
+            <ul>
+                <li><a href="/index">Startseite</a></li>
+                <li><a id="RefToLogin" href="/login">Anmelden</a></li>
+                <li><a href="/statistic">Statistik</a></li>
+                <li><a href="/coronaChat">Corona-Chat</a></li>
+                <li><a href="/vaccination">Impfangebote</a></li>
+                <li><a id="active" href="#">News</a></li>
+                <li><a href="/profile">Profil</a></li>
+            </ul>
+        </div>
+        
+        <section class="newsBlock">
+            
+            
+        </section>
+        <div class="buttonBox">
+            <button  id="zuruck" onclick="aufSeite1()" type="button">Zurück</button> 
+            <button id="seite2" onclick="aufSeite2()" type="button">Weiter</button>
+        </div>
+        
+    
+
+
+        <div class="footer-box">
+            <p class="description" id="loginStatus">Sie sind momentan nicht angemeldet. </p>
+        </div>
+        <script type = "text/javascript" src = "./clientjs/newsClient.js"> </script>
+    </body>
+</html>
