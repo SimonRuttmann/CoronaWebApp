@@ -31,7 +31,7 @@ var con = mysql.createConnection({
     if (err) throw err;
     console.log("Connected!");
     con.query("CREATE DATABASE mydb", function (err, result) {
-       if (err) throw err;
+    //    if (err) throw err;
       console.log("Database created");
     });
   });
