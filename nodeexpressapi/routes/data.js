@@ -2,11 +2,30 @@ const express = require('express');
 const router = express.Router();
 const MongoDB = require('../db.js');
 const dotenv = require('dotenv').config({ path: '../.env', encoding: 'utf8' });
+const fetch = require('node-fetch')
+const APIKey_geocodeapi = "76595980-f617-11eb-933b-bbbe22f4a3df"
+/*Get Longitude and LAtitude from Adress
+
+//curl "https://app.geocodeapi.io/api/v1/status?apikey=APIKEY"
+var options = {
+	url: 'https://app.geocodeapi.io/api/v1/status?apikey='+APIKey_geocodeapi
+  };
+  function callback(error, response, body) {
+	if (!error && response.statusCode == 200) {
+		console.log(body);
+	}
+}
+
+request(options, callback);
+
+*/
 
 
 //Alternativ Databaseaccess for /overview
 router.get('/', async (req, res) => {
-	res.send("Wilkommen auf der Datenroute");
+	param = "10%20Downing%20Street%2C%20Charlestown%2C%20NSW%2C%20Australia"
+	var response =await fetch("https://app.geocodeapi.io/api/v1/search?apikey=" + APIKey_geocodeapi + "&text=" + param)
+	res.send(response);
 });
 
 router.get('/overview', async (req, res) => {
@@ -14,10 +33,10 @@ router.get('/overview', async (req, res) => {
 	try {
 		var data = await getDistrictsFormated();
 	} catch (e) {
-		console.log("error: /overview");
+		console.log(e);
 	}
 
-	if (data.error) {
+	if (data == undefined || data.error) {
 		res.send(data)
 		return;
 	}
@@ -29,7 +48,7 @@ router.get('/overview', async (req, res) => {
 		else
 			try {
 				param = (await MongoDB.find({ "name": req.query.district }, "agsBW", { "ags": 1, "_id": 0 }))[0].ags;
-			}catch (e) {console.log(e)}
+			} catch (e) { console.log(e) }
 		let found = false;
 		for (let i in data) {
 			if (data[i].ags == param) {
@@ -72,62 +91,67 @@ router.get('/overview', async (req, res) => {
 router.get('/district', async (req, res) => {
 	let param = req.query.ags;
 	let response;
-	if (param == null) {
-		try {
+	try {
+		if (param == null) {
+
 			response = await getDistrictsFormated();
-		}
-		catch (e) {
-			console.log("error: /distirct ");
-		}
-	}
-	else {
-		try{
-		const historyDeathsDB = (await MongoDB.find({ "ags": param }, "csvRKI", { "historyDeathsRKI": 1, "_id": 0 }));
-		const historyCasesDB = await MongoDB.find({ "ags": param }, "csvRKI", { "historyCasesRKI": 1, "_id": 0 });
-		const infectionsDBFemale = await MongoDB.find({ "ags": param, "geschlecht": "W" }, "infectionsCSVBW");
-		const infectionsDBMale = await MongoDB.find({ "ags": param, "geschlecht": "M" }, "infectionsCSVBW");
-		const infectionsDBAgeGroup1 = await MongoDB.find({ "ags": param, "altersgruppe": "" }, "infectionsCSVBW"); //Welche Altersgruppen genau?
-		const infectionsDBAgeGroup2 = await MongoDB.find({ "ags": param, "altersgruppe": "" }, "infectionsCSVBW");
-		const districtsBWDB = await MongoDB.find({ "ags": param }, "districtsBW")
-		const vaccinationAll = await MongoDB.find({ "ags": param }, "vaccinationsCSVBWAll")
-		}catch(e){console.log(e)}
-		//const recperWeek = undefined;
-		const deaths_female = getDeathsForNewestData(infectionsDBFemale);
-		const deaths_male = getDeathsForNewestData(infectionsDBMale);
-		const deaths_agegroup1 = getDeathsForNewestData(infectionsDBAgeGroup1);
-		const deaths_agegroup2 = getDeathsForNewestData(infectionsDBAgeGroup2);
-		const deathsPerWeek = getDeathsPerWeek(historyDeathsDB);
-		const casesPerWeek = getCasesPerWeek(historyCasesDB);
-		//const idk = undefined;
-		//const vaccinationOffersPerWeek = undefined;
-		const vaccinatedPerWeek = getVaccinatedPerWeek(vaccinationAll);
-		const incidencePerWeek = getIncidenceThisWeek(districtsBWDB);
 
-		response = {
-			//"Genesene_pro_Woche": recperWeek,
-			"todesfälle_Weiblich": deaths_female,
-			"todesfälle_Männlich": deaths_male,
-			"todesfälle_Altergruppe1": deaths_agegroup1,
-			"todesfälle_Altersgruppe2": deaths_agegroup2,
-			"Tote_pro_Woche": deathsPerWeek,
-			"Fälle_pro_Woche": casesPerWeek,
-			//"Bevölkerung_pro_Woche": idk,
-			//"Impfangebote_pro_Woche": vaccinationOffersPerWeek,
-			"Geimpte_pro_Woche": vaccinatedPerWeek,
-			"Inzidenz_aktuell": incidencePerWeek
+		}
+		else {
+			const historyDeathsDB = (await MongoDB.find({ "ags": param }, "csvRKI", { "historyDeathsRKI": 1, "_id": 0 }));
+			const historyCasesDB = await MongoDB.find({ "ags": param }, "csvRKI", { "historyCasesRKI": 1, "_id": 0 });
+			const infectionsDBFemale = await MongoDB.find({ "ags": param, "geschlecht": "W" }, "infectionsCSVBW");
+			const infectionsDBMale = await MongoDB.find({ "ags": param, "geschlecht": "M" }, "infectionsCSVBW");
+			const infectionsDBAgeGroup1 = await MongoDB.find({ "ags": param, "altersgruppe": "" }, "infectionsCSVBW"); //Welche Altersgruppen genau?
+			const infectionsDBAgeGroup2 = await MongoDB.find({ "ags": param, "altersgruppe": "" }, "infectionsCSVBW");
+			const districtsBWDB = await MongoDB.find({ "ags": param }, "districtsBW")
+			const vaccinationAll = await MongoDB.find({ "ags": param }, "vaccinationsCSVBWAll")
+
+			//const recperWeek = undefined;
+			const deaths_female = getDeathsForNewestData(infectionsDBFemale);
+			const deaths_male = getDeathsForNewestData(infectionsDBMale);
+			const deaths_agegroup1 = getDeathsForNewestData(infectionsDBAgeGroup1);
+			const deaths_agegroup2 = getDeathsForNewestData(infectionsDBAgeGroup2);
+			const deathsPerWeek = getDeathsPerWeek(historyDeathsDB);
+			const casesPerWeek = getCasesPerWeek(historyCasesDB);
+			//const idk = undefined;
+			//const vaccinationOffersPerWeek = undefined;
+			const vaccinatedPerWeek = getVaccinatedPerWeek(vaccinationAll);
+			const incidencePerWeek = getIncidenceThisWeek(districtsBWDB);
+
+			response = {
+				//"Genesene_pro_Woche": recperWeek,
+				"todesfälle_Weiblich": deaths_female,
+				"todesfälle_Männlich": deaths_male,
+				"todesfälle_Altergruppe1": deaths_agegroup1,
+				"todesfälle_Altersgruppe2": deaths_agegroup2,
+				"Tote_pro_Woche": deathsPerWeek,
+				"Fälle_pro_Woche": casesPerWeek,
+				//"Bevölkerung_pro_Woche": idk,
+				//"Impfangebote_pro_Woche": vaccinationOffersPerWeek,
+				"Geimpte_pro_Woche": vaccinatedPerWeek,
+				"Inzidenz_aktuell": incidencePerWeek
+			};
+
 		};
-
-	};
-	res.send(response);
+		res.send(response);
+	} catch (e) {
+		console.log(e);
+		res.send(e);
+	}
 });
 
 router.get('/news', async (req, res) => {
 	const dbData_collection = "newsCoronaBW"
-	try{
-	data = await MongoDB.find({}, dbData_collection, { "articles": { $slice: 10 } });
-	}catch(e){console.log(e)}
-	if (!data.length > 0) data = ({ "error": true, "no_data_from": dbData_collection })
-	res.send(data)
+	try {
+		data = await MongoDB.find({}, dbData_collection, { "articles": { $slice: 10 } });
+		if (!data.length > 0) data = ({ "error": true, "no_data_from": dbData_collection })
+		res.send(data)
+	} catch (e) {
+		console.log(e)
+		res.send(e)
+	}
+
 })
 function getVaccinatedPerWeek(data) {
 	const response = [];
@@ -234,42 +258,39 @@ async function getDistrictsFormated() {
 	const dbData_collection = "districtsBW"
 	try {
 		const dbData = await MongoDB.find({}, dbData_collection);
-	} catch (e) {
-		console.log("error: getDistrictsformated ");
-	}
+		if (dbData.length == 0) return ({ "error": true, "no_data_from": dbData_collection })
+		var dbData2, response, param;
 
-	if (dbData.length == 0) return ({ "error": true, "no_data_from": dbData_collection })
-	var dbData2, response, param;
-
-	response = '{"Landkreise":[';
-	const dbData2_collection = "vaccinationsCSVBWCombined";
-	for (let i in dbData) {
-		param = JSON.parse('{"ags":"' + dbData[i].ags + '", "impfschutz":"2"}');
-		try {
+		response = '{"Landkreise":[';
+		const dbData2_collection = "vaccinationsCSVBWCombined";
+		for (let i in dbData) {
+			param = JSON.parse('{"ags":"' + dbData[i].ags + '", "impfschutz":"2"}');
 			dbData2 = await MongoDB.find(param, dbData2_collection);
-		} catch (e) {
-			console.log("error: getDistrictsfomrated 2");
+			if (dbData2.length == 0) return ({ "error": true, "no_data_from": dbData2_collection });
+			var vaccinated = 0;
+			for (let j in dbData2) {
+				vaccinated = vaccinated + Number(dbData2[j].anzahl);
+			}
+			const immune = vaccinated + dbData[i].recovered;
+			response = response +
+				'{"Landkreis":"' + dbData[i].name +
+				'","ags":"' + dbData[i].ags +
+				'","infizierte":"' + dbData[i].cases +
+				'","genesen":"' + dbData[i].recovered +
+				'","geimpft":"' + vaccinated + //vaccinationsCSVBWCombined
+				'","immune":"' + immune + //vaccinationsCSVBWCombined
+				'","todesfaelle":"' + dbData[i].deaths +
+				'","gesamtbevoelkerung":"' + dbData[i].population +
+				'","wochen_inzidenz":"' + dbData[i].weekIncidence +
+				'"},'
 		}
-		if (dbData2.length == 0) return ({ "error": true, "no_data_from": dbData2_collection });
-		var vaccinated = 0;
-		for (let j in dbData2) {
-			vaccinated = vaccinated + Number(dbData2[j].anzahl);
-		}
-		const immune = vaccinated + dbData[i].recovered;
-		response = response +
-			'{"Landkreis":"' + dbData[i].name +
-			'","ags":"' + dbData[i].ags +
-			'","infizierte":"' + dbData[i].cases +
-			'","genesen":"' + dbData[i].recovered +
-			'","geimpft":"' + vaccinated + //vaccinationsCSVBWCombined
-			'","immune":"' + immune + //vaccinationsCSVBWCombined
-			'","todesfaelle":"' + dbData[i].deaths +
-			'","gesamtbevoelkerung":"' + dbData[i].population +
-			'","wochen_inzidenz":"' + dbData[i].weekIncidence +
-			'"},'
+		response = response.slice(0, -1) + "]}"
+		return (JSON.parse(response));
+	} catch (e) {
+		console.log(e);
+		return e
 	}
-	response = response.slice(0, -1) + "]}"
-	return (JSON.parse(response));
+
 
 }
 
