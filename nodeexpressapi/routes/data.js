@@ -27,7 +27,7 @@ router.get('/overview', async (req, res) => {
 			console.log("Get specific overview")
 			if (data[i].ags == param) {
 				console.log("found ags")
-				console.log(data[i])
+				//console.log(data[i])
 				found = true;
 				infected = Number(data[i].infizierte);
 				immune = Number(data[i].immune);
@@ -73,40 +73,39 @@ router.get('/district', async (req, res) => {
 	else {
 		//Noch nicht funktionsfähig, ist unbekannt wie ich daten formatieren muss
 		//param =JSON.parse('{"ags":"' + param + '"}'); //Anpassen an DB-Form
-		const historyDeathsDB = await MongoDB.find({ "ags": param }, "csvRKI", { "historyDeathsRKI": 1, "_id": 0 });
+		const historyDeathsDB = (await MongoDB.find({ "ags": param }, "csvRKI", { "historyDeathsRKI": 1, "_id": 0 }));
 		const historyCasesDB = await MongoDB.find({ "ags": param }, "csvRKI", { "historyCasesRKI": 1, "_id": 0 });
 		const infectionsDBFemale = await MongoDB.find({ "ags": param, "geschlecht": "W" }, "infectionsCSVBW");
 		const infectionsDBMale = await MongoDB.find({ "ags": param, "geschlecht": "M" }, "infectionsCSVBW");
+		const infectionsDBAgeGroup1 = await MongoDB.find({ "ags": param, "altersgruppe": "" }, "infectionsCSVBW"); //Welche Altersgruppen genau?
+		const infectionsDBAgeGroup2 = await MongoDB.find({ "ags": param, "altersgruppe": "" }, "infectionsCSVBW");
+		const districtsBWDB = await MongoDB.find({ "ags": param }, "districtsBW")
+		const vaccinationAll = await MongoDB.find({ "ags": param }, "vaccinationsCSVBWAll")
 
-		const recperWeek = undefined;
+		//const recperWeek = undefined;
 		const deaths_female = getDeathsForNewestData(infectionsDBFemale);
 		const deaths_male = getDeathsForNewestData(infectionsDBMale);
-		const deaths_agegroup1 = undefined;
-		const deaths_agegroup2 = undefined;
+		const deaths_agegroup1 = getDeathsForNewestData(infectionsDBAgeGroup1);
+		const deaths_agegroup2 = getDeathsForNewestData(infectionsDBAgeGroup2);
 		const deathsPerWeek = getDeathsPerWeek(historyDeathsDB);
 		const casesPerWeek = getCasesPerWeek(historyCasesDB);
-		const idk = undefined;
-		const vaccinationOffersPerWeek = undefined;
-		const vaccinatedPerWeek = undefined;
-		const incidencePerWeek = undefined;
-		//const dbData = await MongoDB.find(param, "historyinfectionsCSVBW")
-		//if (dbData.length == 0) {
-		//	console.log(new Date(1627813823410).toString())
-		//	res.send("No Data found for Parameter"+req.query+"\nPlease use ags for district specification");
-		//	return;
-		//};
+		//const idk = undefined;
+		//const vaccinationOffersPerWeek = undefined;
+		const vaccinatedPerWeek = getVaccinatedPerWeek(vaccinationAll);
+		const incidencePerWeek = getIncidencePerWeek(districtsBWDB);
+
 		response = {
-			"Genesene_pro_Woche": recperWeek,
+			//"Genesene_pro_Woche": recperWeek,
 			"todesfälle_Weiblich": deaths_female,
 			"todesfälle_Männlich": deaths_male,
 			"todesfälle_Altergruppe1": deaths_agegroup1,
 			"todesfälle_Altersgruppe2": deaths_agegroup2,
 			"Tote_pro_Woche": deathsPerWeek,
 			"Fälle_pro_Woche": casesPerWeek,
-			"Bevölkerung_pro_Woche": idk,
-			"Impfangebote_pro_Woche": vaccinationOffersPerWeek,
+			//"Bevölkerung_pro_Woche": idk,
+			//"Impfangebote_pro_Woche": vaccinationOffersPerWeek,
 			"Geimpte_pro_Woche": vaccinatedPerWeek,
-			"Inzidenz_pro_Woche": incidencePerWeek
+			"Inzidenz_aktuell": incidencePerWeek
 		};
 
 	};
@@ -119,12 +118,47 @@ router.get('/news', async (req, res) => {
 	if (data.length == 0) data = ({ "error": true, "no_data_from": dbData_collection })
 	res.send(data)
 })
+function getVaccinatedPerWeek(data) {
+	const response = [];
+	let tmpDate1, tmpDate2, sortedData = [];
+	mainloop:
+	for (let i in data) {
+		tmpDate1 = new Date((data[i].impfdatum).replace("-","."));
+		for (let j in sortedData) {
+			tmpDate2 = new Date(String(sortedData[j].date).replace("-","."));
+			if (tmpDate1 == tmpDate2) {
+				sortedData[j].anzahl += data[i].anzahl;
+				continue mainloop;
+			}
+		}
+		sortedData.push({ "date": tmpDate1, "anzahl": data[i].anzahl })
+	}
+	console.log(sortedData);
+
+	var aufaddieren = 0;
+	for (let i in sortedData) {
+		aufaddieren += Number(sortedData[i].anzahl);
+		if ((i % 7) == 6) {
+			response.push({ "date": sortedData[i].date, "anzahl": aufaddieren })
+			aufaddieren = 0;
+		}
+		if (i == data.length - 1) response.push({ "date": sortedData[i].date, "anzahl": aufaddieren })
+	}
+
+	return response;
+}
+
+function getIncidencePerWeek(data) {
+	const response = data[0].weekIncidence;
+	return response;
+}
 
 function getDeathsPerWeek(data) {
 	//date ist immer das startdatum der woche, die aktuelle Woche kann weniger als 7 Tage beinhalten
 	let response = [];
-	data = data[0].historyDeathsRKI;
-	if (data == undefined || data.length == 0) response = { "error": true, "no_data_from": "csvRKI" }
+	if (!data.length>0) response = { "error": true, "no_data_from": "csvRKI" }
+	else data = data[0].historyDeathsRKI;
+	if (!data.length>0) response = { "error": true, "no_data_from": "csvRKI.historyDeathsRKI" }
 
 	var aufaddieren = 0;
 	for (let i in data) {
@@ -140,8 +174,9 @@ function getDeathsPerWeek(data) {
 function getCasesPerWeek(data) {
 	//date ist immer das startdatum der woche, die aktuelle Woche kann weniger als 7 Tage beinhalten
 	let response = [];
-	data = data[0].historyCasesRKI;
-	if (data == undefined || data.length == 0) response = { "error": true, "no_data_from": "csvRKI" }
+	if (!data.length>0) response = { "error": true, "no_data_from": "csvRKI" }
+	else data = data[0].historyCasesRKI;
+	if (!data.length>0) response = { "error": true, "no_data_from": "csvRKI.historyCasesRKI" }
 
 	var aufaddieren = 0;
 	for (let i in data) {
@@ -155,26 +190,30 @@ function getCasesPerWeek(data) {
 	return response;
 }
 
-function getDeathsForNewestData(data){
+function getDeathsForNewestData(data) {
 	//Es könnte sein das der Date Vergleich zu genau ist, dann müssen Studen gerundet werden
-	let response=0;
-	let compareDate;
-	let newestDate=new Date(data[0].date);
-	let filteredData=[];
-	if(data.length==0) response={ "error": true, "no_data_from": "infectionsCSVBW" }
-	console.log(data)
-	for(let i in data){
-		compareDate=new Date(data[i].date);
-		if(newestDate<compareDate){
-			newestDate=compareDate;
-			filteredData=[data[i]];
+	let response = 0;
+	if (!data.length > 0) response = { "error": true, "no_data_from": "infectionsCSVBW" };
+	else {
+		let newestDate = new Date(data[0].date);
+		let compareDate;
+
+		let filteredData = [];
+
+		for (let i in data) {
+			compareDate = new Date(data[i].date);
+			if (newestDate < compareDate) {
+				newestDate = compareDate;
+				filteredData = [data[i]];
+			}
+			else if (compareDate == newestDate) filteredData.push(data[i])
 		}
-		else if(compareDate==newestDate) filteredData.push(data[i]) 
+		console.log(filteredData)
+		for (let i in filteredData) {
+			response += Number(filteredData[i].anzahltodesfall);
+		}
 	}
-	console.log(filteredData)
-	for(let i in filteredData){
-		response+=Number(filteredData[i].anzahltodesfall);
-	}
+
 	return response;
 }
 
