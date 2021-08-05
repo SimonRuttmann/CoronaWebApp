@@ -17,9 +17,9 @@ function init(){
     getNewsToday(setNewsToday);
     
     
-    header = document.getElementById('kopf');
-    console.log("header" + header);
-    sticky = header.offsetTop;
+    //header = document.getElementById('kopf');
+    //console.log("header" + header);
+    //sticky = header.offsetTop;
 };
 
 // mqtt hier hinzufügen:
@@ -68,8 +68,11 @@ function ConnectionLost(res) {
 function MessageArrived(message) {
     console.log(message.destinationName +" : " + message.payloadString);
     // implementierung
-    if(massage.articles =! undefined){
-
+    console.log("mqtt message"+message);
+    if(massage == "newsCoronaBW"){
+        
+        getNewsToday(setNewsToday);
+        
     }
 
     
@@ -99,7 +102,7 @@ async function getNewsToday(callback){
     // wenn error kommt
     if(result.error != undefined){
         var a = document.createElement("p");
-        a.textContent="Aktuell können keine Nachrichten angezeigt werden";
+        a.textContent="Aktuell können keine weiteren Nachrichten angezeigt werden";
         a.classList.add('error');
         var section =document.getElementsByTagName("section")[0];
         section.appendChild(a);
@@ -276,6 +279,7 @@ function aufSeite1(){ // wenn auf button zurück geklickt wird
         }
     */
     setNewsToday(result);
+    
     document.getElementById("zuruck").disabled=true;
     document.getElementById("seite2").disabled=false;
     
@@ -297,13 +301,15 @@ function aufSeite2(){
             var section =document.getElementsByTagName("section")[0];
             section.appendChild(art);
         }
+    
     document.getElementById("seite2").disabled=true;
     document.getElementById("zuruck").disabled=false;
 }
 
 //scrollbarer header: vill rausnehmen
+
 // When the user scrolls the page, execute myFunction
-window.onscroll = function() {myFunction()};
+//window.onscroll = function() {myFunction()};
 // Add the sticky class to the header when you reach its scroll position. Remove "sticky" when you leave the scroll position
 function myFunction() {
     //console.log("window.sdfr" + window.pageYOffset + "sticky"+ sticky);
@@ -314,19 +320,6 @@ function myFunction() {
     header.classList.remove("sticky");
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 async function getSessionData(callbacks){
