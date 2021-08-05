@@ -103,7 +103,7 @@ async function getNewsToday(callback){
         a.classList.add('error');
         var section =document.getElementsByTagName("section")[0];
         section.appendChild(a);
-        //result=undefined;
+        result=undefined;
         buttonManager();
 
     }
@@ -111,7 +111,7 @@ async function getNewsToday(callback){
         callback(result);
         console.log("getNewsToday:");
         console.log(result);
-        test();
+        
     }
 
 }
@@ -160,7 +160,7 @@ function setNewsToday(result){
     //vorbereitung
     buttonManager();
     var laenge
-    if(result[0].articles.length>5){
+    if(result[0].articles.length<6){
         laenge=result[0].articles.length;
     }
     else {
@@ -168,7 +168,7 @@ function setNewsToday(result){
     }
 
         console.log("die länge der artikelliste"+result[0].articles.length);
-        for(var i =0;i <3; i++){
+        for(var i =0;i <laenge; i++){
             var art = buildNewsblock(result[0].articles[i]);
             var section =document.getElementsByTagName("section")[0];
             section.appendChild(art);
@@ -236,7 +236,7 @@ function buildNewsblock(artikel){
 }
 
 function buttonManager(){
-    if(result != undefined && result[0].articles.length>=3){
+    if(result != undefined && result[0].articles.length>=6){
         zweiSeiten=true;
         //buttens aktivieren
         document.getElementById("zuruck").disabled=true;
@@ -259,7 +259,7 @@ function buttonManager(){
 function aufSeite1(){ // wenn auf button zurück geklickt wird
     //alle details entfernen
     var z =document.getElementsByTagName("details").length;
-    console.log("hie ist länge von details"+z);
+    console.log("Seite2 wechsel auf seite 1: hie ist länge von details"+z);
     for(var o= 0; o< z; o++){
         var e= document.getElementsByTagName("details")[0];
         console.log(e);
@@ -267,12 +267,15 @@ function aufSeite1(){ // wenn auf button zurück geklickt wird
     }
 
     //details wieder einfügen
+    /*
     l= result[0].articles.length
-        for(var i =0;i <3; i++){
+        for(var i =0;i <5; i++){
             var art = buildNewsblock(result[0].articles[i]);
             var section =document.getElementsByTagName("section")[0];
             section.appendChild(art);
         }
+    */
+    setNewsToday(result);
     document.getElementById("zuruck").disabled=true;
     document.getElementById("seite2").disabled=false;
     
@@ -280,7 +283,7 @@ function aufSeite1(){ // wenn auf button zurück geklickt wird
 
 function aufSeite2(){
     var z =document.getElementsByTagName("details").length;
-    console.log("hie ist länge von details"+z);
+    console.log("Seite1 auf seite 2: hie ist länge von details"+z);
     for(var o= 0; o< z; o++){
         var e= document.getElementsByTagName("details")[0];
         console.log(e);
@@ -289,7 +292,7 @@ function aufSeite2(){
 
     console.log("function auf Seite 2: die länge der artikelliste"+result[0].articles.length);
     l= result[0].articles.length
-        for(var i =4;i <l; i++){
+        for(var i =5;i <l; i++){
             var art = buildNewsblock(result[0].articles[i]);
             var section =document.getElementsByTagName("section")[0];
             section.appendChild(art);
