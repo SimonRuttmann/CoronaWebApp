@@ -11,80 +11,132 @@ var mqttClient;
 
 //am anfang ausführen
 async function init() {
+    var result;
+
     console.log("connect MQTT");
     mqttClient = await mqtt.initMQTT();
 
     console.log("AGS");
-    await agsBW.getAGSBW();
+    result = await agsBW.getAGSBW();
+    if (result != undefined && result.length > 0) console.log("Done AGS");
+    else console.log("Failed AGS");
 
     console.log("District");
-    districts.getDistricts(true, mqttClient);
-    districts.saveHistory();
+    result = await districts.getDistricts(true, mqttClient);
+    if (result != undefined && result.length > 0) console.log("Done District");
+    else console.log("Failed District");
+    result = await districts.saveHistory();
+    if (result != undefined && result.length > 0) console.log("Done District History");
+    else console.log("Failed District History");
 
     console.log("Vaccination");
-    vaccination.getVaccinationPlaces(true, mqttClient);
-    vaccination.getVaccinationDates(true, mqttClient);
-    vaccination.saveHistoryPlaces();
-    vaccination.saveHistoryDates();
+    result = await vaccination.getVaccinationPlaces(true, mqttClient);
+    if (result != undefined && result.length > 0) console.log("Done Places");
+    else console.log("Failed Places");
+    result = await vaccination.getVaccinationDates(true, mqttClient);
+    if (result != undefined && result.length > 0) console.log("Done Dates");
+    else console.log("Failed Dates");
+    result = await vaccination.saveHistoryPlaces();
+    if (result != undefined && result.length > 0) console.log("Done Places History");
+    else console.log("Failed Places History");
+    result = await vaccination.saveHistoryDates();
+    if (result != undefined && result.length > 0) console.log("Done Dates History");
+    else console.log("Failed Dates History");
 
     console.log("News");
-    news.getCoronaNewsToday(mqttClient);
+    result = await news.getCoronaNewsToday(mqttClient);
+    if (result != undefined && result.length > 0) console.log("Done News");
+    else console.log("Failed News");
 
     console.log("CSVInfections");
-    csvInfections.getDataFromCSVInfectionsAll(true, mqttClient);
-    csvInfections.getDataFromCSVInfections(true, mqttClient);
+    result = await csvInfections.getDataFromCSVInfectionsAll(true, mqttClient);
+    if (result != undefined && result.length > 0) console.log("Done CSVInfectionsAll");
+    else console.log("Failed CSVInfectionsAll");
+    result = await csvInfections.getDataFromCSVInfections(true, mqttClient);
+    if (result != undefined && result.length > 0) console.log("Done CSVInfections");
+    else console.log("Failed CSVInfections");
 
     console.log("CSVVaccinations");
-    csvVaccinations.getDataFromCSVVaccinationsAll(true, mqttClient);
-    csvVaccinations.getDataFromCSVVaccinations(true, mqttClient);
+    result = await csvVaccinations.getDataFromCSVVaccinationsAll(true, mqttClient);
+    if (result != undefined && result.length > 0) console.log("Done CSVVaccinationsAll");
+    else console.log("Failed CSVVaccinationsAll");
+    result = await csvVaccinations.getDataFromCSVVaccinations(true, mqttClient);
+    if (result != undefined && result.length > 0) console.log("Done CSVVaccinations");
+    else console.log("Failed CSVVaccinations");
 
     console.log("CSVRKI");
-    csvRKI.getDataCombined(true, mqttClient);
+    result = await csvRKI.getDataCombined(true, mqttClient);
+    if (result != undefined && result.length > 0) console.log("Done CSVRKI");
+    else console.log("Failed CSVRKI");
 }
 
 // alle distrikte jede minute aktualisieren
-const intervalMin = setInterval(() => {
+const intervalMin = setInterval(async () => {
     console.log("District");
-    districts.getDistricts(true, mqttClient);
+    result = await districts.getDistricts(true, mqttClient);
+    if (result != undefined && result.length > 0) console.log("Done District");
+    else console.log("Failed District");
 }, 60000);
 
 // alle corona news des tages jede stunde aktualisieren
-const intervalHour = setInterval(() => {
+const intervalHour = setInterval(async () => {
     console.log("News");
-    news.getCoronaNewsToday(mqttClient);
+    result = await news.getCoronaNewsToday(mqttClient);
+    if (result != undefined && result.length > 0) console.log("Done News");
+    else console.log("Failed News");
 
     console.log("Vaccination");
-    vaccination.saveHistoryDates();
+    result = await vaccination.saveHistoryDates();
+    if (result != undefined && result.length > 0) console.log("Done Dates History");
+    else console.log("Failed Dates History");
 }, 3600000);
 
 // alle impftermine 5 mal am tag aktualisieren
-const interval5TimesPerDay = setInterval(() => {
+const interval5TimesPerDay = setInterval(async () => {
     console.log("Vaccination");
-    vaccination.getVaccinationDates(true, mqttClient);
+    result = await vaccination.getVaccinationDates(true, mqttClient);
+    if (result != undefined && result.length > 0) console.log("Done Dates");
+    else console.log("Failed Dates");
 
     console.log("CSVInfections");
-    csvInfections.getDataFromCSVInfectionsAll(true, mqttClient);
-    csvInfections.getDataFromCSVInfections(true, mqttClient);
+    result = await csvInfections.getDataFromCSVInfectionsAll(true, mqttClient);
+    if (result != undefined && result.length > 0) console.log("Done CSVInfectionsAll");
+    else console.log("Failed CSVInfectionsAll");
+    result = await csvInfections.getDataFromCSVInfections(true, mqttClient);
+    if (result != undefined && result.length > 0) console.log("Done CSVInfections");
+    else console.log("Failed CSVInfections");
 
     console.log("CSVVaccinations");
-    csvVaccinations.getDataFromCSVVaccinationsAll(true, mqttClient);
-    csvVaccinations.getDataFromCSVVaccinations(true, mqttClient);
+    result = await csvVaccinations.getDataFromCSVVaccinationsAll(true, mqttClient);
+    if (result != undefined && result.length > 0) console.log("Done CSVVaccinationsAll");
+    else console.log("Failed CSVVaccinationsAll");
+    result = await csvVaccinations.getDataFromCSVVaccinations(true, mqttClient);
+    if (result != undefined && result.length > 0) console.log("Done CSVVaccinations");
+    else console.log("Failed CSVVaccinations");
 }, 17280000);
 
 // alle distrikte jeden tag speichern
-const intervalDay = setInterval(() => {
+const intervalDay = setInterval(async () => {
     console.log("District");
-    districts.saveHistory();
+    result = await districts.saveHistory();
+    if (result != undefined && result.length > 0) console.log("Done District History");
+    else console.log("Failed District History");
 
     console.log("CSVRKI");
-    csvRKI.getDataCombined(true, mqttClient);
+    result = await csvRKI.getDataCombined(true, mqttClient);
+    if (result != undefined && result.length > 0) console.log("Done CSVRKI");
+    else console.log("Failed CSVRKI");
 }, 86400000);
 
 // alle impforte jede woche speichern
-const intervalWeek = setInterval(() => {
+const intervalWeek = setInterval(async () => {
     console.log("Vaccination");
-    vaccination.getVaccinationPlaces(true, mqttClient);
-    vaccination.saveHistoryPlaces();
+    result = await vaccination.getVaccinationPlaces(true, mqttClient);
+    if (result != undefined && result.length > 0) console.log("Done Places");
+    else console.log("Failed Places");
+    result = await vaccination.saveHistoryPlaces();
+    if (result != undefined && result.length > 0) console.log("Done Places History");
+    else console.log("Failed Places History");
 }, 604800000);
 
 // clearInterval(interval);

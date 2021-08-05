@@ -4,7 +4,6 @@ const db = require('./db');
 module.exports = { getDistricts, saveHistory };
 
 async function getDistricts(saveToDB, mqttClient) {
-    console.log("get Districts");
     var data = [];
 
     var requestOptions = {
@@ -67,7 +66,6 @@ async function getDistricts(saveToDB, mqttClient) {
 }
 
 async function saveHistory() {
-    console.log("save DistrictsHistory");
     var data = await getDistricts(false);
     var history = await db.find({}, "historyDistrictsBW");
 
@@ -115,4 +113,6 @@ async function saveHistory() {
 
     await db.dropCollection("historyDistrictsBW");
     await db.insertMany(history, "historyDistrictsBW");
+
+    return history;
 }

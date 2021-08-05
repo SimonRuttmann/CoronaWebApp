@@ -5,7 +5,6 @@ const db = require('./db');
 module.exports = { getVaccinationPlaces, getVaccinationDates, saveHistoryPlaces, saveHistoryDates };
 
 async function getVaccinationPlaces(saveToDB, mqttClient) {
-    console.log("get VaccinationPlaces");
     var data = [];
 
     var requestOptions = {
@@ -46,7 +45,6 @@ async function getVaccinationPlaces(saveToDB, mqttClient) {
 }
 
 async function getVaccinationDates(saveToDB, mqttClient) {
-    console.log("get VaccinationDates");
     var data = [];
     var places = await getVaccinationPlaces(false);
 
@@ -117,7 +115,6 @@ async function getVaccinationDates(saveToDB, mqttClient) {
 }
 
 async function saveHistoryPlaces() {
-    console.log("save HistoryPlaces");
     var data = await getVaccinationPlaces(false);
     var places = [];
 
@@ -133,10 +130,11 @@ async function saveHistoryPlaces() {
     save.data = data;
 
     await db.insertOne(save, "historyVaccinationPlacesBW");
+
+    return ["run", "successful"];
 }
 
 async function saveHistoryDates() {
-    console.log("save HistoryDates");
     var data = await getVaccinationDates(false);
     var history = await db.find({}, "historyVaccinationDatesBW");
 
@@ -170,4 +168,6 @@ async function saveHistoryDates() {
 
     await db.dropCollection("historyVaccinationDatesBW");
     await db.insertMany(history, "historyVaccinationDatesBW");
+
+    return history;
 }

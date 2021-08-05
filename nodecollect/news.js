@@ -4,7 +4,6 @@ const db = require('./db');
 module.exports = { getCoronaNewsToday };
 
 async function getCoronaNewsToday(mqttClient) {
-    console.log("get CoronaNewsToday");
     var data = [];
 
     const news = new newsapi('a0f7ef5d4910438bb69866556aa7caa6');
