@@ -19,24 +19,18 @@ function insertMany(data, collection) {
     connectToDB(async (db) => {
         await db.collection(collection).insertMany(data);
     });
-
-    console.log("Insert Data");
 }
 
 function insertOne(data, collection) {
     connectToDB(async (db) => {
         await db.collection(collection).insertOne(data);
     });
-
-    console.log("Insert Data");
 }
 
 function deleteOne(data, collection) {
     connectToDB(async (db) => {
         await db.collection(collection).deleteOne(data);
     });
-
-    console.log("Delete Data");
 }
 
 function deleteMany(data, collection) {
@@ -45,8 +39,6 @@ function deleteMany(data, collection) {
     connectToDB(async (db) => {
         await db.collection(collection).deleteMany(data);
     });
-
-    console.log("Delete Data");
 }
 
 function dropCollection(collection) {
@@ -66,8 +58,6 @@ function dropCollection(collection) {
         return found;
     });
 
-    console.log("Drop Collection");
-
     return res;
 }
 
@@ -82,8 +72,6 @@ async function connectToDB(exec) {
     var res = await exec(db);
 
     await client.close();
-
-    console.log("Connect to DB");
 
     return res;
 }

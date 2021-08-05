@@ -1,5 +1,5 @@
 #!/bin/bash
 
-# docker-compose up --build
+docker-compose up --build
 
-docker-compose up --build nodecollect mongodb
+# docker-compose up --build nodecollect mongodb mysql mqtt nodeexpressapi

@@ -53,3 +53,5 @@ var myChart = new Chart(
     document.getElementById('myChart'),
     config
 );
+
+// localhost:6969/data/overview
