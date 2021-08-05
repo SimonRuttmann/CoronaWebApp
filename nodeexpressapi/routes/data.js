@@ -115,6 +115,7 @@ router.get('/news', async (req, res) => {
 	const dbData_collection = "newsCoronaBW"
 	data = await MongoDB.find({}, dbData_collection, { "articles": { $slice: 5 } });
 	if (data.length == 0) data = ({ "error": true, "no_data_from": dbData_collection })
+	res.send(data)
 })
 
 async function getDeathsPerWeek(data) {
