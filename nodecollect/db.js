@@ -8,8 +8,6 @@ async function find(data, collection) {
         return resInner;
     });
 
-    console.log("Find Data");
-
     return res;
 }
 

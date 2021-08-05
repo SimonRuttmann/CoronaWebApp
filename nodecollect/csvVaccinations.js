@@ -4,7 +4,6 @@ const db = require('./db');
 module.exports = { getDataFromCSVVaccinations, getDataFromCSVVaccinationsAll }
 
 async function getDataFromCSVVaccinationsAll(saveToDB, mqttClient) {
-    console.log("get CSVVaccinationsAll");
     var data = [];
 
     var requestOptions = {
@@ -83,7 +82,6 @@ async function getDataFromCSVVaccinationsAll(saveToDB, mqttClient) {
 }
 
 async function getDataFromCSVVaccinations(saveToDB, mqttClient) {
-    console.log("get CSVVaccinations");
     var data = await getDataFromCSVVaccinationsAll(false, mqttClient);
 
     if (data == undefined) return undefined;
