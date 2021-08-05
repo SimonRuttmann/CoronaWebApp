@@ -9,7 +9,6 @@ router.get('/', async (req, res) => {
 	res.send("Wilkommen auf der Datenroute");
 });
 
-
 router.get('/overview', async (req, res) => {
 	let infected = 0, immune = 0, vaccinated = 0, recovered = 0, deaths = 0, param;
 	var data = await getDistrictsFormated();
@@ -17,17 +16,16 @@ router.get('/overview', async (req, res) => {
 		res.send(data)
 		return;
 	}
+
 	data = data.Landkreise;
+	//Pfad für Param sucht daten eines spezifischen Landkreises
 	if (req.query.ags != undefined || req.query.district != undefined) {
-		console.log("Get specific overview")
 		if (req.query.ags != undefined) param = req.query.ags;
 		else param = (await MongoDB.find({ "name": req.query.district }, "agsBW", { "ags": 1, "_id": 0 }))[0].ags;
+
 		let found = false;
 		for (let i in data) {
-			console.log("Get specific overview")
 			if (data[i].ags == param) {
-				console.log("found ags")
-				//console.log(data[i])
 				found = true;
 				infected = Number(data[i].infizierte);
 				immune = Number(data[i].immune);
@@ -42,8 +40,7 @@ router.get('/overview', async (req, res) => {
 			return;
 		}
 	}
-	else {
-		console.log("Get general overview")
+	else { //Pfad ohne Parameter -> schreibt alle Landkreisdaten zusammen
 		for (let i in data) {
 			infected += Number(data[i].infizierte);
 			immune += Number(data[i].immune);
@@ -52,6 +49,7 @@ router.get('/overview', async (req, res) => {
 			deaths += Number(data[i].todesfaelle);
 		}
 	}
+
 	const response = {
 		"infizierte": infected,
 		"genesen": recovered,
@@ -63,7 +61,7 @@ router.get('/overview', async (req, res) => {
 	res.send(response);
 });
 
-//Schickt die Daten für alle Districte oder für eines mit Parameterangabe(angabe mit /?var=val)
+//Schickt die Daten für alle Districte oder für eines mit Parameterangabe, nach möglichkeit Historische Daten
 router.get('/district', async (req, res) => {
 	let param = req.query.ags;
 	let response;
@@ -71,8 +69,6 @@ router.get('/district', async (req, res) => {
 		response = await getDistrictsFormated();
 	}
 	else {
-		//Noch nicht funktionsfähig, ist unbekannt wie ich daten formatieren muss
-		//param =JSON.parse('{"ags":"' + param + '"}'); //Anpassen an DB-Form
 		const historyDeathsDB = (await MongoDB.find({ "ags": param }, "csvRKI", { "historyDeathsRKI": 1, "_id": 0 }));
 		const historyCasesDB = await MongoDB.find({ "ags": param }, "csvRKI", { "historyCasesRKI": 1, "_id": 0 });
 		const infectionsDBFemale = await MongoDB.find({ "ags": param, "geschlecht": "W" }, "infectionsCSVBW");
@@ -92,7 +88,7 @@ router.get('/district', async (req, res) => {
 		//const idk = undefined;
 		//const vaccinationOffersPerWeek = undefined;
 		const vaccinatedPerWeek = getVaccinatedPerWeek(vaccinationAll);
-		const incidencePerWeek = getIncidencePerWeek(districtsBWDB);
+		const incidencePerWeek = getIncidenceThisWeek(districtsBWDB);
 
 		response = {
 			//"Genesene_pro_Woche": recperWeek,
@@ -115,40 +111,42 @@ router.get('/district', async (req, res) => {
 router.get('/news', async (req, res) => {
 	const dbData_collection = "newsCoronaBW"
 	data = await MongoDB.find({}, dbData_collection, { "articles": { $slice: 5 } });
-	if (data.length == 0) data = ({ "error": true, "no_data_from": dbData_collection })
+	if (!data.length > 0) data = ({ "error": true, "no_data_from": dbData_collection })
 	res.send(data)
 })
 function getVaccinatedPerWeek(data) {
 	const response = [];
-	let tmpDate1, tmpDate2, sortedData = [];
-	mainloop:
-	for (let i in data) {
-		tmpDate1 = new Date((data[i].impfdatum).replace("-","."));
-		for (let j in sortedData) {
-			tmpDate2 = new Date(String(sortedData[j].date).replace("-","."));
-			if (tmpDate1 == tmpDate2) {
-				sortedData[j].anzahl += data[i].anzahl;
-				continue mainloop;
+	if (!data.length > 0) response = ({ "error": true, "no_data_from": dbData_collection })
+	else {
+		let tmpDate1, tmpDate2, sortedData = [];
+		mainloop:
+		for (let i in data) {
+			tmpDate1 = new Date((data[i].impfdatum).replace("-", "."));
+			for (let j in sortedData) {
+				tmpDate2 = new Date(String(sortedData[j].date).replace("-", "."));
+				if (tmpDate1 == tmpDate2) {
+					sortedData[j].anzahl += data[i].anzahl;
+					continue mainloop;
+				}
 			}
+			sortedData.push({ "date": tmpDate1, "anzahl": data[i].anzahl })
 		}
-		sortedData.push({ "date": tmpDate1, "anzahl": data[i].anzahl })
-	}
-	console.log(sortedData);
+		console.log(sortedData);
 
-	var aufaddieren = 0;
-	for (let i in sortedData) {
-		aufaddieren += Number(sortedData[i].anzahl);
-		if ((i % 7) == 6) {
-			response.push({ "date": sortedData[i].date, "anzahl": aufaddieren })
-			aufaddieren = 0;
+		var aufaddieren = 0;
+		for (let i in sortedData) {
+			aufaddieren += Number(sortedData[i].anzahl);
+			if ((i % 7) == 6) {
+				response.push({ "date": sortedData[i].date, "anzahl": aufaddieren })
+				aufaddieren = 0;
+			}
+			if (i == data.length - 1) response.push({ "date": sortedData[i].date, "anzahl": aufaddieren })
 		}
-		if (i == data.length - 1) response.push({ "date": sortedData[i].date, "anzahl": aufaddieren })
 	}
-
 	return response;
 }
 
-function getIncidencePerWeek(data) {
+function getIncidenceThisWeek(data) {
 	const response = data[0].weekIncidence;
 	return response;
 }
@@ -156,9 +154,9 @@ function getIncidencePerWeek(data) {
 function getDeathsPerWeek(data) {
 	//date ist immer das startdatum der woche, die aktuelle Woche kann weniger als 7 Tage beinhalten
 	let response = [];
-	if (!data.length>0) response = { "error": true, "no_data_from": "csvRKI" }
+	if (!data.length > 0) response = { "error": true, "no_data_from": "csvRKI" }
 	else data = data[0].historyDeathsRKI;
-	if (!data.length>0) response = { "error": true, "no_data_from": "csvRKI.historyDeathsRKI" }
+	if (!data.length > 0) response = { "error": true, "no_data_from": "csvRKI.historyDeathsRKI" }
 
 	var aufaddieren = 0;
 	for (let i in data) {
@@ -174,9 +172,9 @@ function getDeathsPerWeek(data) {
 function getCasesPerWeek(data) {
 	//date ist immer das startdatum der woche, die aktuelle Woche kann weniger als 7 Tage beinhalten
 	let response = [];
-	if (!data.length>0) response = { "error": true, "no_data_from": "csvRKI" }
+	if (!data.length > 0) response = { "error": true, "no_data_from": "csvRKI" }
 	else data = data[0].historyCasesRKI;
-	if (!data.length>0) response = { "error": true, "no_data_from": "csvRKI.historyCasesRKI" }
+	if (!data.length > 0) response = { "error": true, "no_data_from": "csvRKI.historyCasesRKI" }
 
 	var aufaddieren = 0;
 	for (let i in data) {
@@ -208,12 +206,10 @@ function getDeathsForNewestData(data) {
 			}
 			else if (compareDate == newestDate) filteredData.push(data[i])
 		}
-		console.log(filteredData)
 		for (let i in filteredData) {
 			response += Number(filteredData[i].anzahltodesfall);
 		}
 	}
-
 	return response;
 }
 
