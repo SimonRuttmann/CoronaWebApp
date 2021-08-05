@@ -1,31 +1,56 @@
 <html>
-    <head>
-        <title>Impfangebote</title>
-        <link rel = "stylesheet" href = "./stylesheets/index.css" type="text/css"> </link>
-        <script type = "text/javascript" src = "./clientjs/indexClient.js"> </script>
-    </head>
-    
-    <body>
-        <div class="navigationbar">
-            <ul>
-                <li><a id="active" href='#'>Startseite</a></li>
-                <li><a href="/login" id="RefToLogin">Anmelden</a></li>
-                <li><a href="/statistic">Statistik</a></li>
-                <li><a href="/coronaChat">Corona-Chat</a></li>
-                <li><a href="/vaccination">Impfangebote</a></li>
-                <li><a href="/news">News</a></li>
-                <li><a href="/profile">Profil</a></li>
-            </ul>
+
+<head>
+    <title>Impfangebote</title>
+    <link rel="stylesheet" href="./stylesheets/index.css" type="text/css">
+    </link>
+    <script type="text/javascript" src="./clientjs/indexClient.js"> </script>
+
+    <link rel="stylesheet" href="./stylesheets/map.css">
+    <script src="./clientjs/data.js"></script>
+</head>
+
+<body>
+    <div class="navigationbar">
+        <ul>
+            <li><a id="active" href='#'>Startseite</a></li>
+            <li><a href="/login" id="RefToLogin">Anmelden</a></li>
+            <li><a href="/statistic">Statistik</a></li>
+            <li><a href="/coronaChat">Corona-Chat</a></li>
+            <li><a href="/vaccination">Impfangebote</a></li>
+            <li><a href="/news">News</a></li>
+            <li><a href="/profile">Profil</a></li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <div class="content">
+            <br />
+            <b>Aktuelle Zahlen in Baden-Württemberg</b>
+            <br />
+            <br />
+            <p id="replaceContentBW"></p>
         </div>
- 
-
-
-        
-
-
-
-        <div class="footer-box">
-            <p class="description" id="loginStatus">Sie sind momentan nicht angemeldet. </p>
+        <div class="content">
+            <br />
+            <b id="replaceHeader">Wähle einen Landkreis aus!</b>
+            <br />
+            <br />
+            <p id="replaceContent"></p>
         </div>
-    </body>
+        <div class="content">
+            <canvas id="myChart"></canvas>
+        </div>
+    </div>
+    <div id="map"></div>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"> </script>
+    <script src="./clientjs/map.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src='./clientjs/statistic.js'></script>
+
+    <div class="footer-box">
+        <p class="description" id="loginStatus">Sie sind momentan nicht angemeldet. </p>
+    </div>
+</body>
+
 </html>

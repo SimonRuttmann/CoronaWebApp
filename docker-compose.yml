@@ -45,11 +45,11 @@ services:
     mongodb:
       container_name: mongodb
       image: mongo:latest
-      #environment:
-        #   MONGO_INITDB_ROOT_USERNAME: root
-        #  MONGO_INITDB_ROOT_PASSWORD: rootpassword
-      #volumes:
-        #  - ./mongodb:/data/db    
+    #   environment:
+    #       MONGO_INITDB_ROOT_USERNAME: root
+    #       MONGO_INITDB_ROOT_PASSWORD: rootpassword
+    #   volumes:
+    #       - ./mongodb:/data/db    
       ports: 
           - "27017:27017"
 # remove volumes if error

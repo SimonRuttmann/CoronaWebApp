@@ -4,6 +4,7 @@ const db = require('./db');
 module.exports = { getDataCombined }
 
 async function getCasesHistory() {
+    console.log("get CasesHistory");
     var data = [];
 
     var requestOptions = {
@@ -59,6 +60,7 @@ async function getCasesHistory() {
 }
 
 async function getDeathsHistory() {
+    console.log("get DeathsHistory");
     var data = [];
 
     var requestOptions = {
@@ -114,6 +116,7 @@ async function getDeathsHistory() {
 }
 
 async function getDataCombined(saveToDB, mqttClient) {
+    console.log("get DataCombined");
     var dataCases = await getCasesHistory();
     var dataDeaths = await getDeathsHistory();
     var dataCombined = [];

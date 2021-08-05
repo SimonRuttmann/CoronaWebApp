@@ -8,11 +8,14 @@ var sticky;
 var newsZahler=0; // 0 erste seite, 1 zweite seite der nachrichten 
 var zweiSeiten=true;
 let result;
+let resulttest= ({"articles": [
+    {"author":"Tauthor1","title":"TTitle1","description":"Beschreibung1","content":"inhalt1","URL":"www.google.de"}]});
 
 
 function init(){
     getSessionData([setLoginStatus]);
     getNewsToday(setNewsToday);
+    
     
     header = document.getElementById('kopf');
     console.log("header" + header);
@@ -79,6 +82,7 @@ function MessageArrived(message) {
 
 
 async function getNewsToday(callback){
+    console.log("komme in function getNewsToday");
     
     try{
         let response = await fetch('/data/news');
@@ -86,7 +90,8 @@ async function getNewsToday(callback){
         //reads response stream to completion
         result = await response.text();
         result = JSON.parse(result);
-        //console.log("results werden bekommen"+result);
+        console.log("results werden bekommen"+result);
+        console.log(result);
     }
     catch(e){
         console.log("Server is not responing");
@@ -104,18 +109,22 @@ async function getNewsToday(callback){
     }
     else if (result != undefined){
         callback(result);
+        console.log("getNewsToday:");
+        console.log(result);
         test();
     }
 
 }
 //Error: JSON {"error":true,"no_data_from":"X"}
 function test(){
-    for(i=0; i < result[0].articles.length;i++){
+    var testarray= [];
+    for(var i=0; i < result[0].articles.length;i++){
         var testarray = (result[0].articles[i]);
     }
     
    //var a= result[0].articles.push(result[0].articles);
-    console.log(result);
+   console.log("testausgeben"); 
+   console.log(result);
     console.log(testarray);
     result.push(testarray);
     console.log(result);
