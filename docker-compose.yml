@@ -1,14 +1,19 @@
 version: "3.3"
 services:
     nodecollect:
+        restart: on-failure 
         build:
             context: ./nodecollect
 
     nodeexpressapi:
+        restart: on-failure:5
         build:
             context: ./nodeexpressapi
         ports: 
-            - "6969:6969"     
+            - "6969:6969"    
+        depends_on: 
+            mysql:
+                condition: service_healthy     
 
     nginx:
         build:
@@ -31,6 +36,11 @@ services:
             MYSQL_ROOT_PASSWORD: a   
         ports:
             - "3306:3306"  
+        healthcheck:
+            test: "/usr/bin/mysql --user=root --password=a --execute \"SHOW DATABASES;\""
+            interval: 5s
+            timeout: 10s
+            retries: 5
             
     mongodb:
       container_name: mongodb
