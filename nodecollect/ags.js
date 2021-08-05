@@ -39,10 +39,10 @@ async function getAGSBW() {
         }
     }
 
-    if (data.length == 0) return false;
+    if (data.length == 0) return undefined;
 
     await db.deleteMany({}, "agsBW");
     await db.insertMany(data, "agsBW");
 
-    return true;
+    return data;
 }

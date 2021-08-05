@@ -4,7 +4,6 @@ const db = require('./db');
 module.exports = { getDataFromCSVInfections, getDataFromCSVInfectionsAll }
 
 async function getDataFromCSVInfectionsAll(saveToDB, mqttClient) {
-    console.log("get CSVInfectionsAll");
     var data = [];
 
     var requestOptions = {
@@ -90,7 +89,6 @@ async function getDataFromCSVInfectionsAll(saveToDB, mqttClient) {
 }
 
 async function getDataFromCSVInfections(saveToDB, mqttClient) {
-    console.log("get CSVInfections");
     var data = await getDataFromCSVInfectionsAll(false, mqttClient);
     var combineData = [];
 

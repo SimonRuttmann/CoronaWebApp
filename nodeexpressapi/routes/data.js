@@ -11,7 +11,12 @@ router.get('/', async (req, res) => {
 
 router.get('/overview', async (req, res) => {
 	let infected = 0, immune = 0, vaccinated = 0, recovered = 0, deaths = 0, param;
-	var data = await getDistrictsFormated();
+	try {
+		var data = await getDistrictsFormated();
+	} catch (e) {
+		console.log("error: /overview");
+	}
+
 	if (data.error) {
 		res.send(data)
 		return;
@@ -21,8 +26,10 @@ router.get('/overview', async (req, res) => {
 	//Pfad für Param sucht daten eines spezifischen Landkreises
 	if (req.query.ags != undefined || req.query.district != undefined) {
 		if (req.query.ags != undefined) param = req.query.ags;
-		else param = (await MongoDB.find({ "name": req.query.district }, "agsBW", { "ags": 1, "_id": 0 }))[0].ags;
-
+		else
+			try {
+				param = (await MongoDB.find({ "name": req.query.district }, "agsBW", { "ags": 1, "_id": 0 }))[0].ags;
+			}catch (e) {console.log(e)}
 		let found = false;
 		for (let i in data) {
 			if (data[i].ags == param) {
@@ -66,9 +73,15 @@ router.get('/district', async (req, res) => {
 	let param = req.query.ags;
 	let response;
 	if (param == null) {
-		response = await getDistrictsFormated();
+		try {
+			response = await getDistrictsFormated();
+		}
+		catch (e) {
+			console.log("error: /distirct ");
+		}
 	}
 	else {
+		try{
 		const historyDeathsDB = (await MongoDB.find({ "ags": param }, "csvRKI", { "historyDeathsRKI": 1, "_id": 0 }));
 		const historyCasesDB = await MongoDB.find({ "ags": param }, "csvRKI", { "historyCasesRKI": 1, "_id": 0 });
 		const infectionsDBFemale = await MongoDB.find({ "ags": param, "geschlecht": "W" }, "infectionsCSVBW");
@@ -77,7 +90,7 @@ router.get('/district', async (req, res) => {
 		const infectionsDBAgeGroup2 = await MongoDB.find({ "ags": param, "altersgruppe": "" }, "infectionsCSVBW");
 		const districtsBWDB = await MongoDB.find({ "ags": param }, "districtsBW")
 		const vaccinationAll = await MongoDB.find({ "ags": param }, "vaccinationsCSVBWAll")
-
+		}catch(e){console.log(e)}
 		//const recperWeek = undefined;
 		const deaths_female = getDeathsForNewestData(infectionsDBFemale);
 		const deaths_male = getDeathsForNewestData(infectionsDBMale);
@@ -110,7 +123,9 @@ router.get('/district', async (req, res) => {
 
 router.get('/news', async (req, res) => {
 	const dbData_collection = "newsCoronaBW"
-	data = await MongoDB.find({}, dbData_collection, { "articles": { $slice: 5 } });
+	try{
+	data = await MongoDB.find({}, dbData_collection, { "articles": { $slice: 10 } });
+	}catch(e){console.log(e)}
 	if (!data.length > 0) data = ({ "error": true, "no_data_from": dbData_collection })
 	res.send(data)
 })
@@ -217,7 +232,12 @@ function getDeathsForNewestData(data) {
 //Sends back {error:true,{no_data_from:X}} in case of error
 async function getDistrictsFormated() {
 	const dbData_collection = "districtsBW"
-	const dbData = await MongoDB.find({}, dbData_collection);
+	try {
+		const dbData = await MongoDB.find({}, dbData_collection);
+	} catch (e) {
+		console.log("error: getDistrictsformated ");
+	}
+
 	if (dbData.length == 0) return ({ "error": true, "no_data_from": dbData_collection })
 	var dbData2, response, param;
 
@@ -225,8 +245,11 @@ async function getDistrictsFormated() {
 	const dbData2_collection = "vaccinationsCSVBWCombined";
 	for (let i in dbData) {
 		param = JSON.parse('{"ags":"' + dbData[i].ags + '", "impfschutz":"2"}');
-
-		dbData2 = await MongoDB.find(param, dbData2_collection);
+		try {
+			dbData2 = await MongoDB.find(param, dbData2_collection);
+		} catch (e) {
+			console.log("error: getDistrictsfomrated 2");
+		}
 		if (dbData2.length == 0) return ({ "error": true, "no_data_from": dbData2_collection });
 		var vaccinated = 0;
 		for (let j in dbData2) {
@@ -247,6 +270,8 @@ async function getDistrictsFormated() {
 	}
 	response = response.slice(0, -1) + "]}"
 	return (JSON.parse(response));
+
 }
+
 
 module.exports = router;

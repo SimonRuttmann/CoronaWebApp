@@ -8,9 +8,6 @@ html{
 	padding: 10px;
 	overflow: hidden;
 	background-color:#222;
-    
-    position: sticky;
-    top: 0;
 }
 
 .navigationbar li{
@@ -33,12 +30,6 @@ html{
     
       
 }
-
-.sticky {
-    position: fixed;
-    top: 0;
-    width: 100%
-  }
 
 #active{
 	  text-decoration: underline;
