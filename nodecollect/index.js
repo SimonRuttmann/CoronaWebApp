@@ -192,10 +192,20 @@ async function csvrki() {
     return "done";
 }
 
-// alle distrikte jede minute aktualisieren
+// alle fehlerhaften methoden neu versuchen
 const interval30sec = setInterval(async () => {
+    console.log("---------Fixing Methods---------");
+
+    var tmp = [];
     for (var i = 0; i < failedMethods.length; i++) {
-        var method = failedMethods.pop();
+        if (!tmp.includes(failedMethods[i])) {
+            tmp.push(failedMethods[i]);
+        }
+    }
+    failedMethods = [];
+
+    for (var i = 0; i < tmp.length; i++) {
+        var method = tmp.pop();
         i--;
 
         console.log("---------Fixing Method: " + method + "---------");
@@ -245,21 +255,30 @@ const interval30sec = setInterval(async () => {
                 break;
         }
     }
+
+    console.log("---------Done Fixing Methods---------");
+    console.log("---------" + failedMethods.length + " Failed Methods---------");
 }, 30000);
 
 // alle distrikte jede minute aktualisieren
 const intervalMin = setInterval(async () => {
+    if (failedMethods.includes("District")) return;
+
     await district();
 }, 60000);
 
 // alle corona news des tages jede stunde aktualisieren
 const intervalHour = setInterval(async () => {
+    if (failedMethods.includes("News") || failedMethods.includes("Vaccination Dates History")) return;
+
     await newsMethod();
     await vaccinationDatesHistory();
 }, 3600000);
 
 // alle impftermine 5 mal am tag aktualisieren
 const interval5TimesPerDay = setInterval(async () => {
+    if (failedMethods.includes("Vaccination Dates") || failedMethods.includes("CSVInfectionsAll") || failedMethods.includes("CSVInfections") || failedMethods.includes("CSVVaccinationsAll") || failedMethods.includes("CSVVaccinations")) return;
+
     await vaccinationDates();
     await csvInfectionsAll();
     await csvInfectionsMethod();
@@ -269,12 +288,16 @@ const interval5TimesPerDay = setInterval(async () => {
 
 // alle distrikte jeden tag speichern
 const intervalDay = setInterval(async () => {
+    if (failedMethods.includes("District History") || failedMethods.includes("CSVRKI")) return;
+
     await districtHistory();
     await csvrki();
 }, 86400000);
 
 // alle impforte jede woche speichern
 const intervalWeek = setInterval(async () => {
+    if (failedMethods.includes("Vaccination Places") || failedMethods.includes("Vaccination Places History")) return;
+
     await vaccinationPlaces();
     await vaccinationPlacesHistory();
 }, 604800000);
