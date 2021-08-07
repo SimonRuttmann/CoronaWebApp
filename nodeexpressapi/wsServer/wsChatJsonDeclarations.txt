@@ -81,5 +81,3 @@ sendMessage equivalent to clients message
     "message":     "Hello there"
 }
 
-*/
-

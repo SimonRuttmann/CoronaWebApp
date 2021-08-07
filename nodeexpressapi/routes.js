@@ -39,6 +39,16 @@ router.get('/user/getSessionInfo',controller.getSessionInfo);
 //    email:            'testuser@mail.com'                      
 //}
 
+router.get('/user/getCredentials',controller.getCredentials);  
+//Example response:
+//{
+//    authenticated:    true,
+//    name:             'testuser1',
+//    email:            'testuser@mail.com'
+//    password:         '23k32ljJKl32rjlk§K'                      
+//}
+
+
 router.get('/user/getUserData', authenticate.checkAuthenticated, controller.getUserData)
 //Exampe respone:
 //{

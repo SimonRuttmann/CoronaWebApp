@@ -22,9 +22,26 @@ request(options, callback);
 
 
 //Alternativ Databaseaccess for /overview
+var requestOptions = {
+	method: 'GET',
+	redirect: 'follow'
+  };
+
 router.get('/', async (req, res) => {
-	param = "10%20Downing%20Street%2C%20Charlestown%2C%20NSW%2C%20Australia"
-	var response =await fetch("https://app.geocodeapi.io/api/v1/search?apikey=" + APIKey_geocodeapi + "&text=" + param)
+	const db=await MongoDB.find({"Ort":"Bad Mergentheim"},"vaccinationPlacesBW")
+	let strasse=db[0].Adress;
+	let ort =db[0].Ort;
+	let land = "Deutschland";
+	const link ="https://app.geocodeapi.io/api/v1/search?apikey=" + APIKey_geocodeapi + "&text=" +strasse+","+ort+","+land
+	console.log(link)
+	var response =await fetch(link,requestOptions)
+	
+	console.log(response)
+	/*
+	response=await response.text();
+	response=JSON.parse(response);
+	console.log(await MongoDB.updateOne({"Ort":String(ort)},{$set:{"Geocode":response.features[0].geometry}},"vaccinationPlacesBW"))
+*/
 	res.send(response);
 });
 
@@ -143,10 +160,23 @@ router.get('/district', async (req, res) => {
 
 router.get('/news', async (req, res) => {
 	const dbData_collection = "newsCoronaBW"
+	let articleAmount=10;
+	let response=[];
 	try {
-		data = await MongoDB.find({}, dbData_collection, { "articles": { $slice: 10 } });
-		if (!data.length > 0) data = ({ "error": true, "no_data_from": dbData_collection })
-		res.send(data)
+		let calculatedDate,formattedDate,data;
+		
+		for(let i=0;(i==0||data!=undefined) && articleAmount>0;i++){
+			calculatedDate=new Date(new Date().setDate(new Date().getDate()-i));
+			formattedDate= calculatedDate.getFullYear()+"-"+String(calculatedDate.getMonth()+1)+"-"+calculatedDate.getDate();
+			data = (await MongoDB.find({"date":formattedDate}, dbData_collection, { "articles": { $slice: articleAmount } }))[0];
+			if(data!=undefined){
+				response.push(data);
+				articleAmount-=data.articles.length
+			} 
+		}
+
+		if (!response.length > 0) response = ({ "error": true, "no_data_from": dbData_collection })
+		res.send(response)
 	} catch (e) {
 		console.log(e)
 		res.send(e)

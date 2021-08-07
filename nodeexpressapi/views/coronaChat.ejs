@@ -29,10 +29,11 @@
         <div class = "topic-box">
             <div class = "topic-list">
                 <ul>
-	                <li onClick="vaccinate()"> Impfen </li>
-                    <li onClick="quarantine()"> Quarnatäne </li>
-                    <li onClick="tests()"> Testen </li>
-                    <li onClick="experiences()"> Erfahrungen </li>
+                    <li onClick="setGeneralTopic()"> Allgemein </li>
+	                <li onClick="setVaccinateTopic()"> Impfen </li>
+                    <li onClick="setQuarantineTopic()"> Quarnatäne </li>
+                    <li onClick="setTestTopic()"> Testen </li>
+                    <li onClick="setExperienceTopic()"> Erfahrungen </li>
                 </ul>
             </div>
         </div>
@@ -89,11 +90,20 @@
                 <!-- End scrollable Content-->
 	        </div>  
 
-            <input type="text" class="sendInput send" placeholder="Nachricht eingeben"> </input>
+            <input type="text" id ="sendingField" class="sendInput send" placeholder="Nachricht eingeben"> </input>
             <button onClick="sendMessage()" class="sendButton send">Senden</button>
     
         </div>
-
+        
+        <div class = "topic-box">
+            <div class = "topic-list">
+                <ul class = "userList">
+                   <!-- <li> Aktiver User </li> -->
+                    
+                </ul>
+            </div>
+        </div>
+        
         <div class="footer-box">
             <p class="description" id="loginStatus">Sie sind momentan nicht angemeldet. </p>
         </div>
