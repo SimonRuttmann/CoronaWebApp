@@ -38,6 +38,158 @@ body {
     background: #333;
     font-family: 'Roboto', sans-serif;
 }
+.buttonBox{
+    padding-top: 10px;
+    border: 1px solid #222;
+    margin-left: auto;
+    margin-right: auto;
+    width: 1000px;
+    margin-top: 30px;
+    height: auto;
+    background: #222;
+    text-align: right;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+
+
+.button {
+    background-color: #666666;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 5px 5px 5px 5px;
+    box-shadow: 0 5px 5px #313131, 0 9px 0 #393939, 0 9px 10px rgba(0, 0, 0, 0.4), 0 2px 9px rgba(255, 255, 255, 0.2) inset, 0 -2px 9px rgba(0, 0, 0, 0.2) inset;
+    color: #FFFFFF;
+    display: inline-block;
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0px 20px;
+    margin-bottom: 10px;
+    padding: 12px 20px;
+    position: relative;
+    text-decoration: none;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.2);
+}
+.button:hover {
+    box-shadow: 0 5px 5px #313131, 0 9px 0 #393939, 0 9px 10px rgba(0, 0, 0, 0.4), 0 2px 15px rgba(255, 255, 255, 0.4) inset, 0 -2px 9px rgba(0, 0, 0, 0.2) inset;
+}
+
+.button:active {
+    box-shadow: 0 2px 0 #393939, 0 4px 4px rgba(0, 0, 0, 0.4), 0 2px 5px rgba(0, 0, 0, 0.2) inset;
+    top: 7px;
+}
+
+.filterOption{
+    border-top: 1px solid #0DB8DE;
+    margin-left: auto;
+    margin-right: auto;
+    width: 1000px;
+    margin-top: 30px;
+    height: auto;
+    
+    text-align: left;
+   
+   
+}
+.input{
+    display: inline-block;
+    width: 300px;
+    color:#333;
+}
+.inputfield{
+    display: block;
+    border-radius: 5px 5px 5px 5px;
+	
+	
+	
+	background-color: #777;
+    padding: 15px;
+    border: #777;
+    margin-top: 20px;
+    width: 250px;
+   
+    color: #333;
+    text-align:left;
+    font-size: 17px;
+    font-weight: bold;
+    box-sizing: border-box;
+}
+.inputfield:hover{
+    box-shadow: inset 0em 0em 1em #0DB8DE, 0em 0em 1em #0DB8DE;
+}
+.label{
+    display: inline-block;
+    width: 200px;
+    margin-left: 100;
+    color:#A8A8A8;
+}
+.formlabel {
+    
+	display: block;
+    
+    margin-top: 20px;
+    margin-bottom: 50px;
+    text-align: left;
+    font-size: 18px;
+    color: #999999;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+.buttonfilterBox{
+    display: inline-block;
+}
+
+.buttonfilter{
+    
+    background-color: #28D44A;
+    border-bottom: 1px solid rgba(12, 161, 41);
+    border-radius: 5px 5px 5px 5px;
+    box-shadow: 0 5px 5px #2D6E3A, 0 9px 0 rgba(12, 161, 41), 0 9px 10px rgba(0, 0, 0, 0.4), 0 2px 9px rgba(255, 255, 255, 0.2) inset, 0 -2px 9px rgba(0, 0, 0, 0.2) inset;
+    color: #FFFFFF;
+    display: inline-block;
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0px 20px;
+    margin-bottom: 10px;
+    padding: 12px 20px;
+    position: relative;
+    text-decoration: none;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.2);
+}
+.buttonfilter:hover {
+    box-shadow: 0 5px 5px #2D6E3A, 0 9px 0 rgba(12, 161, 41), 0 9px 10px rgba(0, 0, 0, 0.4), 0 2px 9px rgba(255, 255, 255, 0.2) inset, 0 -2px 9px rgba(0, 0, 0, 0.2) inset;
+    }
+
+.buttonfilter:active {
+    box-shadow: 0 2px 0 #393939, 0 4px 4px rgba(0, 0, 0, 0.4), 0 2px 5px rgba(0, 0, 0, 0.2) inset;
+    top: 7px;
+}
+
+
+.tabelle{
+    border: 1px solid #222;
+    margin-left: auto;
+    margin-right: auto;
+    width: 1000px;
+    margin-top: 30px;
+    height: auto;
+    background: #222;
+    text-align: left;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+    color:#A8A8A8; 
+}
+tr:nth-child(even) {background-color: #444;}
+tr:nth-child(odd) {background-color: #777;}
+th, td {
+    
+    padding: 15px;
+    text-align: left;
+}
+th{
+    padding: 25px;
+    background-color: #333;
+    border-bottom: 2px solid #0DB8DE;
+}
+
+
 .footer-box{
 	
 	float: left;

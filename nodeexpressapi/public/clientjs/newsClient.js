@@ -3,23 +3,16 @@
 //was wenn datenlänge kleiner 10
 
 window.onload = init();
-var header;
-var sticky;
-var newsZahler=0; // 0 erste seite, 1 zweite seite der nachrichten 
+
 var zweiSeiten=true;
+var anzahlArtikel;
+var anzahlArrays;
 let result;
-let resulttest= ({"articles": [
-    {"author":"Tauthor1","title":"TTitle1","description":"Beschreibung1","content":"inhalt1","URL":"www.google.de"}]});
 
 
 function init(){
     getSessionData([setLoginStatus]);
     getNewsToday(setNewsToday);
-    
-    
-    //header = document.getElementById('kopf');
-    //console.log("header" + header);
-    //sticky = header.offsetTop;
 };
 
 // mqtt hier hinzufügen:
@@ -74,6 +67,9 @@ function MessageArrived(message) {
         getNewsToday(setNewsToday);
         
     }
+    else{
+        //do nothing
+    }
 
     
 }
@@ -86,6 +82,7 @@ function MessageArrived(message) {
 
 async function getNewsToday(callback){
     console.log("komme in function getNewsToday");
+    
     
     try{
         let response = await fetch('/data/news');
@@ -111,10 +108,22 @@ async function getNewsToday(callback){
 
     }
     else if (result != undefined){
-        callback(result);
+        //callback(result);
         console.log("getNewsToday:");
         console.log(result);
-        
+
+        // //wegmachen_ nur zum test
+        // console.log(" hier ist länge vor push"+result.length);
+        // var test = result;
+        // console.log("ausgabe test");
+        // console.log(test);
+        // result.push(test[0]);
+        // console.log("nach  push"+result.length);
+        // result[1].articles[0].title="ES HAT GEKLAPPT";
+        // console.log("neue result");
+        // console.log(result);
+
+         callback(result);
     }
 
 }
@@ -160,22 +169,43 @@ function test(){
 */
 
 function setNewsToday(result){
-    //vorbereitung
+  
+    countArticles(result);
     buttonManager();
-    var laenge
-    if(result[0].articles.length<6){
-        laenge=result[0].articles.length;
-    }
-    else {
-        laenge=5;
-    }
-
-        console.log("die länge der artikelliste"+result[0].articles.length);
-        for(var i =0;i <laenge; i++){
-            var art = buildNewsblock(result[0].articles[i]);
+    // if(anzahlArrays == 1 || result[0].articles.length >=5 ){
+    //     for(var i =0;i <5; i++){
+    //         var art = buildNewsblock(result[0].articles[i]);
+    //         var section =document.getElementsByTagName("section")[0];
+    //         section.appendChild(art);
+    //     }
+    // }
+    //else{
+    var eingefügteArtikel=0;
+    for(var j=0; j<anzahlArrays; j++){
+        for( var l =0; l < result[j].articles.length && eingefügteArtikel <5; l++){
+            
+            var art = buildNewsblock(result[j].articles[l]);
             var section =document.getElementsByTagName("section")[0];
             section.appendChild(art);
+            eingefügteArtikel++;
+
         }
+    }
+    //}
+    // var laenge
+    // if(result[0].articles.length<6){
+    //     laenge=result[0].articles.length;
+    // }
+    // else {
+    //     laenge=5;
+    // }
+
+    //     console.log("die länge der artikelliste"+result[0].articles.length);
+    //     for(var i =0;i <5; i++){
+    //         var art = buildNewsblock(result[0].articles[i]);
+    //         var section =document.getElementsByTagName("section")[0];
+    //         section.appendChild(art);
+    //     }
         
     
     /*
@@ -195,8 +225,26 @@ function setNewsToday(result){
     document.getElementById("U1").textContent="hier uri einfügen"; 
     //console.log(a +" : "+b+" : "+c +" : "+d+" : "+e);
     */
-   
 }
+
+function countArticles(result){
+    anzahlArtikel=0;
+    anzahlArrays=0;
+    for(var i = 0;i<5;i++ ){
+        if(anzahlArtikel != 10 && result[i] != undefined){
+            anzahlArtikel += result[i].articles.length;
+            console.log("i ist: "+(i));
+        }
+        else{
+            console.log("Anzahl loops "+(i));
+            anzahlArrays=i;
+            break
+        };
+    }
+    console.log("AnzahlArtikel "+anzahlArtikel);
+}
+
+
 /*
 <details>
     <summary > <b id ="US1" >erste überschrift</b>   <br> <p id ="BE1">  Zusammenfassung Punkt 1</p> </summary>
@@ -239,7 +287,7 @@ function buildNewsblock(artikel){
 }
 
 function buttonManager(){
-    if(result != undefined && result[0].articles.length>=6){
+    if(result != undefined && anzahlArtikel>=6){
         zweiSeiten=true;
         //buttens aktivieren
         document.getElementById("zuruck").disabled=true;
@@ -249,6 +297,7 @@ function buttonManager(){
         
     }
     else{
+        //console.log("buttonmanager: buttons deaktivbiert")
         zweiSeiten =false;
         //buttons deaktivieren
         document.getElementById("zuruck").disabled=true;
@@ -262,7 +311,7 @@ function buttonManager(){
 function aufSeite1(){ // wenn auf button zurück geklickt wird
     //alle details entfernen
     var z =document.getElementsByTagName("details").length;
-    console.log("Seite2 wechsel auf seite 1: hie ist länge von details"+z);
+    console.log("Seite2 wechsel auf seite 1: hier ist länge von details"+z);
     for(var o= 0; o< z; o++){
         var e= document.getElementsByTagName("details")[0];
         console.log(e);
@@ -286,6 +335,7 @@ function aufSeite1(){ // wenn auf button zurück geklickt wird
 }
 
 function aufSeite2(){
+    //details entfernen
     var z =document.getElementsByTagName("details").length;
     console.log("Seite1 auf seite 2: hie ist länge von details"+z);
     for(var o= 0; o< z; o++){
@@ -294,13 +344,28 @@ function aufSeite2(){
         e.remove();
     }
 
-    console.log("function auf Seite 2: die länge der artikelliste"+result[0].articles.length);
-    l= result[0].articles.length
-        for(var i =5;i <l; i++){
-            var art = buildNewsblock(result[0].articles[i]);
-            var section =document.getElementsByTagName("section")[0];
-            section.appendChild(art);
-        }
+    // console.log("function auf Seite 2: die länge der artikelliste"+result[0].articles.length);
+    // l= result[0].articles.length
+    //     for(var i =5;i <l; i++){
+    //         var art = buildNewsblock(result[0].articles[i]);
+    //         var section =document.getElementsByTagName("section")[0];
+    //         section.appendChild(art);
+    // }
+    var eingefügteArtikel=0;
+    var spring=0;
+        for(var j=0; j<anzahlArrays; j++){
+            console.log("wechsel auf seite2: mit Array result"+j);
+            for( var l =0; l < result[j].articles.length && eingefügteArtikel <5; l++){
+                    spring++
+                    if(spring > 5){
+                        var art = buildNewsblock(result[j].articles[l]);
+                        var section =document.getElementsByTagName("section")[0];
+                        section.appendChild(art);
+                        eingefügteArtikel++;
+                    }
+                    
+            }
+    }
     
     document.getElementById("seite2").disabled=true;
     document.getElementById("zuruck").disabled=false;
