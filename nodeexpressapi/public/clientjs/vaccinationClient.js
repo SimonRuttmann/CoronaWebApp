@@ -2,7 +2,43 @@ window.onload = init();
 
 function init(){
     getSessionData([setLoginStatus]);
+    fillTable();
 };
+
+
+/*
+<tr>
+    <th>Impfzentrum</th>
+    <th>Impfstoff</th>
+    <th>Adresse</th>
+    <th>BookingURL</th>
+</tr>
+*/
+function fillTable(){
+
+
+
+    var td = buildTD();
+    var table = document.getElementById("tabele");
+    table.appendChild(td);
+}
+
+function buildTD(){
+    for(var i=0; i<4;i++){
+
+        var a= document.createElement(td);
+        a.textContent="test Impfzentrum";
+        var b= document.createElement(td);
+        b.textContent="test Impfstoff";
+        var c= document.createElement(td);
+        c.textContent="test Adresse";
+        var d= document.createElement(td);
+        d.textContent="test BookingURL";
+    }
+
+}
+
+
 
 
 async function getSessionData(callbacks){
