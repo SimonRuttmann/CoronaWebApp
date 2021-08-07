@@ -25,17 +25,17 @@ request(options, callback);
 var requestOptions = {
 	method: 'GET',
 	redirect: 'follow'
-  };
+};
 
 router.get('/', async (req, res) => {
-	const db=await MongoDB.find({"Ort":"Bad Mergentheim"},"vaccinationPlacesBW")
-	let strasse=db[0].Adress;
-	let ort =db[0].Ort;
+	const db = await MongoDB.find({ "Ort": "Bad Mergentheim" }, "vaccinationPlacesBW")
+	let strasse = db[0].Adress;
+	let ort = db[0].Ort;
 	let land = "Deutschland";
-	const link ="https://app.geocodeapi.io/api/v1/search?apikey=" + APIKey_geocodeapi + "&text=" +strasse+","+ort+","+land
+	const link = "https://app.geocodeapi.io/api/v1/search?apikey=" + APIKey_geocodeapi + "&text=" + strasse + "," + ort + "," + land
 	console.log(link)
-	var response =await fetch(link,requestOptions)
-	
+	var response = await fetch(link, requestOptions)
+
 	console.log(response)
 	/*
 	response=await response.text();
@@ -46,7 +46,7 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/overview', async (req, res) => {
-	let infected = 0, immune = 0, vaccinated = 0, recovered = 0, deaths = 0, param;
+	let param;
 	try {
 		var data = await getDistrictsFormated();
 	} catch (e) {
@@ -54,53 +54,26 @@ router.get('/overview', async (req, res) => {
 	}
 
 	if (data == undefined || data.error) {
-		res.send(data)
+		res.send("Couldnt find data")
 		return;
 	}
 
 	data = data.Landkreise;
 	//Pfad für Param sucht daten eines spezifischen Landkreises
+	console.log("Query: " + req.query)
 	if (req.query.ags != undefined || req.query.district != undefined) {
 		if (req.query.ags != undefined) param = req.query.ags;
-		else
+		else {
 			try {
 				param = (await MongoDB.find({ "name": req.query.district }, "agsBW", { "ags": 1, "_id": 0 }))[0].ags;
 			} catch (e) { console.log(e) }
-		let found = false;
-		for (let i in data) {
-			if (data[i].ags == param) {
-				found = true;
-				infected = Number(data[i].infizierte);
-				immune = Number(data[i].immune);
-				vaccinated = Number(data[i].geimpft);
-				recovered = Number(data[i].genesen);
-				deaths = Number(data[i].todesfaelle);
-				break;
-			}
 		}
-		if (!found) {
-			res.send("Could not find requested data");
-			return;
-		}
+		console.log(param)
+		response = getOverview(data, param)
 	}
 	else { //Pfad ohne Parameter -> schreibt alle Landkreisdaten zusammen
-		for (let i in data) {
-			infected += Number(data[i].infizierte);
-			immune += Number(data[i].immune);
-			vaccinated += Number(data[i].geimpft);
-			recovered += Number(data[i].genesen);
-			deaths += Number(data[i].todesfaelle);
-		}
+		response = getOverview(data)
 	}
-
-	const response = {
-		"infizierte": infected,
-		"genesen": recovered,
-		"geimpft": vaccinated,
-		"immun": immune,
-		"todesfaelle": deaths
-	};
-
 	res.send(response);
 });
 
@@ -160,19 +133,19 @@ router.get('/district', async (req, res) => {
 
 router.get('/news', async (req, res) => {
 	const dbData_collection = "newsCoronaBW"
-	let articleAmount=10;
-	let response=[];
+	let articleAmount = 10;
+	let response = [];
 	try {
-		let calculatedDate,formattedDate,data;
-		
-		for(let i=0;(i==0||data!=undefined) && articleAmount>0;i++){
-			calculatedDate=new Date(new Date().setDate(new Date().getDate()-i));
-			formattedDate= calculatedDate.getFullYear()+"-"+String(calculatedDate.getMonth()+1)+"-"+calculatedDate.getDate();
-			data = (await MongoDB.find({"date":formattedDate}, dbData_collection, { "articles": { $slice: articleAmount } }))[0];
-			if(data!=undefined){
+		let calculatedDate, formattedDate, data;
+
+		for (let i = 0; (i == 0 || data != undefined) && articleAmount > 0; i++) {
+			calculatedDate = new Date(new Date().setDate(new Date().getDate() - i));
+			formattedDate = calculatedDate.getFullYear() + "-" + String(calculatedDate.getMonth() + 1) + "-" + calculatedDate.getDate();
+			data = (await MongoDB.find({ "date": formattedDate }, dbData_collection, { "articles": { $slice: articleAmount } }))[0];
+			if (data != undefined) {
 				response.push(data);
-				articleAmount-=data.articles.length
-			} 
+				articleAmount -= data.articles.length
+			}
 		}
 
 		if (!response.length > 0) response = ({ "error": true, "no_data_from": dbData_collection })
@@ -183,6 +156,50 @@ router.get('/news', async (req, res) => {
 	}
 
 })
+function getOverview(data, ags) {
+	let infected = 0, immune = 0, vaccinated = 0, recovered = 0, deaths = 0
+	let response;
+	let found = false
+	if (ags) {
+		
+		for (let i in data) {
+			if (data[i].ags == ags) {
+				found = true;
+				infected = Number(data[i].infizierte);
+				immune = Number(data[i].immune);
+				vaccinated = Number(data[i].geimpft);
+				recovered = Number(data[i].genesen);
+				deaths = Number(data[i].todesfaelle);
+				break;
+			}
+		}
+	}
+	else{
+		for (let i in data) {
+		infected += Number(data[i].infizierte);
+		immune += Number(data[i].immune);
+		vaccinated += Number(data[i].geimpft);
+		recovered += Number(data[i].genesen);
+		deaths += Number(data[i].todesfaelle);
+	}
+	}
+	if ((ags && !found) || !data>0) {
+		response = ("Could not find requested data");
+		return;
+	}
+	else {
+		response = {
+			"infizierte": infected,
+			"genesen": recovered,
+			"geimpft": vaccinated,
+			"immun": immune,
+			"todesfaelle": deaths
+		};
+	}
+	return response;
+}
+
+
 function getVaccinatedPerWeek(data) {
 	const response = [];
 	if (!data.length > 0) response = ({ "error": true, "no_data_from": dbData_collection })
