@@ -24,7 +24,7 @@ request(options, callback);
 //Alternativ Databaseaccess for /overview
 router.get('/', async (req, res) => {
 	param = "10%20Downing%20Street%2C%20Charlestown%2C%20NSW%2C%20Australia"
-	var response =await fetch("https://app.geocodeapi.io/api/v1/search?apikey=" + APIKey_geocodeapi + "&text=" + param)
+	var response = await fetch("https://app.geocodeapi.io/api/v1/search?apikey=" + APIKey_geocodeapi + "&text=" + param)
 	res.send(response);
 });
 
@@ -89,7 +89,14 @@ router.get('/overview', async (req, res) => {
 
 //Schickt die Daten für alle Districte oder für eines mit Parameterangabe, nach möglichkeit Historische Daten
 router.get('/district', async (req, res) => {
-	let param = req.query.ags;
+	var param;
+	if (req.query.ags != undefined || req.query.district != undefined) {
+		if (req.query.ags != undefined) param = req.query.ags;
+		else
+			try {
+				param = (await MongoDB.find({ "name": req.query.district }, "agsBW", { "ags": 1, "_id": 0 }))[0].ags;
+			} catch (e) { console.log(e) }
+	}
 	let response;
 	try {
 		if (param == null) {

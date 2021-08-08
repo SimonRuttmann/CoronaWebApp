@@ -167,6 +167,8 @@ for (var regionName in regions) {
 }
 
 async function onClicked(region, name) {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
     var tmp = {
         infizierte: "",
         genesen: "",
@@ -174,6 +176,9 @@ async function onClicked(region, name) {
         immun: "",
         tode: ""
     };
+
+    document.getElementById("replaceContent").innerText = "Infizierte: Loading...\nGenesen: Loading...\nGeimpft: Loading...\nImmun: Loading...\nTodesfälle: Loading...";
+    document.getElementById('myChart').outerHTML = '<p id="myChart">Loading Graph...</p>';
 
     var overview = await getOverview(name);
     tmp.infizierte = overview.infizierte;
@@ -187,6 +192,8 @@ async function onClicked(region, name) {
 
     var content = document.getElementById("replaceContent");
     content.innerText = "Infizierte: " + tmp.infizierte + "\nGenesen: " + tmp.genesen + "\nGeimpft: " + tmp.geimpft + "\nImmun: " + tmp.immun + "\nTodesfälle: " + tmp.tode;
+
+    changeChart(name);
 }
 
 async function init() {
@@ -197,6 +204,8 @@ async function init() {
         immun: "",
         tode: ""
     };
+
+    document.getElementById('myChart').outerHTML = '<br /><b id="myChart">Wähle einen Landkreis aus!</b>';
 
     var overview = await getOverview();
     tmp.infizierte = overview.infizierte;
@@ -222,6 +231,193 @@ async function getOverview(district) {
     var json = JSON.parse(result);
 
     return json;
+}
+
+async function changeChart(name) {
+    var response = await fetch('/data/district?district=' + name);
+    if (response.status != 200) return undefined;
+
+    var result = await response.text();
+    var json = JSON.parse(result);
+
+    var dataTote = [];
+    for (var i = 0; i < json.Tote_pro_Woche.length; i++) {
+        var tmp = {};
+
+        var date = new Date(json.Tote_pro_Woche[i].date);
+        tmp.month = date.getUTCMonth() + 1;
+        tmp.year = date.getUTCFullYear();
+        tmp.deaths = json.Tote_pro_Woche[i].deaths;
+
+        var found = false;
+        for (var j = 0; j < dataTote.length; j++) {
+            if (dataTote[j].month == tmp.month && dataTote[j].year == tmp.year) {
+                dataTote[j].deaths = dataTote[j].deaths + tmp.deaths;
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) dataTote.push(tmp);
+    }
+
+    var dataInfected = [];
+    for (var i = 0; i < json.Fälle_pro_Woche.length; i++) {
+        var tmp = {};
+
+        var date = new Date(json.Fälle_pro_Woche[i].date);
+        tmp.month = date.getUTCMonth() + 1;
+        tmp.year = date.getUTCFullYear();
+        tmp.cases = json.Fälle_pro_Woche[i].cases;
+
+        var found = false;
+        for (var j = 0; j < dataInfected.length; j++) {
+            if (dataInfected[j].month == tmp.month && dataInfected[j].year == tmp.year) {
+                dataInfected[j].cases = dataInfected[j].cases + tmp.cases;
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) dataInfected.push(tmp);
+    }
+
+    var dataVaccinated = [];
+    for (var i = 0; i < json.Geimpte_pro_Woche.length; i++) {
+        var tmp = {};
+
+        var date = new Date(json.Geimpte_pro_Woche[i].date);
+        tmp.month = date.getUTCMonth() + 1;
+        tmp.year = date.getUTCFullYear();
+        tmp.anzahl = json.Geimpte_pro_Woche[i].anzahl;
+
+        var found = false;
+        for (var j = 0; j < dataVaccinated.length; j++) {
+            if (dataVaccinated[j].month == tmp.month && dataVaccinated[j].year == tmp.year) {
+                dataVaccinated[j].anzahl = dataVaccinated[j].anzahl + tmp.anzahl;
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) dataVaccinated.push(tmp);
+    }
+
+    var dataLabelsInfected = getLabels(dataInfected);
+    var dataLabelsVaccinated = getLabels(dataVaccinated);
+
+    var dataPointsTote = [];
+    for (var i = 0; i < dataTote.length; i++) {
+        dataPointsTote.push(dataTote[i].deaths);
+    }
+
+    var dataPointsInfected = [];
+    for (var i = 0; i < dataInfected.length; i++) {
+        dataPointsInfected.push(dataInfected[i].cases);
+    }
+
+    var dataPointsVaccinated = [];
+    for (var i = 0; i < dataVaccinated.length; i++) {
+        dataPointsVaccinated.push(dataVaccinated[i].anzahl);
+    }
+
+    var tmpVacc = [];
+    var tmpVaccLength = dataLabelsInfected.length - dataPointsVaccinated.length;
+    for (var i = 0; i < tmpVaccLength; i++) {
+        tmpVacc.push(0);
+    }
+    dataPointsVaccinated = tmpVacc.concat(dataPointsVaccinated);
+
+    const data = {
+        labels: dataLabelsInfected,
+        datasets: [{
+            label: 'Deaths',
+            backgroundColor: 'rgb(255, 99, 132)',
+            borderColor: 'rgb(255, 99, 132)',
+            data: dataPointsTote,
+        },
+        {
+            label: 'Infected',
+            backgroundColor: 'rgb(123, 255, 132)',
+            borderColor: 'rgb(123, 255, 132)',
+            data: dataPointsInfected,
+            hidden: true,
+        },
+        {
+            label: 'Vaccinated',
+            backgroundColor: 'rgb(43, 154, 255)',
+            borderColor: 'rgb(43, 154, 255)',
+            data: dataPointsVaccinated,
+            hidden: true,
+        }]
+    };
+
+    const config = {
+        type: 'bar',
+        data,
+        options: {
+            layout: {
+                padding: 10
+            }
+        }
+    };
+
+    Chart.defaults.color = 'rgb(255, 255, 255)';
+    Chart.defaults.borderColor = 'rgb(255, 255, 255, 0.1)';
+    Chart.defaults.backgroundColor = 'rgb(255, 255, 255)';
+
+    document.getElementById('myChart').outerHTML = '<canvas id="myChart"></canvas>';
+
+    var myChart = new Chart(
+        document.getElementById('myChart'),
+        config
+    );
+}
+
+function getLabels(newArr) {
+    var dataLabels = [];
+    for (var i = 0; i < newArr.length; i++) {
+        switch (newArr[i].month) {
+            case 1:
+                dataLabels.push("Januar " + newArr[i].year);
+                break;
+            case 2:
+                dataLabels.push("Februar " + newArr[i].year);
+                break;
+            case 3:
+                dataLabels.push("März " + newArr[i].year);
+                break;
+            case 4:
+                dataLabels.push("April " + newArr[i].year);
+                break;
+            case 5:
+                dataLabels.push("Mai " + newArr[i].year);
+                break;
+            case 6:
+                dataLabels.push("Juni " + newArr[i].year);
+                break;
+            case 7:
+                dataLabels.push("Juli " + newArr[i].year);
+                break;
+            case 8:
+                dataLabels.push("August " + newArr[i].year);
+                break;
+            case 9:
+                dataLabels.push("September " + newArr[i].year);
+                break;
+            case 10:
+                dataLabels.push("Oktober " + newArr[i].year);
+                break;
+            case 11:
+                dataLabels.push("November " + newArr[i].year);
+                break;
+            case 12:
+                dataLabels.push("Dezember " + newArr[i].year);
+                break;
+        }
+    }
+
+    return dataLabels;
 }
 
 init();
