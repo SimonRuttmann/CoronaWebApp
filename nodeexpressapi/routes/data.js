@@ -62,33 +62,36 @@ router.get('/district', async (req, res) => {
 			const historyCasesDB = await MongoDB.find({ "ags": param }, "csvRKI", { "historyCasesRKI": 1, "_id": 0 });
 			const infectionsDBFemale = await MongoDB.find({ "ags": param, "geschlecht": "W" }, "infectionsCSVBW");
 			const infectionsDBMale = await MongoDB.find({ "ags": param, "geschlecht": "M" }, "infectionsCSVBW");
-			const infectionsDBAgeGroup1 = await MongoDB.find({ "ags": param, "altersgruppe": "" }, "infectionsCSVBW"); //Welche Altersgruppen genau?
-			const infectionsDBAgeGroup2 = await MongoDB.find({ "ags": param, "altersgruppe": "" }, "infectionsCSVBW");
+			const infectionsDBAgeGroup1 = await MongoDB.find({ "ags": param, "altersgruppe": "A00-A04" }, "infectionsCSVBW"); 	//A00-A04
+			const infectionsDBAgeGroup2 = await MongoDB.find({ "ags": param, "altersgruppe": "A05-A14" }, "infectionsCSVBW");	//A05-A14
+			const infectionsDBAgeGroup3 = await MongoDB.find({ "ags": param, "altersgruppe": "A15-A34" }, "infectionsCSVBW");	//A15-A34
+			const infectionsDBAgeGroup4 = await MongoDB.find({ "ags": param, "altersgruppe": "A35-A59" }, "infectionsCSVBW");	//A35-A59
+			const infectionsDBAgeGroup5 = await MongoDB.find({ "ags": param, "altersgruppe": "A60-A79" }, "infectionsCSVBW");	//A60-A79
 			const districtsBWDB = await MongoDB.find({ "ags": param }, "districtsBW")
 			const vaccinationAll = await MongoDB.find({ "ags": param }, "vaccinationsCSVBWAll")
 
-			//const recperWeek = undefined;
 			const deaths_female = data_prep.getDeathsForNewestData(infectionsDBFemale);
 			const deaths_male = data_prep.getDeathsForNewestData(infectionsDBMale);
-			const deaths_agegroup1 = data_prep.getDeathsForNewestData(infectionsDBAgeGroup1);
-			const deaths_agegroup2 = data_prep.getDeathsForNewestData(infectionsDBAgeGroup2);
+			const deaths_agegroup1 = data_prep.getDeathsForNewestData(infectionsDBAgeGroup1);  
+			const deaths_agegroup2 = data_prep.getDeathsForNewestData(infectionsDBAgeGroup2); 
+			const deaths_agegroup3 = data_prep.getDeathsForNewestData(infectionsDBAgeGroup3);
+			const deaths_agegroup4 = data_prep.getDeathsForNewestData(infectionsDBAgeGroup4);
+			const deaths_agegroup5 = data_prep.getDeathsForNewestData(infectionsDBAgeGroup5);
 			const deathsPerWeek = data_prep.getDeathsPerWeek(historyDeathsDB);
 			const casesPerWeek = data_prep.getCasesPerWeek(historyCasesDB);
-			//const idk = undefined;
-			//const vaccinationOffersPerWeek = undefined;
 			const vaccinatedPerWeek = data_prep.getVaccinatedPerWeek(vaccinationAll);
 			const incidencePerWeek = data_prep.getIncidenceThisWeek(districtsBWDB);
 
 			response = {
-				//"Genesene_pro_Woche": recperWeek,
 				"todesfälle_Weiblich": deaths_female,
 				"todesfälle_Männlich": deaths_male,
-				"todesfälle_Altergruppe1": deaths_agegroup1,
-				"todesfälle_Altersgruppe2": deaths_agegroup2,
+				"todesfälle_Alter00-04": deaths_agegroup1,
+				"todesfälle_Alter05-14": deaths_agegroup2,
+				"todesfälle_Alter15-34": deaths_agegroup3,
+				"todesfälle_Alter35-59": deaths_agegroup4,
+				"todesfälle_Alter60-79": deaths_agegroup5,
 				"Tote_pro_Woche": deathsPerWeek,
 				"Fälle_pro_Woche": casesPerWeek,
-				//"Bevölkerung_pro_Woche": idk,
-				//"Impfangebote_pro_Woche": vaccinationOffersPerWeek,
 				"Geimpte_pro_Woche": vaccinatedPerWeek,
 				"Inzidenz_aktuell": incidencePerWeek
 			};
@@ -124,7 +127,6 @@ router.get('/news', async (req, res) => {
 		console.log(e)
 		res.send(e)
 	}
-
 })
 
 
@@ -165,8 +167,6 @@ async function getDistrictsFormated() {
 		console.log(e);
 		return e
 	}
-
-
 }
 
 
