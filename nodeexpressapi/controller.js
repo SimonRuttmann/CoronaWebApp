@@ -122,6 +122,27 @@ function getSessionInfo(req, res){
 }
 
 
+//Returns data related to the session and the password
+exports.getCredentials = 
+function getCredentials(req, res){
+    if(req.isAuthenticated()){
+        res.json(
+        {
+            authenticated: true,
+            name: req.user.name,
+            email: req.user.email,
+            password: req.user.password
+        });    
+    }
+    else{
+        res.json(
+            {
+                authenticated: false
+            });    
+    }
+}
+
+
 //Used by passport to authentificate the user
 exports.getUserByEmail =
 async function getUserByEmail(email){
