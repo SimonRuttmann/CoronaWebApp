@@ -5,8 +5,8 @@ const geocode = require('./geocoding.js');
 const data_prep = require('./data_preparation_functions.js');
 
 router.get('/', async (req, res) => {
-	//res.send(await geocode.calcGeocodeForAdress({"Adress":"Europastraße  50","Ort":"Tübingen","Platz":"72072","Land":"Deutschland"}));
-	res.send(await geocode.calcGeocodeForCompleteDB())
+	res.send(await geocode.calcGeocodeForAdress({"Ort":"Tuebingen","Platz":"72072","Land":"Deutschland"}));
+	//res.send(await geocode.calcGeocodeForCompleteDB())
 });
 router.get('/overview', async (req, res) => {
 	let param;
