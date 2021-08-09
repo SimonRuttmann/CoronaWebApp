@@ -1,7 +1,7 @@
 const mongodb = require('mongodb');
 const env = require('dotenv').config({encoding:'utf8'});
 
-module.exports = {insertOne,find};
+module.exports = {find,updateOne};
 
 async function find(data, collection) {
     var res = await connectToDB(async (db) => {
@@ -16,18 +16,15 @@ async function find(data,collection,projection){
         var resInner = await db.collection(collection).find(data).project(projection).toArray();
         return resInner;
     });
-
-    //console.log("Find Data");
-
     return res;
 }
 
-function insertOne(data, collection) {
-    connectToDB(async (db) => {
-        await db.collection(collection).insertOne(data);
+async function updateOne(data,change,collection){
+    var res = await connectToDB(async (db) => {
+        var resInner = await db.collection(collection).updateOne(data,change);
+        return resInner;
     });
-
-    //console.log("Insert Data");
+    return res;
 }
 
 async function connectToDB(exec) {
