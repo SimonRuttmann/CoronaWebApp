@@ -91,8 +91,8 @@ body {
 
 
 ul {
-margin-left: 10px;
-padding:0px;
+    margin-left: 10px;
+    padding:0px;
 }
 
 .heading {
@@ -222,4 +222,40 @@ height: 500px;
     background: #222;
     text-align: center;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+
+
+.user-box{
+	
+	float: left;
+    width: 20%;
+    margin-top: 30px;
+    height: auto;
+    background: #222;
+    text-align: center;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+
+
+
+.user-list li{
+	background-color: #111;
+	margin: 10px;
+	color: white;
+	margin-left:0px;
+	text-decoration: none;
+	font-size: large;
+	font-weight: bold;
+    text-align: left;
+	list-style-type: none;
+	padding: 10px;
+}
+
+.user-title{
+	color: #ECF0F5;
+    margin: auto;
+    padding-top: 10px;
+    margin-bottom: 5px;
+	font-size: large;
+	font-weight: bold;
 }

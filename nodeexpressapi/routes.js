@@ -53,22 +53,30 @@ router.get('/user/getUserData', authenticate.checkAuthenticated, controller.getU
 //Exampe respone:
 //{
 //  name:           'testuser1',
-//  email:          'testuser@mail.com'
-//  gender:         'male'
-//  priority:       'priority4'
-//  perfVaccine:    'moderna'
-//  district:       'Heidenheim'
-//  radius:         'all'  
+//  email:          'testuser@mail.com',
+//  biontech:        true,
+//  moderna:         false,
+//  astra:           false,
+//  johnson:         true,
+//  latitude:        '7.2342341',
+//  longitude:       '4.1232131',
+//  city:            'Aalen',
+//  radius:          10
 //}
 
+
 router.post('/user/updateUser', authenticate.checkAuthenticated, controller.updateUser)
-//Expects as input:
+//Expects as input:                         Example response:
 //{
-//  gender:         'male'
-//  priority:       'priority4'
-//  perfVaccine:    'moderna'
-//  district:       'Heidenheim'
-//  radius:         'all'     
+//  id:             '4324222424',           {
+//  biontech:        true,                      updated: true
+//  moderna:         false,                 }
+//  astra:           false,                 or
+//  johnson:         true,                  {
+//  latitude:        '7.2342341',               updated: false
+//  longitude:       '4.1232131',           }
+//  city:            'Aalen',
+//  radius:          10
 //}
 
 

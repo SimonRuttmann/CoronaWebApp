@@ -5,6 +5,10 @@ const passport = require('passport')
 const routes = require("./routes.js")
 const authentificationSetup = require("./authentificationSetup");
 const dataRoute = require("./routes/data.js")
+
+console.log("test1")
+
+console.log("test")
 const app = express()
 const env = require('dotenv').config({ encoding: 'utf8' });
 var mysql = require('mysql2');
@@ -24,6 +28,10 @@ app.use(express.json());
 
 app.use(express.static('public'));                
 app.use(express.static(__dirname + '/public'));
+//exports.initializeWebsocketServer = 
+//wsServer.initializeWebsocketServer()
+//wsServer.getServer(app);
+
 
 //Configuration for passport & sessions
 
@@ -45,6 +53,12 @@ app.use(passport.session());
 app.use("", routes);
 app.use('/data/',dataRoute);
   
-app.listen(6969, () => {
+const server = app.listen(6969, () => {
    console.log("Server listens at Port 6969")
 })
+
+exports.getServer = 
+function getServer (){
+    return server;
+}
+const wsServer = require("./wsServer/websocketServer.js")

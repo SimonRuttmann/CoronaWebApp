@@ -29,6 +29,7 @@ async function getSessionData(callbacks){
 
 function setLoginStatus(data){
     if(data.authenticated){
+        console.log(data)
         //Display feedback at footer
         document.getElementById("loginStatus").textContent="Sie sind angemeldet als: " + data.name;     
         //Modify Navigationbar to Logout    

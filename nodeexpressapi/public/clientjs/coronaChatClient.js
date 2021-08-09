@@ -20,9 +20,10 @@ var topic = topics.GENERAL;
 var containerColourWhite = true;
 
 async function init(){
-    await getSessionData([setLoginStatus, setCredentials, toggleSendButton]);
+    await getSessionData([setLoginStatus, setCredentials, toggleSendButton, toggleUserlist]);
     await initializeWebsocket();
-    authorize();
+    await authorize();
+    setGeneralTopic();
 };
 
 
@@ -83,6 +84,15 @@ function toggleSendButton(data){
     }
 }
 
+function toggleUserlist(data){
+    if(data.authenticated){
+        document.getElementsByClassName("user-box")[0].style.visibility = "visible";
+    }
+    else{
+        document.getElementsByClassName("user-box")[0].style.visibility = "hidden";
+    }
+}
+
 function initializeWebsocket(){
     return new Promise( (resolve, reject) => {
         if (ws) {
@@ -93,17 +103,14 @@ function initializeWebsocket(){
         ws = new WebSocket('ws://localhost:6969');
           
         ws.onopen = () => {   console.log('Connection opened!'); resolve(true);  }
-        ws.onmessage = receiveMessage(messageFromServer);
+        ws.onmessage = (messageFromServer) => receiveMessage(messageFromServer.data);
         ws.onclose = function() { ws = null;  }
         
-        socket = new WebSocket('ws://localhost:3000')
     })
 
-   
-   
 }
 
-function authorize(){
+async function authorize(){
     if(credentials.authenticated){
 
         var cred = {
@@ -115,19 +122,8 @@ function authorize(){
         var sendingObject = {};
         sendingObject.type = "authorize";
         sendingObject.credentials = cred;
-
-        // var send = 
-        // `{
-        //     "type":     "authorize"
-        //     "credentials": 
-        //     {
-        //         "email":      "${credentials.email}",
-        //         "name":       "${credentials.name}"
-        //         "password":   "${credentials.password}"
-        //     }
-        // }`   
-
-        ws.send(JSON.stringify(send));
+ 
+        await ws.send(JSON.stringify(sendingObject));
     }
     
 }
@@ -139,11 +135,41 @@ function setQuarantineTopic()   {  changeTopic(topics.QUARANTINE);   }
 function setTestTopic()         {  changeTopic(topics.TEST);         }
 function setExperienceTopic()   {  changeTopic(topics.EXPERIENCE);   }
 
-function changeTopic(top){
+async function changeTopic(top){
     topic = top;
+    changeDescription(top);
     clearChatbox(); 
     clearUsers(); 
-    sendTopic();
+    await sendTopic();
+}
+
+function changeDescription(top){
+    var title;
+    var description;
+    switch(top){
+        case topics.GENERAL:    
+            title = "Sie sind im Allgmeinen-Thread";
+            description = "Hier können Sie sich mit anderen Teilnehmern über allgmeine Themen unterhalten." 
+            break;
+        case topics.VACCINATE:
+            title = "Sie sind im Impfen-Thread";
+            description = "Hier können Sie sich mit anderen Teilnehmern über alles rund ums Impfen unterhalten." 
+            break;
+        case topics.QUARANTINE:
+            title = "Sie sind im Quarantäne-Thread";
+            description = "Hier können Sie sich mit anderen Teilnehmern über alles rund um die Quarantäne unterhalten." 
+            break;
+        case topics.TEST:
+            title = "Sie sind im Test-Thread";
+            description = "Hier können Sie sich mit anderen Teilnehmern über alles rund ums Testen unterhalten." 
+            break;
+        case topics.EXPERIENCE:
+            title = "Sie sind im Erfahrungs-Thread";
+            description = "Hier können Sie sich mit anderen Teilnehmern über bisherige Erfahrungen unterhalten." 
+            break;                
+    }
+    document.getElementsByClassName("topic-title")[0].innerText = title;
+    document.getElementsByClassName("topic-description")[0].innerText = description;
 }
 
 function clearChatbox(){
@@ -156,15 +182,18 @@ function clearUsers(){
     userList.innerHTML = "";
 }
 
-function sendTopic(){
+async function sendTopic(){
     var sendingObject = {
         type: "topic",
         topic: topic
     }
+    await ws.send(JSON.stringify(sendingObject));
 }
 
 function sendMessage(){
     var messageToSend = document.getElementById("sendingField").value;
+    if (!messageToSend) return;
+
     document.getElementById("sendingField").value = "";
     
     var meta = {
@@ -177,7 +206,7 @@ function sendMessage(){
     sendingObject.meta = meta;
     sendingObject.message = messageToSend;
     
-    // message
+    //Json, which will be sent
     // {
     //     "type":       "message"
     //     "meta":
@@ -189,20 +218,23 @@ function sendMessage(){
     //     "message":     "Hello there"
     // }
     
-    ws.send(sendingObject);
+    ws.send(JSON.stringify(sendingObject));
 }
 
 function receiveMessage(message){
+
     var receivedObject = JSON.parse(message);
-    
-    switch (receiveMessage.type){
-        case "prevMessages": 
+  
+    switch (receivedObject.type){
+        case "prevMessages":
+            clearChatbox(); 
             receivedObject.messages.forEach(mess => {
                 if(mess.meta.topic != topic) return;
                 displayMessage(mess.message, mess.meta.time, mess.meta.username);
             })
             break;
         case "activeUsers":
+            clearUsers();
             receivedObject.users.forEach(username => {
                 displayUser(username);
             })
@@ -214,15 +246,14 @@ function receiveMessage(message){
 }
 
 function displayMessage(message, time, username){
-    /*
-    
+    /* Creates in HTML-style
 		        <div class="container-dark">
   			        <p>Guten Morgen. Hier ist ein Chat</p>
   			        <span class="chatmeta-left">11:01 - oleg</span>
 		        </div>
-
     */
-
+    
+    time = formatTime(time);
     var container = document.createElement("div");
     
     if(containerColourWhite)    container.setAttribute("class", "container-white");            
@@ -242,7 +273,7 @@ function displayMessage(message, time, username){
     container.appendChild(span);  
 
     var chatBox = document.getElementsByClassName("scrollableChat")[0];
-    chatBox.appendchild(container);
+    chatBox.appendChild(container);
 
     containerColourWhite = !containerColourWhite;
 }
@@ -255,52 +286,38 @@ function displayUser(username){
     userList.appendChild(activeUser)
 }
 
-//Chrome-Browser BuildIn WebSockets
-//socket = new WebSocket('ws://localhost:3000')
-//socket.onmessage = function(message){ console.log(message)}
-//socket.send("Hallo vom Client")
 
-/*
 
-(function() {
-    const sendBtn = document.querySelector('#send');
-    const messages = document.querySelector('#messages');
-    const messageBox = document.querySelector('#messageBox');
 
-    let ws;
+  function formatTime(millis){
+    var date = new Date(millis);
+    var h = date.getHours();
+    var m = date.getMinutes();
+    var s = date.getSeconds();
+    var d = date.getDay();
+    h = addZeros(h); 
+    m = addZeros(m); 
+    s = addZeros(s); 
+    d = setDay(d);
+    return d + " um " + h + ":" + m + ":" + s;
+  }
 
-    function showMessage(message) {
-      messages.textContent += `\n\n${message}`;
-      messages.scrollTop = messages.scrollHeight;
-      messageBox.value = '';
+  
+function setDay(val){
+    switch(val){
+      case 1: return "Montag";
+      case 2:	return "Dienstag";
+      case 3: return "Mittwoch";
+      case 4: return "Donnerstag";
+      case 5: return "Freitag";
+      case 6: return "Samstag";
+      case 0: return "Sonntag";
     }
+  }
 
-    function init() {
-      if (ws) {
-        ws.onerror = ws.onopen = ws.onclose = null;
-        ws.close();
-      }
-
-      ws = new WebSocket('ws://localhost:6969');
-      ws.onopen = () => {
-        console.log('Connection opened!');
-      }
-      ws.onmessage = ({ data }) => showMessage(data);
-      ws.onclose = function() {
-        ws = null;
-      }
+  function addZeros(val){
+    if(val < 10) {
+        val = "0" + val
     }
-
-    sendBtn.onclick = function() {
-      if (!ws) {
-        showMessage("No WebSocket connection :(");
-        return ;
-      }
-
-      ws.send(messageBox.value);
-      showMessage(messageBox.value);
-    }
-
-    init();
-  })();
-*/
+  return val;
+}
