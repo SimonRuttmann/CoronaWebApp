@@ -6,7 +6,7 @@ const main = require("../server.js");
 
 const server = main.getServer()
 
-const wsServer = new ws.Server({server}) //{server}
+const wsServer = new ws.Server({server}) 
 const env = require('dotenv').config({path: '../.env', encoding:'utf8'});
 
 //<---------- Configuration ------------>//
@@ -75,6 +75,8 @@ function getPwFromMySql(email){
     })
 }
 
+//<----------------- Mongo Db ------------------>//
+
 async function createMongoTTL(){
     
     try{
@@ -82,17 +84,16 @@ async function createMongoTTL(){
         await client.connect();
      
         const database = client.db(ourDb);
-       
-        const chatColl = await database.collection("chat").createIndex({"createdAt":1},{expireAfterSeconds: 86400});
-    
-       console.log("Created TTL");
+        
+        if (! (await database.collection("chat").indexExists("createdAt_1")) ){
+            await database.collection("chat").createIndex({"createdAt":1},{expireAfterSeconds: 86400});
+        }
     }
     finally{
         await client.close();
     }
 }
 createMongoTTL();
-//<----------------- Mongo Db ------------------>//
 
 async function runMongo(mongoQuery) {
     var result;
@@ -146,14 +147,9 @@ function getPreviousMessagesFromMongo(topic){
 
 async function saveMessageInMongo(message){
     var doc = message;
-    //const doc =  {
-    //    title: "Record of a Shriveled Datum",
-    //    content: "No bytes, no problem. Just insert a document, in MongoDB",
-    //  }
-   
-   // doc = JSON.parse(doc);
+    
     doc.createdAt = new Date();
-    //doc = JSON.stringify(doc);
+   
     return new Promise( async(resolve, reject) => {
 
         try{
@@ -172,8 +168,6 @@ async function saveMessageInMongo(message){
 //<------------------ Helpfunctions ----------------------->//
 
 
-
-
 async function checkAuthorized(email, password){
     passwordSql = await getPwFromMySql(email);
     if(passwordSql){ 
@@ -184,23 +178,18 @@ async function checkAuthorized(email, password){
 
 
 function notifyActiveTopicUsers(message,topic){
-    console.log("notifyActive")
+    
     wsServer.clients.forEach( socket => {
         if(socket.readyState == ws.OPEN && socket.topic == topic){
-            console.log("notify active topic user")
             socket.send(message);
         }
     })
 }
 
 function notifyAuthTopicUsers(message, topic){
-    console.log("auth. Notify")
-   
+    
     wsServer.clients.forEach( socket => {
         if(socket.readyState == ws.OPEN && socket.authorize && socket.topic == topic){
-            console.log("notify authenticated user")
-            console.log("socket.topic " + socket.topic);
-            console.log("topic" + topic)
             socket.send(message);
         }
     })
@@ -227,11 +216,7 @@ function createSendUserResponse(topic){
         type: servertypes.ACTIVEUSERS,
         users: usernamesByTopic
     }
-    console.log("SendUsersResponse an topic: " + topic);
    
-    console.log(JSON.stringify(userResponse))
-    console.log("users:")
-    console.log(userResponse.users)
     return JSON.stringify(userResponse);
 
 }
@@ -240,14 +225,12 @@ function createSendUserResponse(topic){
 //<------------------ Logic ----------------------->//
 
 wsServer.on('connection', socket => {
-    console.log("Client hat Verbinung zum Websocket Server hergestellt");
-    wsServer.clients.forEach(socket => console.log("Socket"));
+
     socket.topic = topics.GENERAL;
     socket.authorize = false;
     socket.on('message', async data => {
         const receivedMessage = JSON.parse(data);
-        console.log("geparstes Json:")
-        console.log(receivedMessage)
+       
         switch(receivedMessage.type){
             case clienttypes.AUTHORIZE:
 
@@ -256,10 +239,9 @@ wsServer.on('connection', socket => {
                 
                     if(checkAuthorized(email, pw)){ 
                         socket.authorize = true;
-                        socket.name=receivedMessage.credentials.name;
-                      //  notifyAuthTopicUsers(createSendUserResponse(socket.topic), socket.topic)    
+                        socket.name=receivedMessage.credentials.name;   
                     }
-                    //socket.send(JSON.stringify(await createPreviousMessages(socket.topic)))
+                    
                     break;
 
             case clienttypes.TOPIC:
@@ -268,7 +250,7 @@ wsServer.on('connection', socket => {
                     socket.topic = receivedMessage.topic;
                     socket.send(JSON.stringify(await createPreviousMessages(socket.topic)))
 
-                    //Wenn authorisiert 1. Aus dem Alten topic entfernen, 2. Aus dem neuen topic hinzufügen
+                    //if authenticated, notify users from previous and new topic
                     if(socket.authorize){
                         if(socket.topic != previousTopic){
                             notifyAuthTopicUsers(createSendUserResponse(previousTopic), previousTopic);
@@ -292,23 +274,4 @@ wsServer.on('connection', socket => {
         notifyAuthTopicUsers(createSendUserResponse(socket.topic), socket.topic);
     })
 });
-
-
-//Chrome-Browser BuildIn WebSockets
-//socket = new WebSocket('ws://localhost:3000')
-//socket.onmessage = function(message){ console.log(message)}
-//socket.send("Hallo vom Client")
-
-//Possible Heartbeat
-/*
-setInterval( () => {
-    wsServer.clients.forEach(client => {
-        if(client.readyState !== ws.OPEN){
-            return; //Returned anonyme funktion
-        }
-        client.send(JSON.stringify({type: 'heartbeat'}));
-    });
-
-}, 10000)
-*/
 

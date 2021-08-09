@@ -107,11 +107,8 @@ function initializeWebsocket(){
         ws.onmessage = (messageFromServer) => receiveMessage(messageFromServer.data);
         ws.onclose = function() { ws = null;  }
         
-        //socket = new WebSocket('ws://localhost:3000')
     })
 
-   
-   
 }
 
 async function authorize(){
@@ -126,17 +123,7 @@ async function authorize(){
         var sendingObject = {};
         sendingObject.type = "authorize";
         sendingObject.credentials = cred;
-
-        // var send = 
-        // `{
-        //     "type":     "authorize"
-        //     "credentials": 
-        //     {
-        //         "email":      "${credentials.email}",
-        //         "name":       "${credentials.name}"
-        //         "password":   "${credentials.password}"
-        //     }
-        // }`   
+ 
         console.log(sendingObject);
         console.log(JSON.stringify(sendingObject));
         await ws.send(JSON.stringify(sendingObject));
@@ -220,7 +207,7 @@ function sendMessage(){
     sendingObject.meta = meta;
     sendingObject.message = messageToSend;
     
-    // message
+    //Json, which will be sent
     // {
     //     "type":       "message"
     //     "meta":
@@ -262,13 +249,11 @@ function receiveMessage(message){
 }
 
 function displayMessage(message, time, username){
-    /*
-    
+    /* Creates in HTML-style
 		        <div class="container-dark">
   			        <p>Guten Morgen. Hier ist ein Chat</p>
   			        <span class="chatmeta-left">11:01 - oleg</span>
 		        </div>
-
     */
     console.log("displaying message")
     time = formatTime(time);
