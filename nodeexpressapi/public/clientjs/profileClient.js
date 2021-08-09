@@ -195,11 +195,14 @@ CREATE TABLE IF NOT EXISTS Account (
     name        VARCHAR(255) NOT NULL UNIQUE,
     email       VARCHAR(255) NOT NULL UNIQUE,
     password    VARCHAR(255) NOT NULL,
-    gender      ENUM('unkown', 'male', 'female', 'diverse')  DEFAULT 'unknown', 
-    prioritiy    VARCHAR(30)  DEFAULT 'priority4',
-    prefVaccine VARCHAR(50)  DEFAULT 'everything',
-    district    VARCHAR(255) DEFAULT 'unkown',
-    radius      ENUM('all', 'surr', 'one')  DEFAULT 'all',   
+    biontech    BOOLEAN,
+    moderna     BOOLEAN,
+    astra       BOOLEAN,
+    johnson     BOOLEAN,
+    latitude    VARCHAR(40) DEFAULT '0',
+    longitude   VARCHAR(40) DEFAULT '0',
+    city        VARCHAR(255) DEFAULT 'none',
+    radius      INTEGER,   
     PRIMARY KEY (id)
 );
 */

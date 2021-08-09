@@ -5,35 +5,35 @@ const bcrypt = require('bcrypt')
 exports.getUserData =
 async function getUserData(req, res){
     var selectQuery = 
-    `SELECT name, email, gender, priority, prefVaccine, district, radius 
+    `SELECT name, email, biontech, moderna, astra, johnson, latitude, longitude, city, radius 
      FROM Account 
      WHERE id = ${req.user.id}`
      
      let user = await relDb.getAllUserData(selectQuery);
-     console.log("Sending Data:")
-     console.log(user);
+     
      if(user){
          res.json(user)
      }
      else{
          res.json({valid: false})
      }
-
 }
   
 
 
 exports.updateUser =
  async function updateUser(req, res){
-    console.log(req.body);
-    //JSON.parse(req.body);
+
     var updateQuery = 
     `UPDATE Account
      SET 
-     gender = "${req.body.gender}", 
-     priority = "${req.body.priority}", 
-     prefVaccine = "${req.body.prefVaccine}",
-     district = "${req.body.district}",
+     biontech = "${req.body.biontech}", 
+     moderna = "${req.body.moderna}", 
+     astra = "${req.body.astra}",
+     johnson = "${req.body.johnson}",
+     latitude = "${req.body.latitude}",
+     longitude = "${req.body.longitude}",
+     city = "${req.body.city}",
      radius = "${req.body.radius}"
      WHERE  id = "${req.user.id}";`
 
@@ -67,18 +67,19 @@ async function registerUser(req, res){
       };
 
       //Query for name
-      var selectquery =
-       `SELECT name, email, gender, priority, prefVaccine, district, radius 
-       FROM Account 
-       WHERE name = "${user.name}"`
-      let existingUserByName = await relDb.getAllUserData(selectquery);
+
+      var selectquery = 
+      `SELECT id, name, email, password 
+       FROM Account WHERE name = "${user.name}";`;
+  
+      let existingUserByName = await relDb.getUserDataForSession(selectquery);
       
       //Query for email
-      selectquery = 
-      `SELECT name, email, gender, priority, prefVaccine, district, radius 
-      FROM Account 
-      WHERE email = "${user.email}"`
-      let existingUserByEmail = await relDb.getAllUserData(selectquery);
+      var selectquery = 
+      `SELECT id, name, email, password 
+       FROM Account WHERE email = "${user.email}";`;
+  
+      let existingUserByEmail = await relDb.getUserDataForSession(selectquery);
       
       //Create response message, if queries received user
       let existingMessage = null;
@@ -122,7 +123,8 @@ function getSessionInfo(req, res){
 }
 
 
-//Returns data related to the session and the password
+//Returns data related to the session and the password 
+//(only used by ws-chat)
 exports.getCredentials = 
 function getCredentials(req, res){
     if(req.isAuthenticated()){
