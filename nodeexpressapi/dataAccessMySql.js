@@ -40,28 +40,39 @@ const env = require('dotenv').config({ encoding:'utf8'});
 async function initDB (){
     await createDatabase();
     var worked = await changeUser();
+    var created;
     if(worked) {
-        await createAccountTable();
+        created = await createAccountTable();
     }
     
+    if(created){
+        console.log("Mysql database successfully initialized")
+        return;
+    }
+    console.log("Couldn`t initialize mysql database")
 };
 
 
-initDB();
-  
+
+
 
 //Creating DB-Pool 
-var mysqlPool = mysql.createPool({
-    connectionLimit: 10,
-    host: process.env.MYSQL_HOST,
-    user: process.env.MYSQL_USER,
-    password: process.env.MYSQL_PASSWORD,
-    database: process.env.MYSQL_DATABASE
-});
+var mysqlPool;  
+createMySqlPool();
 
 
 
+async function createMySqlPool(){
+    await initDB();
 
+    mysqlPool = mysql.createPool({
+        connectionLimit: 10,
+        host: process.env.MYSQL_HOST,
+        user: process.env.MYSQL_USER,
+        password: process.env.MYSQL_PASSWORD,
+        database: process.env.MYSQL_DATABASE
+    });
+}
 
 
 exports.getAllUserData = 
@@ -174,7 +185,7 @@ function getUserDataForSession(selectQuery){
 function createDatabase(){
     var createDBQuery = 
     `CREATE DATABASE IF NOT EXISTS ${process.env.MYSQL_DATABASE};`;
-    console.log(createDBQuery);
+    console.log("Creating database user if not already existend")
     return new Promise( (resolve,reject) => {
         createDBandTableCon.query(createDBQuery, (err, resultrows, fields) => {
             if (err){      
@@ -221,15 +232,20 @@ function createAccountTable(){
         city        VARCHAR(255) DEFAULT 'none',
         radius      INTEGER,   
         PRIMARY KEY (id)
-    );`
+    );`;
+    console.log("Creating table Account, if not already existend")
     return new Promise( (resolve,reject) => {
         createDBandTableCon.query(tableQuery, (err, resultrows, fields) => {
             if (err){ 
-                createDBandTableCon.release();
+                createDBandTableCon.end();
                 reject(false);
             }
             else if (resultrows.length == 0){
-                createDBandTableCon.release();
+                awaitcreateDBandTableCon.end();
+                resolve(true);
+            }
+            else{
+               createDBandTableCon.end();
                 resolve(true);
             }
         });

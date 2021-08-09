@@ -85,7 +85,13 @@ async function createMongoTTL(){
      
         const database = client.db(ourDb);
         
+        if(! (await checkIfCollectionExists(database))){
+            console.log("Create Collection chat")
+           await database.createCollection("chat");
+        }
+
         if (! (await database.collection("chat").indexExists("createdAt_1")) ){
+            console.log("Creating TTL-Index on chat collection")
             await database.collection("chat").createIndex({"createdAt":1},{expireAfterSeconds: 86400});
         }
     }
@@ -93,7 +99,20 @@ async function createMongoTTL(){
         await client.close();
     }
 }
+
 createMongoTTL();
+
+
+function checkIfCollectionExists(db){
+    return new Promise((resolve, reject) => {
+
+        db.listCollections({name: "chat"})
+        .next(function(err, collinfo) {
+                resolve(collinfo)    
+        });
+    })
+}
+
 
 async function runMongo(mongoQuery) {
     var result;
