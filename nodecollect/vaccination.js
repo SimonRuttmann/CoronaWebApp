@@ -30,6 +30,24 @@ async function getVaccinationPlaces(saveToDB, mqttClient) {
 
     if (data.length == 0) return undefined;
 
+    for (var i = 0; i < data.length; i++) {
+        if (data[i].Adress.includes("  ")) {
+            data[i].Adress = data[i].Adress.replace("  ", " ");
+        } else if (!data[i].Adress.includes(" ") && data[i].Adress.length > 0) {
+            var index = -1;
+            for (var j = 0; j < data[i].Adress.length; j++) {
+                if (!isNaN(Number(data[i].Adress[j]))) {
+                    index = j;
+                    break;
+                }
+            }
+
+            if (index != -1) {
+                data[i].Adress = data[i].Adress.substring(0, index) + " " + data[i].Adress.substring(index, data[i].Adress.length);
+            }
+        }
+    }
+
     if (saveToDB) {
         var oldData = await db.find({}, "vaccinationPlacesBW");
 
