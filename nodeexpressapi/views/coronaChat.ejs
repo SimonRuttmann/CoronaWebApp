@@ -2,7 +2,7 @@
     <head>
         <title>Corona-Chat</title>
         <link rel = "stylesheet" href = "./stylesheets/coronaChat.css" type="text/css"> </link>
-        <script type = "text/javascript" src = "./clientjs/coronaChatClient.js"> </script>
+        
     </head>
     <body>
 
@@ -31,7 +31,7 @@
                 <ul>
                     <li onClick="setGeneralTopic()"> Allgemein </li>
 	                <li onClick="setVaccinateTopic()"> Impfen </li>
-                    <li onClick="setQuarantineTopic()"> Quarnatäne </li>
+                    <li onClick="setQuarantineTopic()"> Quarantäne </li>
                     <li onClick="setTestTopic()"> Testen </li>
                     <li onClick="setExperienceTopic()"> Erfahrungen </li>
                 </ul>
@@ -39,15 +39,15 @@
         </div>
 
         <div class="chat-box">
-	        <div class="topic-title"> Sie sind im Impfen-Thread. </div>
-            <div class = "topic-description"> Hier können Sie sich mit anderen Teilnehmern 
-                <br> über alles rund ums Impfen unterhalten. 
-            </div>
+            
+	            <div class="topic-title"> Sie sind im Allgmeinen-Thread. </div>
+                <div class = "topic-description"> Hier können Sie sich mit anderen Teilnehmern über allgmeine Themen unterhalten. 
+                </div>
             
  	        <div class = "scrollableChat">
                 <!-- Dynamic generated Content starts here-->
 
-		        <div class="container-dark">
+		<!--        <div class="container-dark">
   			        <p>Guten Morgen. Hier ist ein Chat</p>
   			        <span class="chatmeta-left">11:01 - oleg</span>
 		        </div>
@@ -86,7 +86,7 @@
             	        dem AJAX-Request gemacht werden dddddddddddddddddddddddddd</p>
   			        <span class="chatmeta-left">11:01 - oleg</span>
 		        </div>
-
+            -->
                 <!-- End scrollable Content-->
 	        </div>  
 
@@ -107,6 +107,7 @@
         <div class="footer-box">
             <p class="description" id="loginStatus">Sie sind momentan nicht angemeldet. </p>
         </div>
-
+        
     </body>
+    <script type = "text/javascript" src = "./clientjs/coronaChatClient.js" defer> </script>
 </html>

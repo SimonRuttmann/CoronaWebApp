@@ -224,4 +224,4 @@ async function getOverview(district) {
     return json;
 }
 
-init();
+window.onload = init();
