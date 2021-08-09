@@ -1,6 +1,13 @@
 window.onload = init();
 var menuDisplay=false;
 
+var slider = document.getElementById("radius");
+var output = document.getElementById("slidervalue");
+output.innerHTML = slider.value + " km";
+
+slider.oninput = function() {
+  output.innerHTML = this.value + " km";
+}
 
 function init(){
     getSessionData([setLoginStatus]);

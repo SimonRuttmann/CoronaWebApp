@@ -17,74 +17,63 @@
                 <li><a href="/profile">Profil</a></li>
             </ul>
         </div>
+        <div class="infobox">
+            <h2 class = "heading"> Impfangebote </h2>
+            <p class="description">Wenn Sie eingeloggt sind, werden die Ergebnisse bereits nach Ihren Profilangaben gefiltert. 
+                <br>Weitere Filteranfragen sind natürlich möglich. </p>
+        </div>
         <div class="buttonbox">
             <button class="button" id="filter" onclick="filtermenu()" type="button">Filter</button> 
             <button class="button"  id="refresh" onclick="refresh()" type="button">Aktualisieren</button>
             <div class="filterOption">
                 <div class="label">
-                    <label for="gender"class="formlabel">Impfzentrum</label>
-                    <label for="gender"class="formlabel">Impfstoff</label>
-                    <label for="gender"class="formlabel">Kreis</label>
+                    <label for="Impfstoff"class="impfstofflabel">Impfstoffe</label>
+                    <label for="radius"class="formlabel">Suchradius</label>
+                    <label for="ort"class="formlabel">Ort</label>
+                    
                 </div>
-                <div class="input">
-                    <select type="text" class="inputfield" id="gender">
-                        <option value = "unknown"	>&nbsp;&#160; Keine Angabe </option>
-                        <option value = "male"		>&nbsp;&#160; Männlich </option>
-                        <option value = "female"	>&nbsp;&#160; Weiblich </option>
-                        <option value = "diverse"	>&nbsp;&#160; Divers </option>
-                    </select>  
-                    <select type="text" class="inputfield" id="vaccine">
-                        <option value = "everything">&nbsp;&#160; Alle zug. Impfstoffe </option>
-                        <option value = "biontech"	>&nbsp;&#160; Biontech/Pfizer </option>
-                        <option value = "moderna"	>&nbsp;&#160; Moderna </option>
-                        <option value = "astra"		>&nbsp;&#160; AstraZeneca </option>
-                        <option value = "johnson"	>&nbsp;&#160; Johnson&amp;Johnson </option>
-                    </select>
-                    <select type="text" class="inputfield" id="district">
-                        <option value = "unknown"					>&nbsp;&#160; Keine Angabe </option>
-                        <option value = "Alb-Donau-Kreis"			>&nbsp;&#160; Alb-Donau-Kreis </option>
-                        <option value = "Baden-Baden"				>&nbsp;&#160; Baden-Baden </option>
-                        <option value = "Biberach"					>&nbsp;&#160; Biberach </option>
-                        <option value = "Böblingen"					>&nbsp;&#160; Böblingen </option>
-                        <option value = "Bodenseekreis"				>&nbsp;&#160; Bodenseekreis </option>
-                        <option value = "Breisgau-Hochschwarzwald"	>&nbsp;&#160; Breisgau-Hochschwarzwald </option>
-                        <option value = "Calw"						>&nbsp;&#160; Calw </option>
-                        <option value = "Emmendingen"				>&nbsp;&#160; Emmendingen </option>
-                        <option value = "Enzkeis"					>&nbsp;&#160; Enzkeis </option>
-                        <option value = "Esslingen"					>&nbsp;&#160; Esslingen </option>
-                        <option value = "Freiburg im Breisgau"		>&nbsp;&#160; Freiburg im Breisgau </option>
-                        <option value = "Freudenstadt"				>&nbsp;&#160; Freudenstadt </option>
-                        <option value = "Göppingen"					>&nbsp;&#160; Göppingen </option>
-                        <option value = "Heidelberg"				>&nbsp;&#160; Heidelberg </option>
-                        <option value = "Heidenheim"				>&nbsp;&#160; Heidenheim </option>
-                        <option value = "Heilbonn"					>&nbsp;&#160; Heilbonn </option>
-                        <option value = "Hohenlohekreis"			>&nbsp;&#160; Hohenlohekreis </option>
-                        <option value = "Karlsruhe"					>&nbsp;&#160; Karlsruhe </option>
-                        <option value = "Konstanz"					>&nbsp;&#160; Konstanz </option>
-                        <option value = "Lörrach"					>&nbsp;&#160; Lörrach </option>
-                        <option value = "Ludwigsburg"				>&nbsp;&#160; Ludwigsburg </option>
-                        <option value = "Main-Tauber-Kreis"			>&nbsp;&#160; Main-Tauber-Kreis </option>
-                        <option value = "Mannheim"					>&nbsp;&#160; Mannheim </option>
-                        <option value = "Neckar-Odenwald-Kreis"		>&nbsp;&#160; Neckar-Odenwald-Kreis </option>
-                        <option value = "Ortenaukreis"				>&nbsp;&#160; Ortenaukreis </option>
-                        <option value = "Ostalbkreis"				>&nbsp;&#160; Ostalbkreis </option>
-                        <option value = "Pforzheim"					>&nbsp;&#160; Pforzheim </option>
-                        <option value = "Rastatt"					>&nbsp;&#160; Rastatt </option>
-                        <option value = "Ravenburg"					>&nbsp;&#160; Ravenburg </option>
-                        <option value = "Rems-Murr-Kreis"			>&nbsp;&#160; Rems-Murr-Kreis </option>
-                        <option value = "Reutlingen"				>&nbsp;&#160; Reutlingen </option>
-                        <option value = "Rhein-Neckar-Kreis"		>&nbsp;&#160; Rhein-Neckar-Kreis </option>
-                        <option value = "Rottweil"					>&nbsp;&#160; Rottweil </option>
-                        <option value = "Schwäbisch Hall"			>&nbsp;&#160; Schwäbisch Hall </option>
-                        <option value = "Schwarzwald-Baar-Kreis"	>&nbsp;&#160; Schwarzwald-Baar-Kreis </option>
-                        <option value = "Sigmaringen"				>&nbsp;&#160; Sigmaringen </option>
-                        <option value = "Stuttgart"					>&nbsp;&#160; Stuttgart </option>
-                        <option value = "Tübingen"					>&nbsp;&#160; Tübingen </option>
-                        <option value = "Tuttlingen"				>&nbsp;&#160; Tuttlingen </option>
-                        <option value = "Ulm"						>&nbsp;&#160; Ulm </option>
-                        <option value = "Waldshut"					>&nbsp;&#160; Waldshut </option>
-                        <option value = "Zollneralbkrei"			>&nbsp;&#160; Zollneralbkrei </option>
-                    </select>
+                <div class="inputBox">
+                    <div class="checkboxBox">
+                        <label class="checkbox">Biontech/Pfizer
+                            <input class="auswahl" type="checkbox" id = "biontech">
+                            <span class ="checkmark"></span>
+                        </label>
+                        <br> </br>
+                        
+                        <label class="checkbox">Moderna
+                            <input class="auswahl" type="checkbox" id = "moderna">
+                            <span class ="checkmark"></span>
+                        </label>
+                            <br> </br>
+                        
+                        <label class="checkbox">AstraZeneca
+                            <input class="auswahl" type="checkbox" id = "astra">
+                            <span class ="checkmark"></span>
+                        </label>
+                        <br> </br>
+                    
+                        <label class="checkbox">Johnson&amp;Johnson
+                            <input class="auswahl" type="checkbox" id = "johnson">
+                            <span class ="checkmark"></span>
+                        </label>
+                
+                        <br></br>    
+                    </div>  
+                    
+
+                    <div class="slidecontainer">
+                        <input type="range" min="10" max="450" value="50" class="slider" step="20" id="radius" name = "radius">
+                        <p><span id="slidervalue"></span></p>
+                    </div>
+                    
+
+                    <div class="ortInput">
+                        <input type="text" class="inputfield" id="city" placeholder="Bitte Ort eingeben" >
+                    </div>
+                    
+                    
+                    
+                    
                 </div>
                 <div class="buttonfilterBox">
                     <button class= "buttonfilter" id="filterOK" onclick="getfilter" type="button">übernehmen</button> 
@@ -95,31 +84,13 @@
     
         <table id="tableID" class="tabelle">
             <tr>
-              <th>Impfzentrum</th>
-              <th>Impfstoff</th>
-              <th>Adresse</th>
-              <th>BookingURL</th>
+                <th id="distance" >Distanz</th>
+                <th>Impfzentrum</th>
+                <th>Impfstoff</th>
+                <th>Adresse</th>
+                <th>BookingURL</th>
             </tr>
-            <tr>
-              <td>Miljöh</td>
-              <td>Kiez</td>
-              <td>Bierdampf</td>
-             </tr>
-             <tr>
-               <td>Buletten</td>
-               <td>Frikadellen</td>
-               <td>Fleischpflanzerl</td>
-             </tr>
-             <tr>
-                <td>Buletten</td>
-                <td>Frikadellen</td>
-                <td>Fleischpflanzerl</td>
-              </tr>
-              <tr>
-                <td>Buletten</td>
-                <td>Frikadellen</td>
-                <td>Fleischpflanzerl</td>
-              </tr>
+            
           </table>
  
 

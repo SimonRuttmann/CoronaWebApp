@@ -34,6 +34,28 @@
 ul {
 padding: 0px;
 }
+.infobox{
+    padding-top: 10px;
+    border: 1px solid #222;
+    margin-left: auto;
+    margin-right: auto;
+    width: 1000px;
+    margin-top: 30px;
+    height: auto;
+    background: #222;
+    text-align: right;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+.heading {
+	margin-top:0px;
+    text-align: center;
+    font-size: 40px;
+    letter-spacing: 2px;
+    padding: 3px;
+    margin-bottom: 0px;
+    font-weight: bold;
+    color: #ECF0F5;
+}
 body {
     background: #333;
     font-family: 'Roboto', sans-serif;
@@ -50,7 +72,6 @@ body {
     text-align: right;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 }
-
 
 .button {
     background-color: #666666;
@@ -86,29 +107,91 @@ body {
     height: auto;
     display: none;
     text-align: left;
-   
-   
 }
-.input{
+/* mittlere Box*/
+.inputBox{
     display: inline-block;
     width: 300px;
-    color:#333;
+    
 }
+.checkboxBox{
+    display:block;
+    width: 300px;
+    margin-top: 20px;
+    margin-bottom: 20px; 
+    
+}
+.slidecontainer{
+    display: block;
+    width: 300px;
+    margin-bottom:50px;
+}
+.slider {
+    -webkit-appearance: none;
+    width: 100%;
+    border-radius: 5px;
+    height: 10px;
+    background: #A8A8A8;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+}
+  
+.slider:hover {
+    opacity: 1;
+}
+  
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: #0DB8DE;
+    cursor: pointer;
+}
+  
+.slider::-moz-range-thumb {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: #0DB8DE;
+    cursor: pointer;
+}
+  
+#slidervalue {
+      display: block;
+      margin: auto;
+      font-size: 18px;
+      color:#A8A8A8;
+      font-weight: bold;
+      letter-spacing: 1px;
+}
+.ortInput{
+    display: block;
+    width: 300px;
+    color: #333;
+    
+}
+
 .inputfield{
     display: block;
     border-radius: 5px 5px 5px 5px;
-	
-	background-color: #777;
+	cursor: pointer;
+	background-color: #444;
     padding: 15px;
     border: #777;
     margin-top: 20px;
     width: 250px;
    
-    color: #333;
+    color: #777;
     text-align:left;
     font-size: 17px;
     font-weight: bold;
     box-sizing: border-box;
+
+    
 }
 .inputfield:hover{
     box-shadow: inset 0em 0em 1em #0DB8DE, 0em 0em 1em #0DB8DE;
@@ -121,28 +204,57 @@ select{
 }
 
 
+
 .label{
     display: inline-block;
     width: 200px;
     margin-left: 100;
     color:#A8A8A8;
 }
-.formlabel {
-    
+.formlabel { 
 	display: block;
+    margin-top: 80px;
     
-    margin-top: 20px;
-    margin-bottom: 50px;
     text-align: left;
     font-size: 18px;
     color: #999999;
     font-weight: bold;
     letter-spacing: 1px;
 }
-.buttonfilterBox{
-    display: inline-block;
+.impfstofflabel{
+    display: block;
+    margin-top: 20px;
+    margin-bottom: 280px;
+    text-align: left;
+    font-size: 18px;
+    color: #999999;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+/* Checkbox */
+.checkbox {
+    color: #999999;
+    font-weight: bold;
+    font-size: 18px;
+    padding-left: 30px;
+    display: block;
+    text-align: end;
+    letter-spacing: 1px;
+}
+input.auswahl{
+    width: 20px;
+    height: 20px;
 }
 
+
+
+
+
+.buttonfilterBox{
+    display: inline-block;
+    margin-left: 100;
+    
+}
 .buttonfilter{
     
     background-color: #28D44A;
@@ -154,7 +266,7 @@ select{
     font-size: 18px;
     font-weight: bold;
     margin: 0px 20px;
-    margin-bottom: 10px;
+    margin-bottom: 30px;
     padding: 12px 20px;
     position: relative;
     text-decoration: none;
@@ -213,5 +325,4 @@ th{
     margin-bottom: 10px;
     font-weight: bold;
     color: #ECF0F5;
-
 }
