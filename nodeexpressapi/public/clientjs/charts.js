@@ -1,41 +1,3 @@
-window.onload = initSession();
-
-function initSession() {
-    getSessionData([setLoginStatus]);
-};
-
-async function getSessionData(callbacks) {
-    let result;
-    try {
-        let response = await fetch('/user/getSessionInfo');
-        if (response.status != 200) {
-            console.log("Received status: " + response.status);
-            return;
-        }
-
-        //reads response stream to completion
-        result = await response.text();
-        result = JSON.parse(result);
-    }
-    catch (e) {
-        console.log("Server is not responing");
-    }
-    if (result != undefined) {
-        callbacks.forEach(callback => callback(result))
-    }
-
-}
-
-function setLoginStatus(data) {
-    if (data.authenticated) {
-        //Display feedback at footer
-        document.getElementById("loginStatus").textContent = "Sie sind angemeldet als: " + data.name;
-        //Modify Navigationbar to Logout    
-        document.getElementById("RefToLogin").textContent = "Abmelden";
-        document.getElementById("RefToLogin").setAttribute("href", "/logout");
-    }
-}
-
 var MAP_WIDTH = 760;
 var MAP_HEIGHT = 870;
 
@@ -205,79 +167,41 @@ for (var regionName in regions) {
 }
 
 async function onClicked(region, name) {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    resetCharts();
 
-    var tmp = {
-        infizierte: "",
-        genesen: "",
-        geimpft: "",
-        immun: "",
-        tode: ""
-    };
+    document.getElementById("diagrams").style = "display: block;";
 
-    document.getElementById("replaceContent").innerText = "Infizierte: Loading...\nGenesen: Loading...\nGeimpft: Loading...\nImmun: Loading...\nTodesfälle: Loading...";
-    document.getElementById('myChart').outerHTML = '<p id="myChart">Loading Graph...</p>';
+    var data = await fetch("/data/district?district=" + name);
+    var json = JSON.parse(await data.text());
 
-    var overview = await getOverview(name);
-    tmp.infizierte = overview.infizierte;
-    tmp.genesen = overview.genesen;
-    tmp.geimpft = overview.geimpft;
-    tmp.immun = overview.immun;
-    tmp.tode = overview.todesfaelle;
+    console.log(json);
+    var texts = document.getElementsByClassName("loading");
 
-    var header = document.getElementById("replaceHeader");
-    header.innerText = "Aktuelle Zahlen vom Landkreis: " + name;
-
-    var content = document.getElementById("replaceContent");
-    content.innerText = "Infizierte: " + tmp.infizierte + "\nGenesen: " + tmp.genesen + "\nGeimpft: " + tmp.geimpft + "\nImmun: " + tmp.immun + "\nTodesfälle: " + tmp.tode;
-
-    changeChart(name);
-}
-
-async function init() {
-    var tmp = {
-        infizierte: "",
-        genesen: "",
-        geimpft: "",
-        immun: "",
-        tode: ""
-    };
-
-    document.getElementById('myChart').outerHTML = '<br /><b id="myChart">Wähle einen Landkreis aus!</b>';
-
-    var overview = await getOverview();
-    tmp.infizierte = overview.infizierte;
-    tmp.genesen = overview.genesen;
-    tmp.geimpft = overview.geimpft;
-    tmp.immun = overview.immun;
-    tmp.tode = overview.todesfaelle;
-
-    var content = document.getElementById("replaceContentBW");
-    content.innerText = "Infizierte: " + tmp.infizierte + "\nGenesen: " + tmp.genesen + "\nGeimpft: " + tmp.geimpft + "\nImmun: " + tmp.immun + "\nTodesfälle: " + tmp.tode;
-}
-
-async function getOverview(district) {
-    var query = "";
-    if (district != undefined) {
-        query = "?district=" + district;
+    for (var i = 0; i < texts.length; i++) {
+        texts[i].style = "display: none;";
     }
 
-    var response = await fetch('/data/overview' + query);
-    if (response.status != 200) return undefined;
-
-    var result = await response.text();
-    var json = JSON.parse(result);
-
-    return json;
+    fillCharts(name, json);
 }
 
-async function changeChart(name) {
-    var response = await fetch('/data/district?district=' + name);
-    if (response.status != 200) return undefined;
+function reset(){
+    document.getElementById("diagrams").style = "display: none;";
+    resetCharts();
+}
 
-    var result = await response.text();
-    var json = JSON.parse(result);
+function resetCharts() {
+    var texts = document.getElementsByClassName("loading");
 
+    for (var i = 0; i < texts.length; i++) {
+        texts[i].style = "display: block;";
+    }
+
+    document.getElementById("deaths").outerHTML = '<canvas id="deaths"></canvas>';
+    document.getElementById("infected").outerHTML = '<canvas id="infected"></canvas>';
+    document.getElementById("vaccinated").outerHTML = '<canvas id="vaccinated"></canvas>';
+}
+
+function fillCharts(name, json) {
     var dataTote = [];
     for (var i = 0; i < json.Tote_pro_Woche.length; i++) {
         var tmp = {};
@@ -343,7 +267,9 @@ async function changeChart(name) {
 
     dataVaccinated.reverse();
 
-    var dataLabelsInfected = getLabels(dataInfected);
+    var deathLabels = getLabels(dataTote);
+    var vaccLabels = getLabels(dataVaccinated);
+    var infectedLabels = getLabels(dataInfected);
 
     var dataPointsTote = [];
     for (var i = 0; i < dataTote.length; i++) {
@@ -360,40 +286,39 @@ async function changeChart(name) {
         dataPointsVaccinated.push(dataVaccinated[i].anzahl);
     }
 
-    var tmpVacc = [];
-    var tmpVaccLength = dataLabelsInfected.length - dataPointsVaccinated.length;
-    for (var i = 0; i < tmpVaccLength; i++) {
-        tmpVacc.push(0);
-    }
-    dataPointsVaccinated = tmpVacc.concat(dataPointsVaccinated);
-
-    const data = {
-        labels: dataLabelsInfected,
+    const deaths = {
+        labels: deathLabels,
         datasets: [{
-            label: 'Deaths',
+            label: 'Deaths ' + name,
             backgroundColor: 'rgb(255, 99, 132)',
             borderColor: 'rgb(255, 99, 132)',
             data: dataPointsTote,
-        },
-        {
-            label: 'Infected',
-            backgroundColor: 'rgb(123, 255, 132)',
-            borderColor: 'rgb(123, 255, 132)',
+        }]
+    };
+
+    const infected = {
+        labels: infectedLabels,
+        datasets: [{
+            label: 'Infected ' + name,
+            backgroundColor: 'rgb(255, 99, 132)',
+            borderColor: 'rgb(255, 99, 132)',
             data: dataPointsInfected,
-            hidden: true,
-        },
-        {
-            label: 'Vaccinated',
-            backgroundColor: 'rgb(43, 154, 255)',
-            borderColor: 'rgb(43, 154, 255)',
+        }]
+    };
+
+    const vaccinated = {
+        labels: vaccLabels,
+        datasets: [{
+            label: 'Vaccinated ' + name,
+            backgroundColor: 'rgb(255, 99, 132)',
+            borderColor: 'rgb(255, 99, 132)',
             data: dataPointsVaccinated,
-            hidden: true,
         }]
     };
 
     const config = {
         type: 'line',
-        data,
+        data: deaths,
         options: {
             layout: {
                 padding: 10
@@ -405,10 +330,22 @@ async function changeChart(name) {
     Chart.defaults.borderColor = 'rgb(255, 255, 255, 0.1)';
     Chart.defaults.backgroundColor = 'rgb(255, 255, 255)';
 
-    document.getElementById('myChart').outerHTML = '<canvas id="myChart"></canvas>';
+    new Chart(
+        document.getElementById('deaths'),
+        config
+    );
 
-    var myChart = new Chart(
-        document.getElementById('myChart'),
+    config.data = infected;
+
+    new Chart(
+        document.getElementById('infected'),
+        config
+    );
+
+    config.data = vaccinated;
+
+    new Chart(
+        document.getElementById('vaccinated'),
         config
     );
 }
@@ -459,4 +396,45 @@ function getLabels(newArr) {
     return dataLabels;
 }
 
-init();
+async function fillTable() {
+    var data = await fetch("/data/district");
+    var json = JSON.parse(await data.text());
+
+    var landkreise = json["Landkreise"];
+    for (var i = 0; i < landkreise.length; i++) {
+        var td;
+        var tr = document.createElement("tr");
+
+        td = document.createElement("td");
+        td.innerText = landkreise[i]["Landkreis"];
+        tr.appendChild(td);
+
+        td = document.createElement("td");
+        td.innerText = landkreise[i]["todesfaelle"];
+        tr.appendChild(td);
+
+        td = document.createElement("td");
+        td.innerText = landkreise[i]["genesen"];
+        tr.appendChild(td);
+
+        td = document.createElement("td");
+        td.innerText = landkreise[i]["infizierte"];
+        tr.appendChild(td);
+
+        td = document.createElement("td");
+        td.innerText = landkreise[i]["geimpft"];
+        tr.appendChild(td);
+
+        td = document.createElement("td");
+        td.innerText = landkreise[i]["immune"];
+        tr.appendChild(td);
+
+        td = document.createElement("td");
+        td.innerText = landkreise[i]["gesamtbevoelkerung"];
+        tr.appendChild(td);
+
+        document.getElementById("tabelleLandkreise").getElementsByTagName("tbody")[0].appendChild(tr);
+    }
+}
+
+fillTable();
