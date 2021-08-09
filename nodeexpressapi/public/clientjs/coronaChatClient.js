@@ -96,7 +96,6 @@ function toggleUserlist(data){
 function initializeWebsocket(){
     return new Promise( (resolve, reject) => {
         if (ws) {
-            console.log("ws noch aktiv")
             ws.onerror = ws.onopen = ws.onclose = null;
             ws.close();
           }
@@ -124,8 +123,6 @@ async function authorize(){
         sendingObject.type = "authorize";
         sendingObject.credentials = cred;
  
-        console.log(sendingObject);
-        console.log(JSON.stringify(sendingObject));
         await ws.send(JSON.stringify(sendingObject));
     }
     
@@ -195,6 +192,8 @@ async function sendTopic(){
 
 function sendMessage(){
     var messageToSend = document.getElementById("sendingField").value;
+    if (!messageToSend) return;
+
     document.getElementById("sendingField").value = "";
     
     var meta = {
@@ -223,11 +222,9 @@ function sendMessage(){
 }
 
 function receiveMessage(message){
-    console.log("erhalte nachricht:")
-    console.log(message)
+
     var receivedObject = JSON.parse(message);
-    console.log("geparstes Objekt")
-    console.log(receivedObject)
+  
     switch (receivedObject.type){
         case "prevMessages":
             clearChatbox(); 
@@ -255,7 +252,7 @@ function displayMessage(message, time, username){
   			        <span class="chatmeta-left">11:01 - oleg</span>
 		        </div>
     */
-    console.log("displaying message")
+    
     time = formatTime(time);
     var container = document.createElement("div");
     
