@@ -3,155 +3,104 @@
 <html>
 <head>
     <link rel = "stylesheet" href = "./stylesheets/profile.css" type="text/css"> </link>
-    <script type = "text/javascript" src = "./clientjs/profileClient.js"> </script>
+    
 </head>
 <body>
 
-<div class="navigationbar">
-  <ul>
-    <li><a href="/index">Startseite</a></li>
-    <li><a href="/login" id="RefToLogin">Anmelden</a></li>
-    <li><a href="/statistic">Statistik</a></li>
-    <li><a href="/coronaChat">Corona-Chat</a></li>
-    <li><a href="/vaccination">Impfangebote</a></li>
-    <li><a href="/news">News</a></li>
-    <li><a id = "active" href = "#">Profil</a></li>
-  </ul>
-</div>
-
-<div class="register-box">
-
-	<div class="profile-title"> Daten </div>
-   
-    
-    	<div id = "outputFields">
-    	
-        <label for="nameOutput"class="formlabel">Benutzername</label>
-        <input type="text" class="inputfield" id="nameOutput" placeholder="Keine Angabe" disabled>
-    	
-        <label for="emailOutput"class="formlabel">E-Mail</label>
-        <input type="text" class="inputfield" id="emailOutput" placeholder="Keine Angabe"disabled>
-        
-        <label for="genderOutput"class="formlabel">Geschlecht</label>
-        <input type="text" class="inputfield" id="genderOutput" placeholder="Keine Angabe" disabled>
-        
-   		<label for="priorityOutput"class="formlabel">Prioritätsgruppe</label>
-        <input type="text" class="inputfield" id="priorityOutput" placeholder="Keine Angabe" disabled>
-    	
-        <label for="vaccineOutput" class="formlabel">Bevorzugter Impfstoff</label> 
-        <input type="text" class="inputfield" id="vaccineOutput" placeholder="Keine Angabe" disabled>
-        
-        <label for="districtOutput" class="formlabel">Landkreis</label> 
-        <input type="text" class="inputfield" id="districtOutput" placeholder="Keine Angabe" disabled>
-        
-        <label for="radiusOutput" class="formlabel">Radius</label> 
-        <input type="text" class="inputfield" id="radiusOutput" placeholder="Keine Angabe" disabled>
-        <br></br>
-		</div>
+    <div class="navigationbar">
+      <ul>
+        <li><a href="/index">Startseite</a></li>
+        <li><a href="/login" id="RefToLogin">Anmelden</a></li>
+        <li><a href="/statistic">Statistik</a></li>
+        <li><a href="/coronaChat">Corona-Chat</a></li>
+        <li><a href="/vaccination">Impfangebote</a></li>
+        <li><a href="/news">News</a></li>
+        <li><a id = "active" href = "#">Profil</a></li>
+      </ul>
     </div>
+    
+    <div class="register-box">
+    
+        <div class="profile-title"> Daten </div>
+       
         
-</div>
-
-
-<div class="register-box">
-
-	<div class="profile-title"> Profil bearbeiten </div>
+            <div id = "outputFields">
+            
+            <label for="nameOutput"class="formlabel">Benutzername</label>
+            <input type="text" class="inputfield" id="nameOutput" placeholder="Keine Angabe" disabled>
+            
+            <label for="emailOutput"class="formlabel">E-Mail</label>
+            <input type="text" class="inputfield" id="emailOutput" placeholder="Keine Angabe"disabled>
+            
+            <label for="vaccineOutput" class="formlabel">Bevorzugte Impfstoffe</label> 
+            <input type="text" class="inputfield" id="vaccineOutput" placeholder="Keine Angabe" disabled>
+            
+            <label for="districtOutput" class="formlabel">Ort</label> 
+            <input type="text" class="inputfield" id="districtOutput" placeholder="Keine Angabe" disabled>
+            
+            <label for="radiusOutput" class="formlabel">Radius</label> 
+            <input type="text" class="inputfield" id="radiusOutput" placeholder="Keine Angabe" disabled>
+           
+            <br>
+            </div>
+        </div>
+            
+    </div>
     
     
-
+    <div class="register-box">
     
-    	<label for="gender"class="formlabel">Geschlecht</label>
-        <select type="text" class="inputfield" id="gender">
-        <option value = "unknown"	>&nbsp;&#160; Keine Angabe </option>
-        <option value = "male"		>&nbsp;&#160; Männlich </option>
-        <option value = "female"	>&nbsp;&#160; Weiblich </option>
-        <option value = "diverse"	>&nbsp;&#160; Divers </option>
-        </select>
+        <div class="profile-title"> Profil bearbeiten </div>
         
-        <label for="priority"class="formlabel">Prioritätsgruppe</label>
-        <select type="text" class="inputfield" id="priority">
-        <option value = "priority4">&nbsp;&#160; Gruppe 4 - Keine Priorität </option>
-        <option value = "priority1">&nbsp;&#160; Gruppe 1 - Höchste Priorität </option>
-        <option value = "priority2">&nbsp;&#160; Gruppe 2 - Hohe Priorität </option>
-        <option value = "priority3">&nbsp;&#160; Gruppe 3 - Erhöhte Priorität </option>
         
-        </select>
-        
-        <label for="vaccine"class="formlabel">Bevorzugter Impfstoff</label>
-        <select type="text" class="inputfield" id="vaccine">
-        <option value = "everything">&nbsp;&#160; Alle zug. Impfstoffe </option>
-        <option value = "biontech"	>&nbsp;&#160; Biontech/Pfizer </option>
-        <option value = "moderna"	>&nbsp;&#160; Moderna </option>
-        <option value = "astra"		>&nbsp;&#160; AstraZeneca </option>
-        <option value = "johnson"	>&nbsp;&#160; Johnson&amp;Johnson </option>
-        </select>
-        
-        <label for="district"class="formlabel">Landkreis</label>
-        <select type="text" class="inputfield" id="district">
-        <option value = "unknown"					>&nbsp;&#160; Keine Angabe </option>
-        <option value = "Alb-Donau-Kreis"			>&nbsp;&#160; Alb-Donau-Kreis </option>
-        <option value = "Baden-Baden"				>&nbsp;&#160; Baden-Baden </option>
-        <option value = "Biberach"					>&nbsp;&#160; Biberach </option>
-        <option value = "Böblingen"					>&nbsp;&#160; Böblingen </option>
-        <option value = "Bodenseekreis"				>&nbsp;&#160; Bodenseekreis </option>
-        <option value = "Breisgau-Hochschwarzwald"	>&nbsp;&#160; Breisgau-Hochschwarzwald </option>
-        <option value = "Calw"						>&nbsp;&#160; Calw </option>
-        <option value = "Emmendingen"				>&nbsp;&#160; Emmendingen </option>
-        <option value = "Enzkeis"					>&nbsp;&#160; Enzkeis </option>
-        <option value = "Esslingen"					>&nbsp;&#160; Esslingen </option>
-        <option value = "Freiburg im Breisgau"		>&nbsp;&#160; Freiburg im Breisgau </option>
-        <option value = "Freudenstadt"				>&nbsp;&#160; Freudenstadt </option>
-        <option value = "Göppingen"					>&nbsp;&#160; Göppingen </option>
-        <option value = "Heidelberg"				>&nbsp;&#160; Heidelberg </option>
-        <option value = "Heidenheim"				>&nbsp;&#160; Heidenheim </option>
-        <option value = "Heilbonn"					>&nbsp;&#160; Heilbonn </option>
-        <option value = "Hohenlohekreis"			>&nbsp;&#160; Hohenlohekreis </option>
-        <option value = "Karlsruhe"					>&nbsp;&#160; Karlsruhe </option>
-        <option value = "Konstanz"					>&nbsp;&#160; Konstanz </option>
-        <option value = "Lörrach"					>&nbsp;&#160; Lörrach </option>
-       	<option value = "Ludwigsburg"				>&nbsp;&#160; Ludwigsburg </option>
-        <option value = "Main-Tauber-Kreis"			>&nbsp;&#160; Main-Tauber-Kreis </option>
-        <option value = "Mannheim"					>&nbsp;&#160; Mannheim </option>
-        <option value = "Neckar-Odenwald-Kreis"		>&nbsp;&#160; Neckar-Odenwald-Kreis </option>
-       	<option value = "Ortenaukreis"				>&nbsp;&#160; Ortenaukreis </option>
-        <option value = "Ostalbkreis"				>&nbsp;&#160; Ostalbkreis </option>
-        <option value = "Pforzheim"					>&nbsp;&#160; Pforzheim </option>
-        <option value = "Rastatt"					>&nbsp;&#160; Rastatt </option>
-       	<option value = "Ravenburg"					>&nbsp;&#160; Ravenburg </option>
-        <option value = "Rems-Murr-Kreis"			>&nbsp;&#160; ems-Murr-Kreis </option>
-        <option value = "Reutlingen"				>&nbsp;&#160; Reutlingen </option>
-        <option value = "Rhein-Neckar-Kreis"		>&nbsp;&#160; Rhein-Neckar-Kreis </option>
-       	<option value = "Rottweil"					>&nbsp;&#160; Rottweil </option>
-        <option value = "Schwäbisch Hall"			>&nbsp;&#160; Schwäbisch Hall </option>
-        <option value = "Schwarzwald-Baar-Kreis"	>&nbsp;&#160; Schwarzwald-Baar-Kreis </option>
-        <option value = "Sigmaringen"				>&nbsp;&#160; Sigmaringen </option>
-       	<option value = "Stuttgart"					>&nbsp;&#160; Stuttgart </option>
-        <option value = "Tübingen"					>&nbsp;&#160; Tübingen </option>
-        <option value = "Tuttlingen"				>&nbsp;&#160; Tuttlingen </option>
-        <option value = "Ulm"						>&nbsp;&#160; Ulm </option>
-       	<option value = "Waldshut"					>&nbsp;&#160; Waldshut </option>
-        <option value = "Zollneralbkrei"			>&nbsp;&#160; Zollneralbkrei </option>
-        </select>
-        
-        <label for="radius"class="formlabel">Radius</label>
-        <select type="text" class="inputfield" id="radius">
-        <option value = "all"	>&nbsp;&#160; Ganz Baden-Württemberg </option>
-        <option value = "one"	>&nbsp;&#160; Mein Landkreis </option>
-        <option value = "surr"	>&nbsp;&#160; Mein und alle umliegenden Landkreise </option>
-        </select>
-     
-    	
-        <button onClick="sendProfile()" class="profilebutton">Aktualisieren</button> 
+            <label for="radius"class="formlabelSlider">Suchradius</label>
+            <div class="slidecontainer">
+              <input type="range" min="10" max="450" value="50" class="slider" step="20" id="radius" name = "radius">
+            <p><span id="slidervalue" ></span></p>
+            </div>
+           
+         
+            <label for="vaccine"class="formlabel">Bevorzugter Impfstoff</label>
+            <br> </br>
+            <label class="checkbox">Biontech/Pfizer
+                  <input type="checkbox" id = "biontech">
+            </label>
+            <br> </br>
+            
+            <label class="checkbox">Moderna
+                  <input type="checkbox" id = "moderna">
+            </label>
+            <br> </br>
+           
+            <label class="checkbox">AstraZeneca
+                  <input type="checkbox" id = "astra">
+            </label>
+            <br> </br>
+         
+            <label class="checkbox">Johnson&amp;Johnson
+                  <input type="checkbox" id = "johnson">
+            </label>
     
-    <form action="/index" method="GET">
-        <button type="submit" class= "profilebutton"> Abbruch </button>
-    </form>
-               
-</div>
-
-<div class="footer-box">
-    <p class="description" id="loginStatus">Sie sind momentan nicht angemeldet. </p>
-</div>
-
-</body>
+            <br></br>
+            
+            
+             <label for="districtOutput" class="formlabel">Ort</label> 
+             <br></br>
+            <input type="text" class="inputfield" id="city" placeholder="Bitte Ort eingeben" >
+            
+           
+            <button onClick="sendProfile()" class="profilebutton">Aktualisieren</button> 
+        
+        <form action="/index" method="GET">
+            <button type="submit" class= "profilebutton"> Abbruch </button>
+        </form>
+                   
+    </div>
+    
+    <div class="footer-box">
+        <p class="description" id="loginStatus">Sie sind momentan nicht angemeldet. </p>
+    </div>
+   
+    </body>
+    <script type = "text/javascript" src = "./clientjs/profileClient.js"> </script>
 </html>
