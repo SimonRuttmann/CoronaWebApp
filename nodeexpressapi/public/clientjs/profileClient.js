@@ -1,9 +1,18 @@
 window.onload = init();
 
+var slider = document.getElementById("radius");
+var output = document.getElementById("slidervalue");
+output.innerHTML = slider.value + " km";
+
+slider.oninput = function() {
+  output.innerHTML = this.value + " km";
+}
+
 async function init(){
     await getSessionData([setLoginStatus, setSession]);
     getUserData();
 };
+
 
 async function getUserData(){
     
@@ -25,13 +34,18 @@ async function getUserData(){
         console.log("Server is not responing");
     }
     if (result != undefined){
-        profile.gender = result.gender;
-        profile.priority = result.priority;
-        profile.prefVaccine = result.prefVaccine;
-        profile.district = result.district;
-        profile.radius = result.radius;
+       
         session.name = result.name;
-        session.email = result.name;
+        session.email = result.email;
+        
+        profile.biontech = result.biontech;
+        profile.moderna = result.moderna;
+        profile.astra = result.astra;
+        profile.johnson = result.johnson;
+        profile.city = result.city;
+        profile.radius = result.radius;
+        profile.latitude = result.latitude;            
+        profile.longitude = result.longitude;   
         updateProfileDOM();
     }
 
@@ -92,42 +106,16 @@ function updateProfileDOM(){
     document.getElementById("nameOutput").value = session.name;
     document.getElementById("emailOutput").value = session.email;
 
-    let genderTranslated;
-    switch(profile.gender){
-        case "male":      genderTranslated = "Männlich";      break;
-        case "female":    genderTranslated = "Weiblich";      break;
-        case "diverse":   genderTranslated = "Divers";        break;
-        case "unknown":   genderTranslated = "Keine Angabe";  break;
-    }
-    document.getElementById("genderOutput").value = genderTranslated;
-    
-    let priorityTranslated;
-    switch(profile.priority){
-        case "priority1": priorityTranslated = "Gruppe 1 - Höchste Priorität";    break;
-        case "priority2": priorityTranslated = "Gruppe 2 - Hohe Priorität";       break;
-        case "priority3": priorityTranslated = "Gruppe 3 - Erhöhte Priorität";    break;
-        case "priority4": priorityTranslated = "Gruppe 4 - Keine Priorität";      break          
-    }    
-    document.getElementById("priorityOutput").value = priorityTranslated;
+    let vaccineTranslated = "";
+    if(profile.biontech) vaccineTranslated += "Biontech/Pfizer ";
+    if(profile.moderna) vaccineTranslated += "Moderna ";
+    if(profile.astra) vaccineTranslated += "AstraZeneca ";
+    if(profile.johnson) vaccineTranslated += "Johnson&Johnson ";
+    if(vaccineTranslated === "") vaccineTranslated = "Keine Angabe";
 
-    let vaccineTranslated;
-    switch(profile.prefVaccine){
-        case "everything":    vaccineTranslated = "Alle zug. Impfstoffe"; break;
-        case "biontech":      vaccineTranslated = "Biontech/Pfizer";      break;
-        case "moderna":       vaccineTranslated = "Moderna";              break;
-        case "astra":         vaccineTranslated = "AstraZeneca";          break;
-        case "johnsen":       vaccineTranslated = "Johnson&amp;Johnson";  break;              
-    }
     document.getElementById("vaccineOutput").value = vaccineTranslated;
     document.getElementById("districtOutput").value = profile.district;
-
-    let radiusTranslated;
-    switch(profile.radius){
-        case "all":   radiusTranslated = "Ganz Baden-Württemberg";   break;
-        case "one":   radiusTranslated = "Mein Landkreis";   break;
-        case "surr":  radiusTranslated = "Main und alle umliegenden Landkreise";  break;
-    }
-    document.getElementById("radiusOutput").value = radiusTranslated;
+    document.getElementById("radiusOutput").value = profile.radius + " km";
 
 }
 
@@ -161,19 +149,27 @@ async function sendToServer(){
 };
 
 function getProfile(){
-    profile.gender = document.getElementById("gender").value;
-    profile.priority = document.getElementById("priority").value;
-    profile.prefVaccine = document.getElementById("vaccine").value;
-    profile.district = document.getElementById("district").value;
-    profile.radius = document.getElementById("radius").value;
+    profile.biontech = document.getElementById("biontech").checked;
+    profile.moderna = document.getElementById("moderna").checked;
+    profile.astra = document.getElementById("astra").checked;
+    profile.johnson = document.getElementById("johnson").checked;
+    profile.city = document.getElementById("city").value;
+    profile.radius = slider.value;
+    profile.latitude = 0;               //TODO
+    profile.longitude = 0;              //TODO
 }
 
-var profile = {
-    gender:     "unkown",
-    priority:   "priority4",
-    prefVaccine:"everthing",
-    district:   "unknown",
-    radius:     "all"
+
+var profile = 
+{
+    biontech:        false,                     
+    moderna:         false,                 
+    astra:           false,                 
+    johnson:         false,                  
+    latitude:        '0',               
+    longitude:       '0',           
+    city:            'none',
+    radius:           0
 }
 
 var session = {
@@ -183,23 +179,19 @@ var session = {
 }
 
 /*
-gender = ${req.body.gender}, 
-priority = ${req.body.priority}, 
-prefVaccine = ${req.body.prefVaccine},
-district = ${req.body.district},
-radius = ${req.body.radius},
-WHERE  id = ${req.body.id};
-
 CREATE TABLE IF NOT EXISTS Account (
     id          VARCHAR(255),
     name        VARCHAR(255) NOT NULL UNIQUE,
     email       VARCHAR(255) NOT NULL UNIQUE,
     password    VARCHAR(255) NOT NULL,
-    gender      ENUM('unkown', 'male', 'female', 'diverse')  DEFAULT 'unknown', 
-    prioritiy    VARCHAR(30)  DEFAULT 'priority4',
-    prefVaccine VARCHAR(50)  DEFAULT 'everything',
-    district    VARCHAR(255) DEFAULT 'unkown',
-    radius      ENUM('all', 'surr', 'one')  DEFAULT 'all',   
+    biontech    BOOLEAN,
+    moderna     BOOLEAN,
+    astra       BOOLEAN,
+    johnson     BOOLEAN,
+    latitude    VARCHAR(40) DEFAULT '0',
+    longitude   VARCHAR(40) DEFAULT '0',
+    city        VARCHAR(255) DEFAULT 'none',
+    radius      INTEGER,   
     PRIMARY KEY (id)
 );
 */
