@@ -1,8 +1,10 @@
 window.onload = init();
+var menuDisplay=false;
+
 
 function init(){
     getSessionData([setLoginStatus]);
-    fillTable();
+    fillTable(); 
 };
 
 
@@ -16,27 +18,55 @@ function init(){
 */
 function fillTable(){
 
-
-
     var td = buildTD();
-    var table = document.getElementById("tabele");
+    var table = document.getElementById("tableID");
     table.appendChild(td);
 }
 
 function buildTD(){
-    for(var i=0; i<4;i++){
 
-        var a= document.createElement(td);
+    
+
+        var a= document.createElement("td");
         a.textContent="test Impfzentrum";
-        var b= document.createElement(td);
+        var b= document.createElement("td");
         b.textContent="test Impfstoff";
-        var c= document.createElement(td);
+        var c= document.createElement("td");
         c.textContent="test Adresse";
-        var d= document.createElement(td);
+        var d= document.createElement("td");
         d.textContent="test BookingURL";
+
+    var dr = document.createElement("tr");
+
+    dr.appendChild(a);
+    dr.appendChild(b);
+    dr.appendChild(c);
+    dr.appendChild(d);
+    
+    console.log(dr);
+    return dr;
+}
+
+
+function filtermenu(){
+    var a,b;
+    if(!menuDisplay){
+        a  = document.getElementsByClassName("filterOption");
+        a[0].style.display='block';
+        menuDisplay=true;
+        b = document.getElementById("filter");
+        b.textContent="Filter einklappen"; 
+    }
+    else{
+        a = document.getElementsByClassName("filterOption");
+        a[0].style.display='none';
+        menuDisplay=false;
+        b = document.getElementById("filter");
+        b.textContent="Filter";
     }
 
 }
+
 
 
 
