@@ -184,7 +184,7 @@ async function onClicked(region, name) {
     fillCharts(name, json);
 }
 
-function reset(){
+function reset() {
     document.getElementById("diagrams").style = "display: none;";
     resetCharts();
 }
@@ -199,6 +199,7 @@ function resetCharts() {
     document.getElementById("deaths").outerHTML = '<canvas id="deaths"></canvas>';
     document.getElementById("infected").outerHTML = '<canvas id="infected"></canvas>';
     document.getElementById("vaccinated").outerHTML = '<canvas id="vaccinated"></canvas>';
+    document.getElementById("gender").outerHTML = '<canvas id="gender"></canvas>';
 }
 
 function fillCharts(name, json) {
@@ -316,9 +317,49 @@ function fillCharts(name, json) {
         }]
     };
 
-    const config = {
+    const gender = {
+        labels: ["Männlich", "Weiblich"],
+        datasets: [{
+            label: 'Gender ' + name,
+            backgroundColor: ['rgb(255, 99, 132)', 'rgb(123, 12, 231)'],
+            borderColor: ['rgb(255, 99, 132)', 'rgb(123, 12, 231)'],
+            data: [json.todesfälle_Männlich, json.todesfälle_Weiblich],
+        }]
+    };
+
+    const config1 = {
         type: 'line',
         data: deaths,
+        options: {
+            layout: {
+                padding: 10
+            }
+        }
+    };
+
+    const config2 = {
+        type: 'line',
+        data: infected,
+        options: {
+            layout: {
+                padding: 10
+            }
+        }
+    };
+
+    const config3 = {
+        type: 'line',
+        data: vaccinated,
+        options: {
+            layout: {
+                padding: 10
+            }
+        }
+    };
+
+    const config4 = {
+        type: 'pie',
+        data: gender,
         options: {
             layout: {
                 padding: 10
@@ -332,21 +373,22 @@ function fillCharts(name, json) {
 
     new Chart(
         document.getElementById('deaths'),
-        config
+        config1
     );
-
-    config.data = infected;
 
     new Chart(
         document.getElementById('infected'),
-        config
+        config2
     );
-
-    config.data = vaccinated;
 
     new Chart(
         document.getElementById('vaccinated'),
-        config
+        config3
+    );
+
+    new Chart(
+        document.getElementById('gender'),
+        config4
     );
 }
 
@@ -431,6 +473,10 @@ async function fillTable() {
 
         td = document.createElement("td");
         td.innerText = landkreise[i]["gesamtbevoelkerung"];
+        tr.appendChild(td);
+
+        td = document.createElement("td");
+        td.innerText = landkreise[i]["wochen_inzidenz"];
         tr.appendChild(td);
 
         document.getElementById("tabelleLandkreise").getElementsByTagName("tbody")[0].appendChild(tr);
