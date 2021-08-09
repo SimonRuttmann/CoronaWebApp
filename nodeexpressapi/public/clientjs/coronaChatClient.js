@@ -20,7 +20,7 @@ var topic = topics.GENERAL;
 var containerColourWhite = true;
 
 async function init(){
-    await getSessionData([setLoginStatus, setCredentials, toggleSendButton]);
+    await getSessionData([setLoginStatus, setCredentials, toggleSendButton, toggleUserlist]);
     await initializeWebsocket();
     await authorize();
     setGeneralTopic();
@@ -81,6 +81,15 @@ function toggleSendButton(data){
 			element.style.visibility = "hidden";
             element.setAttribute("disabled", true);
         }
+    }
+}
+
+function toggleUserlist(data){
+    if(data.authenticated){
+        document.getElementsByClassName("user-box")[0].style.visibility = "visible";
+    }
+    else{
+        document.getElementsByClassName("user-box")[0].style.visibility = "hidden";
     }
 }
 
@@ -262,6 +271,7 @@ function displayMessage(message, time, username){
 
     */
     console.log("displaying message")
+    time = formatTime(time);
     var container = document.createElement("div");
     
     if(containerColourWhite)    container.setAttribute("class", "container-white");            
@@ -295,54 +305,37 @@ function displayUser(username){
 }
 
 
-//window.onunload
 
-//Chrome-Browser BuildIn WebSockets
-//socket = new WebSocket('ws://localhost:3000')
-//socket.onmessage = function(message){ console.log(message)}
-//socket.send("Hallo vom Client")
 
-/*
+  function formatTime(millis){
+    var date = new Date(millis);
+    var h = date.getHours();
+    var m = date.getMinutes();
+    var s = date.getSeconds();
+    var d = date.getDay();
+    h = addZeros(h); 
+    m = addZeros(m); 
+    s = addZeros(s); 
+    d = setDay(d);
+    return d + " um " + h + ":" + m + ":" + s;
+  }
 
-(function() {
-    const sendBtn = document.querySelector('#send');
-    const messages = document.querySelector('#messages');
-    const messageBox = document.querySelector('#messageBox');
-
-    let ws;
-
-    function showMessage(message) {
-      messages.textContent += `\n\n${message}`;
-      messages.scrollTop = messages.scrollHeight;
-      messageBox.value = '';
+  
+function setDay(val){
+    switch(val){
+      case 1: return "Montag";
+      case 2:	return "Dienstag";
+      case 3: return "Mittwoch";
+      case 4: return "Donnerstag";
+      case 5: return "Freitag";
+      case 6: return "Samstag";
+      case 0: return "Sonntag";
     }
+  }
 
-    function init() {
-      if (ws) {
-        ws.onerror = ws.onopen = ws.onclose = null;
-        ws.close();
-      }
-
-      ws = new WebSocket('ws://localhost:6969');
-      ws.onopen = () => {
-        console.log('Connection opened!');
-      }
-      ws.onmessage = ({ data }) => showMessage(data);
-      ws.onclose = function() {
-        ws = null;
-      }
+  function addZeros(val){
+    if(val < 10) {
+        val = "0" + val
     }
-
-    sendBtn.onclick = function() {
-      if (!ws) {
-        showMessage("No WebSocket connection :(");
-        return ;
-      }
-
-      ws.send(messageBox.value);
-      showMessage(messageBox.value);
-    }
-
-    init();
-  })();
-*/
+  return val;
+}

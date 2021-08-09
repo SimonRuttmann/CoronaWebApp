@@ -75,8 +75,23 @@ function getPwFromMySql(email){
     })
 }
 
-
-
+async function createMongoTTL(){
+    
+    try{
+     
+        await client.connect();
+     
+        const database = client.db(ourDb);
+       
+        const chatColl = await database.collection("chat").createIndex({"createdAt":1},{expireAfterSeconds: 86400});
+    
+       console.log("Created TTL");
+    }
+    finally{
+        await client.close();
+    }
+}
+createMongoTTL();
 //<----------------- Mongo Db ------------------>//
 
 async function runMongo(mongoQuery) {
@@ -130,12 +145,15 @@ function getPreviousMessagesFromMongo(topic){
 
 
 async function saveMessageInMongo(message){
-    const doc = message;
+    var doc = message;
     //const doc =  {
     //    title: "Record of a Shriveled Datum",
     //    content: "No bytes, no problem. Just insert a document, in MongoDB",
     //  }
    
+   // doc = JSON.parse(doc);
+    doc.createdAt = new Date();
+    //doc = JSON.stringify(doc);
     return new Promise( async(resolve, reject) => {
 
         try{
