@@ -5,7 +5,7 @@ const geocode = require('./geocoding.js');
 const data_prep = require('./data_preparation_functions.js');
 
 router.get('/', async (req, res) => {
-	res.send(await geocode.calcGeocodeForAdress({"Ort":"Tuebingen","Platz":"72072","Land":"Deutschland"}));
+	res.send(await geocode.calcGeocodeForAdress({ "Ort": "Tuebingen", "Platz": "72072", "Land": "Deutschland" }));
 	//res.send(await geocode.calcGeocodeForCompleteDB())
 });
 router.get('/overview', async (req, res) => {
@@ -40,10 +40,37 @@ router.get('/overview', async (req, res) => {
 	res.send(response);
 });
 
+router.get('/vaccination', async (req, res) => {
+	let response = [];
+	let tmp,data2, data = await MongoDB.find({}, "vaccinationPlacesBW");
+
+	console.log(data.length)
+	for (let i in data) {
+		tmp={
+			"Zentrumsname": data[i].Zentrumsname,
+			"Adresse": data[i].Adress,
+			"PLZ": data[i].PLZ,
+			"Ort": data[i].Ort,
+			"BookingURL": data[i].BookingURL,
+			"Vaccines": data[i].Vaccines
+		}
+		for(let j in tmp.Vaccines){
+			data2 = (await MongoDB.find({"Slug":tmp.Vaccines[j].Slug}, "vaccinationDatesBW"))[0];
+			tmp.Vaccines[j].Available=data2.Available;
+			tmp.Vaccines[j].NoBooking=data2.NoBooking;
+		}
+		console.log("Push it"+response.length)
+		response.push(tmp)
+	}
+
+	if (!response.length > 0) response = ({ "error": true, "no_data_from": "vaccinationPlacesBW" })
+	res.send(response);
+});
+
 //Schickt die Daten für alle Districte oder für eines mit Parameterangabe, nach möglichkeit Historische Daten
 router.get('/district', async (req, res) => {
-	let param=null,response;
-	if( req.query.ags!=undefined || req.query.district != undefined){
+	let param = null, response;
+	if (req.query.ags != undefined || req.query.district != undefined) {
 		if (req.query.ags != undefined) param = req.query.ags;
 		else {
 			try {
@@ -52,7 +79,7 @@ router.get('/district', async (req, res) => {
 		}
 	}
 	try {
-		if (param == null || param==undefined) {
+		if (param == null || param == undefined) {
 
 			response = await getDistrictsFormated();
 
@@ -72,8 +99,8 @@ router.get('/district', async (req, res) => {
 
 			const deaths_female = data_prep.getDeathsForNewestData(infectionsDBFemale);
 			const deaths_male = data_prep.getDeathsForNewestData(infectionsDBMale);
-			const deaths_agegroup1 = data_prep.getDeathsForNewestData(infectionsDBAgeGroup1);  
-			const deaths_agegroup2 = data_prep.getDeathsForNewestData(infectionsDBAgeGroup2); 
+			const deaths_agegroup1 = data_prep.getDeathsForNewestData(infectionsDBAgeGroup1);
+			const deaths_agegroup2 = data_prep.getDeathsForNewestData(infectionsDBAgeGroup2);
 			const deaths_agegroup3 = data_prep.getDeathsForNewestData(infectionsDBAgeGroup3);
 			const deaths_agegroup4 = data_prep.getDeathsForNewestData(infectionsDBAgeGroup4);
 			const deaths_agegroup5 = data_prep.getDeathsForNewestData(infectionsDBAgeGroup5);
