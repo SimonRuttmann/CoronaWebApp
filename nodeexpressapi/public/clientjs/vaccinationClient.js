@@ -9,10 +9,71 @@ slider.oninput = function() {
   output.innerHTML = this.value + " km";
 }
 
+var profile = 
+{
+    biontech:        false,                     
+    moderna:         false,                 
+    astra:           false,                 
+    johnson:         false,                  
+    latitude:        '0',               
+    longitude:       '0',           
+    city:            'none',
+    radius:           0
+}
+
 function init(){
     getSessionData([setLoginStatus]);
     fillTable(); 
+    
 };
+
+async function getUserData(){
+    
+    let result;
+    try{
+        let response = await fetch('/user/getUserData');
+        if(response.status != 200) {
+            console.log("Received status: " + response.status);
+            return;
+        }
+        
+        //reads response stream to completion
+        result = await response.text();
+        console.log(result);
+        result = JSON.parse(result);
+        
+    }
+    catch(e){
+        console.log("Server is not responing");
+    }
+    if (result != undefined){
+        
+        profile.biontech = result.biontech;
+        profile.moderna = result.moderna;
+        profile.astra = result.astra;
+        profile.johnson = result.johnson;
+        profile.city = result.city;
+        profile.radius = result.radius;
+        profile.latitude = result.latitude;            
+        profile.longitude = result.longitude;   
+        updateFilterDOM();
+    }
+
+}
+
+function updateFilterDOM(){
+
+    
+    if(profile.biontech) document.getElementById("biontech").checked = true;
+    if(profile.moderna) document.getElementById("moderna").checked = true;
+    if(profile.astra) document.getElementById("astra").checked = true;
+    if(profile.johnson) document.getElementById("johnson").checked = true;
+    
+
+    
+    document.getElementById("city").value = profile.district;
+    document.getElementById("radius").value = profile.radius + " km";
+}
 
 
 /*
@@ -107,5 +168,6 @@ function setLoginStatus(data){
         //Modify Navigationbar to Logout    
         document.getElementById("RefToLogin").textContent="Abmelden";
         document.getElementById("RefToLogin").setAttribute("href", "/logout");
+        getUserData();
     }
 }
