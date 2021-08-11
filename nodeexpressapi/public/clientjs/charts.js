@@ -184,6 +184,8 @@ async function onClicked(region, name) {
         texts[i].style = "display: none;";
     }
 
+    document.getElementById("hinweis").style = "display: none; align-items: center; justify-content: center;";
+
     fillCharts(name, json);
     fillContainer(name);
 }
@@ -230,6 +232,7 @@ async function getOverview(district) {
 
 function reset() {
     document.getElementById("diagrams").style = "display: none;";
+    document.getElementById("hinweis").style = "display: flex; align-items: center; justify-content: center;";
     resetCharts();
 }
 
