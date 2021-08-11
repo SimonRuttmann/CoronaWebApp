@@ -274,6 +274,7 @@ function buildNewsblock(artikel){
     var url = document.createElement("a")
     url.textContent = "Zum Originalartikel";
     url.href=artikel.url;
+    url.classList.add('links');
     summary.appendChild(title);
     summary.appendChild(umbruch);
     summary.appendChild(zus);
