@@ -247,6 +247,7 @@ function resetCharts() {
     document.getElementById("infected").outerHTML = '<canvas id="infected"></canvas>';
     document.getElementById("vaccinated").outerHTML = '<canvas id="vaccinated"></canvas>';
     document.getElementById("gender").outerHTML = '<canvas id="gender"></canvas>';
+    document.getElementById("altersgruppen").outerHTML = '<canvas id="altersgruppen"></canvas>';
 }
 
 function fillCharts(name, json) {
@@ -380,6 +381,16 @@ function fillCharts(name, json) {
         }]
     };
 
+    const altersgruppen = {
+        labels: ["0-4", "5-14", "15-34", "35-59", "60-79"],
+        datasets: [{
+            label: 'Gender ' + name,
+            backgroundColor: ['rgb(255, 99, 132)', 'rgb(123, 12, 231)', 'rgb(123, 45, 123)', 'rgb(45, 255, 43)', 'rgb(255, 54, 255)'],
+            borderColor: ['rgb(255, 99, 132)', 'rgb(123, 12, 231)', 'rgb(123, 45, 123)', 'rgb(45, 255, 43)', 'rgb(255, 54, 255)'],
+            data: [json["todesfälle_Alter00-04"], json["todesfälle_Alter05-14"], json["todesfälle_Alter15-34"], json["todesfälle_Alter35-59"], json["todesfälle_Alter60-79"]],
+        }]
+    };
+
     const config1 = {
         type: 'line',
         data: deaths,
@@ -420,6 +431,16 @@ function fillCharts(name, json) {
         }
     };
 
+    const config5 = {
+        type: 'pie',
+        data: altersgruppen,
+        options: {
+            layout: {
+                padding: 10
+            }
+        }
+    };
+
     Chart.defaults.color = 'rgb(255, 255, 255)';
     Chart.defaults.borderColor = 'rgb(255, 255, 255, 0.1)';
     Chart.defaults.backgroundColor = 'rgb(255, 255, 255)';
@@ -442,6 +463,11 @@ function fillCharts(name, json) {
     new Chart(
         document.getElementById('gender'),
         config4
+    );
+
+    new Chart(
+        document.getElementById('altersgruppen'),
+        config5
     );
 }
 
