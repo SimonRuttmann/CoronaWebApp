@@ -20,7 +20,8 @@
         <div class="infobox">
             <h2 class = "heading"> Impfangebote </h2>
             <p class="description">Wenn Sie eingeloggt sind, werden die Ergebnisse bereits nach Ihren Profilangaben gefiltert. 
-                <br>Weitere Filteranfragen sind natürlich möglich. </p>
+                <br>Weitere Filteranfragen sind natürlich möglich. 
+                <br> Für die Distanzberechnung ist die Orteingabe notwendig.</p>
         </div>
         <div class="buttonbox">
             <button class="button" id="filter" onclick="filtermenu()" type="button">Filter</button> 
@@ -76,19 +77,19 @@
                     
                 </div>
                 <div class="buttonfilterBox">
-                    <button class= "buttonfilter" id="filterOK" onclick="getfilter" type="button">übernehmen</button> 
+                    <button class= "buttonfilter" id="filterOK" onclick="getfilter()" type="button">übernehmen</button> 
                 </div>
                 
             </div>
         </div>
     
-        <table id="tableID" class="tabelle">
+        <table id="tableID" class="tabelle">          
             <tr>
                 <th id="distance" >Distanz</th>
                 <th>Impfzentrum</th>
                 <th>Impfstoff</th>
                 <th>Adresse</th>
-                <th>BookingURL</th>
+                <th>Kontakt</th>
             </tr>
             
           </table>
@@ -99,5 +100,6 @@
             <p class="description" id="loginStatus">Sie sind momentan nicht angemeldet. </p>
         </div>
         <script type = "text/javascript" src = "./clientjs/vaccinationClient.js"> </script>
+        
     </body>
 </html>
