@@ -110,16 +110,16 @@ router.get('/district', async (req, res) => {
 			const incidencePerWeek = data_prep.getIncidenceThisWeek(districtsBWDB);
 
 			response = {
-				"todesfälle_Weiblich": deaths_female,
-				"todesfälle_Männlich": deaths_male,
-				"todesfälle_Alter00-04": deaths_agegroup1,
-				"todesfälle_Alter05-14": deaths_agegroup2,
-				"todesfälle_Alter15-34": deaths_agegroup3,
-				"todesfälle_Alter35-59": deaths_agegroup4,
-				"todesfälle_Alter60-79": deaths_agegroup5,
-				"Tote_pro_Woche": deathsPerWeek,
-				"Fälle_pro_Woche": casesPerWeek,
-				"Geimpte_pro_Woche": vaccinatedPerWeek,
+				"Weiblich_perWeek": deaths_female,
+				"Männlich_perWeek": deaths_male,
+				"Alter00-04_perWeek": deaths_agegroup1,
+				"Alter05-14:perWeek": deaths_agegroup2,
+				"Alter15-34_perWeek": deaths_agegroup3,
+				"Alter35-59_perWeek": deaths_agegroup4,
+				"Alter60-79_perWeek": deaths_agegroup5,
+				//"Tote_pro_Woche": deathsPerWeek,
+				//"Fälle_pro_Woche": casesPerWeek,
+				"Geimpte_per_Week": vaccinatedPerWeek,
 				"Inzidenz_aktuell": incidencePerWeek
 			};
 
