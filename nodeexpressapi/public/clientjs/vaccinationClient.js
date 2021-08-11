@@ -1,9 +1,79 @@
 window.onload = init();
+var menuDisplay=false;
+
+var slider = document.getElementById("radius");
+var output = document.getElementById("slidervalue");
+output.innerHTML = slider.value + " km";
+
+slider.oninput = function() {
+  output.innerHTML = this.value + " km";
+}
+
+var profile = 
+{
+    biontech:        false,                     
+    moderna:         false,                 
+    astra:           false,                 
+    johnson:         false,                  
+    latitude:        '0',               
+    longitude:       '0',           
+    city:            'none',
+    radius:           0
+}
 
 function init(){
     getSessionData([setLoginStatus]);
-    fillTable();
+    fillTable(); 
+    
 };
+
+async function getUserData(){
+    
+    let result;
+    try{
+        let response = await fetch('/user/getUserData');
+        if(response.status != 200) {
+            console.log("Received status: " + response.status);
+            return;
+        }
+        
+        //reads response stream to completion
+        result = await response.text();
+        console.log(result);
+        result = JSON.parse(result);
+        
+    }
+    catch(e){
+        console.log("Server is not responing");
+    }
+    if (result != undefined){
+        
+        profile.biontech = result.biontech;
+        profile.moderna = result.moderna;
+        profile.astra = result.astra;
+        profile.johnson = result.johnson;
+        profile.city = result.city;
+        profile.radius = result.radius;
+        profile.latitude = result.latitude;            
+        profile.longitude = result.longitude;   
+        updateFilterDOM();
+    }
+
+}
+
+function updateFilterDOM(){
+
+    
+    if(profile.biontech) document.getElementById("biontech").checked = true;
+    if(profile.moderna) document.getElementById("moderna").checked = true;
+    if(profile.astra) document.getElementById("astra").checked = true;
+    if(profile.johnson) document.getElementById("johnson").checked = true;
+    
+
+    
+    document.getElementById("city").value = profile.district;
+    document.getElementById("radius").value = profile.radius + " km";
+}
 
 
 /*
@@ -16,27 +86,55 @@ function init(){
 */
 function fillTable(){
 
-
-
     var td = buildTD();
-    var table = document.getElementById("tabele");
+    var table = document.getElementById("tableID");
     table.appendChild(td);
 }
 
 function buildTD(){
-    for(var i=0; i<4;i++){
 
-        var a= document.createElement(td);
+    
+
+        var a= document.createElement("td");
         a.textContent="test Impfzentrum";
-        var b= document.createElement(td);
+        var b= document.createElement("td");
         b.textContent="test Impfstoff";
-        var c= document.createElement(td);
+        var c= document.createElement("td");
         c.textContent="test Adresse";
-        var d= document.createElement(td);
+        var d= document.createElement("td");
         d.textContent="test BookingURL";
+
+    var dr = document.createElement("tr");
+
+    dr.appendChild(a);
+    dr.appendChild(b);
+    dr.appendChild(c);
+    dr.appendChild(d);
+    
+    console.log(dr);
+    return dr;
+}
+
+
+function filtermenu(){
+    var a,b;
+    if(!menuDisplay){
+        a  = document.getElementsByClassName("filterOption");
+        a[0].style.display='block';
+        menuDisplay=true;
+        b = document.getElementById("filter");
+        b.textContent="Filter einklappen"; 
+    }
+    else{
+        a = document.getElementsByClassName("filterOption");
+        a[0].style.display='none';
+        menuDisplay=false;
+        b = document.getElementById("filter");
+        b.textContent="Filter";
     }
 
 }
+
 
 
 
@@ -70,5 +168,6 @@ function setLoginStatus(data){
         //Modify Navigationbar to Logout    
         document.getElementById("RefToLogin").textContent="Abmelden";
         document.getElementById("RefToLogin").setAttribute("href", "/logout");
+        getUserData();
     }
 }

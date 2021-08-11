@@ -2,7 +2,7 @@
     <head>
         <title>Impfangebote</title>
         <link rel = "stylesheet" href = "./stylesheets/vaccination.css" type="text/css"> </link>
-        <script type = "text/javascript" src = "./clientjs/vaccinationClient.js"> </script>
+        
     </head>
     
     <body>
@@ -17,35 +17,63 @@
                 <li><a href="/profile">Profil</a></li>
             </ul>
         </div>
+        <div class="infobox">
+            <h2 class = "heading"> Impfangebote </h2>
+            <p class="description">Wenn Sie eingeloggt sind, werden die Ergebnisse bereits nach Ihren Profilangaben gefiltert. 
+                <br>Weitere Filteranfragen sind natürlich möglich. </p>
+        </div>
         <div class="buttonbox">
             <button class="button" id="filter" onclick="filtermenu()" type="button">Filter</button> 
             <button class="button"  id="refresh" onclick="refresh()" type="button">Aktualisieren</button>
             <div class="filterOption">
                 <div class="label">
-                    <label for="gender"class="formlabel">Impfzentrum</label>
-                    <label for="gender"class="formlabel">Impfstoff</label>
-                    <label for="gender"class="formlabel">Ort</label>
+                    <label for="Impfstoff"class="impfstofflabel">Impfstoffe</label>
+                    <label for="radius"class="formlabel">Suchradius</label>
+                    <label for="ort"class="formlabel">Ort</label>
+                    
                 </div>
-                <div class="input">
-                    <select type="text" class="inputfield" id="gender">
-                        <option value = "unknown"	>&nbsp;&#160; Keine Angabe </option>
-                        <option value = "male"		>&nbsp;&#160; Männlich </option>
-                        <option value = "female"	>&nbsp;&#160; Weiblich </option>
-                        <option value = "diverse"	>&nbsp;&#160; Divers </option>
-                    </select>  
+                <div class="inputBox">
+                    <div class="checkboxBox">
+                        <label class="checkbox">Biontech/Pfizer
+                            <input class="auswahl" type="checkbox" id = "biontech">
+                            <span class ="checkmark"></span>
+                        </label>
+                        <br> </br>
+                        
+                        <label class="checkbox">Moderna
+                            <input class="auswahl" type="checkbox" id = "moderna">
+                            <span class ="checkmark"></span>
+                        </label>
+                            <br> </br>
+                        
+                        <label class="checkbox">AstraZeneca
+                            <input class="auswahl" type="checkbox" id = "astra">
+                            <span class ="checkmark"></span>
+                        </label>
+                        <br> </br>
+                    
+                        <label class="checkbox">Johnson&amp;Johnson
+                            <input class="auswahl" type="checkbox" id = "johnson">
+                            <span class ="checkmark"></span>
+                        </label>
                 
-                    <select type="text" class="inputfield" id="gender">
-                        <option value = "unknown"	>&nbsp;&#160; Keine Angabe </option>
-                        <option value = "male"		>&nbsp;&#160; Männlich </option>
-                        <option value = "female"	>&nbsp;&#160; Weiblich </option>
-                        <option value = "diverse"	>&nbsp;&#160; Divers </option>
-                    </select>  
-                    <select type="text" class="inputfield" id="gender">
-                        <option value = "unknown"	>&nbsp;&#160; Keine Angabe </option>
-                        <option value = "male"		>&nbsp;&#160; Männlich </option>
-                        <option value = "female"	>&nbsp;&#160; Weiblich </option>
-                        <option value = "diverse"	>&nbsp;&#160; Divers </option>
-                    </select> 
+                        <br></br>    
+                    </div>  
+                    
+
+                    <div class="slidecontainer">
+                        <input type="range" min="10" max="450" value="50" class="slider" step="20" id="radius" name = "radius">
+                        <p><span id="slidervalue"></span></p>
+                    </div>
+                    
+
+                    <div class="ortInput">
+                        <input type="text" class="inputfield" id="city" placeholder="Bitte Ort eingeben" >
+                    </div>
+                    
+                    
+                    
+                    
                 </div>
                 <div class="buttonfilterBox">
                     <button class= "buttonfilter" id="filterOK" onclick="getfilter" type="button">übernehmen</button> 
@@ -54,33 +82,15 @@
             </div>
         </div>
     
-        <table id="tabele" class="tabelle">
+        <table id="tableID" class="tabelle">
             <tr>
-              <th>Impfzentrum</th>
-              <th>Impfstoff</th>
-              <th>Adresse</th>
-              <th>BookingURL</th>
+                <th id="distance" >Distanz</th>
+                <th>Impfzentrum</th>
+                <th>Impfstoff</th>
+                <th>Adresse</th>
+                <th>BookingURL</th>
             </tr>
-            <tr>
-              <td>Miljöh</td>
-              <td>Kiez</td>
-              <td>Bierdampf</td>
-             </tr>
-             <tr>
-               <td>Buletten</td>
-               <td>Frikadellen</td>
-               <td>Fleischpflanzerl</td>
-             </tr>
-             <tr>
-                <td>Buletten</td>
-                <td>Frikadellen</td>
-                <td>Fleischpflanzerl</td>
-              </tr>
-              <tr>
-                <td>Buletten</td>
-                <td>Frikadellen</td>
-                <td>Fleischpflanzerl</td>
-              </tr>
+            
           </table>
  
 
@@ -88,5 +98,6 @@
         <div class="footer-box">
             <p class="description" id="loginStatus">Sie sind momentan nicht angemeldet. </p>
         </div>
+        <script type = "text/javascript" src = "./clientjs/vaccinationClient.js"> </script>
     </body>
 </html>

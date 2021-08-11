@@ -5,7 +5,7 @@ const geocode = require('./geocoding.js');
 const data_prep = require('./data_preparation_functions.js');
 
 router.get('/', async (req, res) => {
-	res.send(await geocode.calcGeocodeForAdress({"Ort":"Tuebingen","Platz":"72072","Land":"Deutschland"}));
+	res.send(await geocode.calcGeocodeForAdress({ "Ort": "Tuebingen", "Platz": "72072", "Land": "Deutschland" }));
 	//res.send(await geocode.calcGeocodeForCompleteDB())
 });
 router.get('/overview', async (req, res) => {
@@ -40,10 +40,37 @@ router.get('/overview', async (req, res) => {
 	res.send(response);
 });
 
+router.get('/vaccination', async (req, res) => {
+	let response = [];
+	let tmp,data2, data = await MongoDB.find({}, "vaccinationPlacesBW");
+
+	console.log(data.length)
+	for (let i in data) {
+		tmp={
+			"Zentrumsname": data[i].Zentrumsname,
+			"Adresse": data[i].Adress,
+			"PLZ": data[i].PLZ,
+			"Ort": data[i].Ort,
+			"BookingURL": data[i].BookingURL,
+			"Vaccines": data[i].Vaccines
+		}
+		for(let j in tmp.Vaccines){
+			data2 = (await MongoDB.find({"Slug":tmp.Vaccines[j].Slug}, "vaccinationDatesBW"))[0];
+			tmp.Vaccines[j].Available=data2.Available;
+			tmp.Vaccines[j].NoBooking=data2.NoBooking;
+		}
+		console.log("Push it"+response.length)
+		response.push(tmp)
+	}
+
+	if (!response.length > 0) response = ({ "error": true, "no_data_from": "vaccinationPlacesBW" })
+	res.send(response);
+});
+
 //Schickt die Daten für alle Districte oder für eines mit Parameterangabe, nach möglichkeit Historische Daten
 router.get('/district', async (req, res) => {
-	let param=null,response;
-	if( req.query.ags!=undefined || req.query.district != undefined){
+	let param = null, response;
+	if (req.query.ags != undefined || req.query.district != undefined) {
 		if (req.query.ags != undefined) param = req.query.ags;
 		else {
 			try {
@@ -52,7 +79,7 @@ router.get('/district', async (req, res) => {
 		}
 	}
 	try {
-		if (param == null || param==undefined) {
+		if (param == null || param == undefined) {
 
 			response = await getDistrictsFormated();
 
@@ -60,24 +87,24 @@ router.get('/district', async (req, res) => {
 		else {
 			const historyDeathsDB = (await MongoDB.find({ "ags": param }, "csvRKI", { "historyDeathsRKI": 1, "_id": 0 }));
 			const historyCasesDB = await MongoDB.find({ "ags": param }, "csvRKI", { "historyCasesRKI": 1, "_id": 0 });
-			const infectionsDBFemale = await MongoDB.find({ "ags": param, "geschlecht": "W" }, "infectionsCSVBW");
-			const infectionsDBMale = await MongoDB.find({ "ags": param, "geschlecht": "M" }, "infectionsCSVBW");
-			const infectionsDBAgeGroup1 = await MongoDB.find({ "ags": param, "altersgruppe": "A00-A04" }, "infectionsCSVBW"); 	//A00-A04
-			const infectionsDBAgeGroup2 = await MongoDB.find({ "ags": param, "altersgruppe": "A05-A14" }, "infectionsCSVBW");	//A05-A14
-			const infectionsDBAgeGroup3 = await MongoDB.find({ "ags": param, "altersgruppe": "A15-A34" }, "infectionsCSVBW");	//A15-A34
-			const infectionsDBAgeGroup4 = await MongoDB.find({ "ags": param, "altersgruppe": "A35-A59" }, "infectionsCSVBW");	//A35-A59
-			const infectionsDBAgeGroup5 = await MongoDB.find({ "ags": param, "altersgruppe": "A60-A79" }, "infectionsCSVBW");	//A60-A79
+			const infectionsDBFemale = await MongoDB.find({ "ags": param, "geschlecht": "W" }, "infectionsCSVBWAll");
+			const infectionsDBMale = await MongoDB.find({ "ags": param, "geschlecht": "M" }, "infectionsCSVBWAll");
+			const infectionsDBAgeGroup1 = await MongoDB.find({ "ags": param, "altersgruppe": "A00-A04" }, "infectionsCSVBWAll"); 	//A00-A04
+			const infectionsDBAgeGroup2 = await MongoDB.find({ "ags": param, "altersgruppe": "A05-A14" }, "infectionsCSVBWAll");	//A05-A14
+			const infectionsDBAgeGroup3 = await MongoDB.find({ "ags": param, "altersgruppe": "A15-A34" }, "infectionsCSVBWAll");	//A15-A34
+			const infectionsDBAgeGroup4 = await MongoDB.find({ "ags": param, "altersgruppe": "A35-A59" }, "infectionsCSVBWAll");	//A35-A59
+			const infectionsDBAgeGroup5 = await MongoDB.find({ "ags": param, "altersgruppe": "A60-A79" }, "infectionsCSVBWAll");	//A60-A79
 			const districtsBWDB = await MongoDB.find({ "ags": param }, "districtsBW")
 			const vaccinationAll = await MongoDB.find({ "ags": param }, "vaccinationsCSVBWAll")
 
-			const deaths_female = data_prep.getDeathsForNewestData(infectionsDBFemale);
-			const deaths_male = data_prep.getDeathsForNewestData(infectionsDBMale);
-			const deaths_agegroup1 = data_prep.getDeathsForNewestData(infectionsDBAgeGroup1);  
-			const deaths_agegroup2 = data_prep.getDeathsForNewestData(infectionsDBAgeGroup2); 
-			const deaths_agegroup3 = data_prep.getDeathsForNewestData(infectionsDBAgeGroup3);
-			const deaths_agegroup4 = data_prep.getDeathsForNewestData(infectionsDBAgeGroup4);
-			const deaths_agegroup5 = data_prep.getDeathsForNewestData(infectionsDBAgeGroup5);
-			const deathsPerWeek = data_prep.getDeathsPerWeek(historyDeathsDB);
+			const deaths_female = data_prep.getDeathsPerWeekCSV(infectionsDBFemale);
+			const deaths_male = data_prep.getDeathsPerWeekCSV(infectionsDBMale);
+			const deaths_agegroup1 =data_prep.getDeathsPerWeekCSV(infectionsDBAgeGroup1);
+			const deaths_agegroup2 =data_prep.getDeathsPerWeekCSV(infectionsDBAgeGroup2);
+			const deaths_agegroup3 =data_prep.getDeathsPerWeekCSV(infectionsDBAgeGroup3);
+			const deaths_agegroup4 =data_prep.getDeathsPerWeekCSV(infectionsDBAgeGroup4);
+			const deaths_agegroup5 =data_prep.getDeathsPerWeekCSV(infectionsDBAgeGroup5);
+			const deathsPerWeek = data_prep.getDeathsPerWeekRKI(historyDeathsDB);
 			const casesPerWeek = data_prep.getCasesPerWeek(historyCasesDB);
 			const vaccinatedPerWeek = data_prep.getVaccinatedPerWeek(vaccinationAll);
 			const incidencePerWeek = data_prep.getIncidenceThisWeek(districtsBWDB);

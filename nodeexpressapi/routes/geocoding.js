@@ -46,6 +46,7 @@ async function calcGeocodeForCompleteDB() {
 }
 
 function filterGermanLetters(string) {
+    if(string==undefined) return string;
     string = string.replace("ß", "ss");
     string = string.replace("ä", "ae");
     string = string.replace("ö", "oe");
@@ -73,7 +74,7 @@ async function calcGeocodeForAdress(adress) {
     //let response =request(options, callback);
     let response = "ERROR NO RESPONSE SET";
     //const db = await MongoDB.find({ "Ort": "Bad Mergentheim" }, "vaccinationPlacesBW")
-    let strasse = filterGermanLetters(filterGermanLettersadress.Adress);
+    let strasse = filterGermanLetters(adress.Adress);
     let ort = filterGermanLetters(adress.Ort);
     let land = "Germany";
     let platz = adress.Platz;
