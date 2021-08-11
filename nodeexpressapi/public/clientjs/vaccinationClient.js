@@ -320,7 +320,30 @@ async function getfilter(){
             lon1=profile.longitude;
         }
         else{// berechnung der lat und lon vom Standort 
+            var query="/data/geocode/city?c="+city;
+                try{
+                    var geoData= await fetch(query);
+                    geo = await geoData.text();
+                    geo = JSON.parse(geo);
+                    
+                }catch(e){
+                    console.log("Server is not responing: geoDaten einer city"+e);
+                }
+                if (geo != undefined){
+                    
+                   lon1= geo.features[0].geometry.coordinates[0];
+                   lat1= geo.features[0].geometry.coordinates[1];
+                   console.log("test abfrage geo " +lon1);
+                   console.log(geo);
 
+                }
+                else{
+                    var a = document.createElement("caption");
+                    a.textContent="Fehlerhafte Eingabe im Feld Ort";
+                    a.classList.add('error');
+                    var table =document.getElementsByTagName("table")[0];
+                    table.insertBefore(a, table.firstChild); 
+                }
         }
             
             // berechnung mit koordinaten von city
@@ -328,27 +351,18 @@ async function getfilter(){
                 console.log(i);
                 var lon2=copyResult[i].Geocode.coordinates[0];
                 var lat2=copyResult[i].Geocode.coordinates[1];
-                console.log("long "+lon2+" lat "+lat2);
-
+                //console.log("long "+lon2+" lat "+lat2);
+                //console.log("lat1"+lat1+"&long1="+lon1+"&lat2="+lat2+"&long2="+lon2);
                 var query="/data/geocode/distance?lat1="+lat1+"&long1="+lon1+"&lat2="+lat2+"&long2="+lon2;
                 try{
                     var d= await fetch(query);
                     dist = await d.text();
-                    dist = JSON.parse(dist);
+                    console.log("dist: "+dist+" d: "+d);
                     
                 }catch(e){
-                    console.log("Server is not responing");
+                    console.log("Server is not responing"+e);
                 }
-                // wenn error kommt
-                if(dist.error != undefined){
-                    // var a = document.createElement("caption");
-                    // a.textContent="Aktuell können keine Impfangebote angezeigt werden";
-                    // a.classList.add('error');
-                    // var table =document.getElementsByTagName("table")[0];
-                    // table.insertBefore(a, table.firstChild);
-                    
-                }
-                else if (dist != undefined){
+                if (dist != undefined){
                     
                     copyResult[i].Distance = dist;
 
@@ -356,12 +370,14 @@ async function getfilter(){
  
             }
             //realResult=sortJSON(realResult,"Distance",123);
-            copyResult.sort(GetSortOrder("Distance"));
-            console.log(copyResult);
+            //copyResult.sort(GetSortOrder("Distance"));
+            //console.log(copyResult);
+            copyResult.sort(function(a, b){
+                return a.Distance - b.Distance;
+            });
             for (var i in copyResult){
-                if(copyResult[i].Distance <= distValue ) gefiltertResult.push(copyResult[i]);
+                if(Number(copyResult[i].Distance) <= distValue ) gefiltertResult.push(copyResult[i]);
             }
-            
             gefiltertResult = filterImpfstoff(gefiltertResult);
             
 
@@ -373,10 +389,11 @@ async function getfilter(){
                 table.insertBefore(a, table.firstChild);  
                 }
             else{
-
+                console.log(gefiltertResult);
+                
                 fillTable(gefiltertResult);
             }
-        
+            
 
         //rechne geocode von city aus (eingegebener Value)
 
@@ -409,6 +426,7 @@ async function getfilter(){
 
     
 }
+
 function filterImpfstoff(gefiltertResult){
     var biontech = document.getElementById("biontech").checked;
     var moderna = document.getElementById("moderna").checked;
@@ -454,9 +472,7 @@ function filterImpfstoff(gefiltertResult){
                         break;
                 }
             }
-            //console.log(i);
-            //console.log(stoff)
-            //console.log(impfstoffe);
+
             
         }
     }
@@ -474,6 +490,9 @@ function GetSortOrder(prop){
        return 0;
     }
  }
+ function compareNumbers(a, b) {
+    return a - b;
+  }
 
 
 

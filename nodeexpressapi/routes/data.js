@@ -164,9 +164,22 @@ router.get('/geocode/distance', (req,res) =>{
 	const lat1=req.query.lat1;
 	const lat2=req.query.lat2;
 	const lon1=req.query.long1;
-	const lon2=req.query.long2
+	const lon2=req.query.long2;
 	if(lat1==undefined || lat2== undefined || lon1 == undefined|| lon2==undefined) res.send("Parameters not defined")
 	res.send(String(getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2)))
+})
+
+
+//Zugriff über /data/geocode/city?c=X
+router.get('/geocode/city', async (req,res) =>{
+	const city = req.query.c;
+	adress={
+		"Ort":city,
+		"Land":"Musterland"
+	}
+	if(city == undefined) res.send("Paramerers not defied");
+
+	res.send(await geocode.calcGeocodeForAdress(adress));
 })
 
 function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
