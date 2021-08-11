@@ -35,21 +35,48 @@
         </tr>
     </table>
 
+    <hr>
+
+    <div class="container">
+        <div class="containercontent">
+            <br />
+            <b>Aktuelle Zahlen in Baden-Württemberg</b>
+            <br />
+            <br />
+            <p id="replaceContentBW"></p>
+        </div>
+        <div class="containercontent">
+            <br />
+            <b id="replaceHeader">Wähle einen Landkreis aus!</b>
+            <br />
+            <br />
+            <p id="replaceContent"></p>
+        </div>
+    </div>
+
     <div id="map"></div>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"> </script>
 
+    <hr>
+
     <div id="diagrams" style="display: none;">
         <div class="content">
+            <table id="tabelleTote"></table>
+
             <canvas id="deaths"></canvas>
             <p class="loading" style="display: block;">Loading...</p>
         </div>
         <hr>
         <div class="content">
+            <table id="tabelleInfected"></table>
+
             <canvas id="infected"></canvas>
             <p class="loading" style="display: block;">Loading...</p>
         </div>
         <hr>
         <div class="content">
+            <table id="tabelleVaccinated"></table>
+
             <canvas id="vaccinated"></canvas>
             <p class="loading" style="display: block;">Loading...</p>
         </div>
