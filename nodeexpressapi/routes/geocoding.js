@@ -1,4 +1,4 @@
-module.exports = { calcGeocodeForCompleteDB, calcGeocodeForAdress, calculateUserDistanceFromVaccPlace };
+module.exports = { calcGeocodeForCompleteDB, calcGeocodeForAdress, getDistanceFromLatLonInKm};
 
 const MongoDB = require('../db.js');
 const fetch = require('node-fetch')
@@ -65,22 +65,14 @@ adress={
     "Land":"Musterland"
 }
 */
-function callback(error, response, body) {
-    if (!error && response.statusCode == 200) {
-        console.log(body);
-    }
-}
+
 async function calcGeocodeForAdress(adress) {
-    //let response =request(options, callback);
     let response = "ERROR NO RESPONSE SET";
-    //const db = await MongoDB.find({ "Ort": "Bad Mergentheim" }, "vaccinationPlacesBW")
     let strasse = filterGermanLetters(adress.Adress);
     let ort = filterGermanLetters(adress.Ort);
     let land = "Germany";
     let platz = adress.Platz;
     const link = "https://app.geocodeapi.io/api/v1/search?apikey=" + APIKey_geocodeapi + "&text="+ ort + "," + platz + "," + land
-    //const link="https://app.geocodeapi.io/api/v1/search?apikey="+APIKey_geocodeapi+"&text=10%20Downing%20Street%2C%20Charlestown%2C%20NSW%2C%20Australia"
-    //let requestOptions = { "uri": link };
     console.log(link);
     response = await fetch(link, requestOptions);
     
@@ -94,32 +86,7 @@ async function calcGeocodeForAdress(adress) {
     return response
 }
 
-/*
-Useradr={
-   "Ort":"Musterort",
-   "Platz":"75664"
-   "Land":"Musterland"
-   "Geocode":{"coodinates":[X,Y]}
-}
-VaccPlaceAdr={
-   "Adress":"Musterstrasse 2",
-   "Ort":"Musterort",
-   "Platz":"75664"
-   "Land":"Musterland"
-   "Geocode":{"coodinates":[X,Y]}
-}
-*/
-function calculateUserDistanceFromVaccPlace(Useradr, VaccPlaceAdr) { //Not maintained, dummy function has to be implemented if needed
 
-    let response;
-    const lat1 = -32.955015;
-    const long1 = 151.68502;
-
-    const lat2 = 49.487231;
-    const long2 = 9.769926
-    response = getDistanceFromLatLonInKm(lat1, long1, lat2, long2);
-    return response;
-}
 
 function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
     var R = 6371; // Radius of the earth in km

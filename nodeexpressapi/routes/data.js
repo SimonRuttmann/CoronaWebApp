@@ -51,8 +51,11 @@ router.get('/vaccination', async (req, res) => {
 			"Adresse": data[i].Adress,
 			"PLZ": data[i].PLZ,
 			"Ort": data[i].Ort,
+			"Tel": data[i].Phone,
+			"Distance": null,
 			"BookingURL": data[i].BookingURL,
-			"Vaccines": data[i].Vaccines
+			"Vaccines": data[i].Vaccines,
+			"Geocode" : data[i].Geocode
 		}
 		for(let j in tmp.Vaccines){
 			data2 = (await MongoDB.find({"Slug":tmp.Vaccines[j].Slug}, "vaccinationDatesBW"))[0];
