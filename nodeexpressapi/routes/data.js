@@ -90,24 +90,24 @@ router.get('/district', async (req, res) => {
 		else {
 			const historyDeathsDB = (await MongoDB.find({ "ags": param }, "csvRKI", { "historyDeathsRKI": 1, "_id": 0 }));
 			const historyCasesDB = await MongoDB.find({ "ags": param }, "csvRKI", { "historyCasesRKI": 1, "_id": 0 });
-			const infectionsDBFemale = await MongoDB.find({ "ags": param, "geschlecht": "W" }, "infectionsCSVBW");
-			const infectionsDBMale = await MongoDB.find({ "ags": param, "geschlecht": "M" }, "infectionsCSVBW");
-			const infectionsDBAgeGroup1 = await MongoDB.find({ "ags": param, "altersgruppe": "A00-A04" }, "infectionsCSVBW"); 	//A00-A04
-			const infectionsDBAgeGroup2 = await MongoDB.find({ "ags": param, "altersgruppe": "A05-A14" }, "infectionsCSVBW");	//A05-A14
-			const infectionsDBAgeGroup3 = await MongoDB.find({ "ags": param, "altersgruppe": "A15-A34" }, "infectionsCSVBW");	//A15-A34
-			const infectionsDBAgeGroup4 = await MongoDB.find({ "ags": param, "altersgruppe": "A35-A59" }, "infectionsCSVBW");	//A35-A59
-			const infectionsDBAgeGroup5 = await MongoDB.find({ "ags": param, "altersgruppe": "A60-A79" }, "infectionsCSVBW");	//A60-A79
+			const infectionsDBFemale = await MongoDB.find({ "ags": param, "geschlecht": "W" }, "infectionsCSVBWAll");
+			const infectionsDBMale = await MongoDB.find({ "ags": param, "geschlecht": "M" }, "infectionsCSVBWAll");
+			const infectionsDBAgeGroup1 = await MongoDB.find({ "ags": param, "altersgruppe": "A00-A04" }, "infectionsCSVBWAll"); 	//A00-A04
+			const infectionsDBAgeGroup2 = await MongoDB.find({ "ags": param, "altersgruppe": "A05-A14" }, "infectionsCSVBWAll");	//A05-A14
+			const infectionsDBAgeGroup3 = await MongoDB.find({ "ags": param, "altersgruppe": "A15-A34" }, "infectionsCSVBWAll");	//A15-A34
+			const infectionsDBAgeGroup4 = await MongoDB.find({ "ags": param, "altersgruppe": "A35-A59" }, "infectionsCSVBWAll");	//A35-A59
+			const infectionsDBAgeGroup5 = await MongoDB.find({ "ags": param, "altersgruppe": "A60-A79" }, "infectionsCSVBWAll");	//A60-A79
 			const districtsBWDB = await MongoDB.find({ "ags": param }, "districtsBW")
 			const vaccinationAll = await MongoDB.find({ "ags": param }, "vaccinationsCSVBWAll")
 
-			const deaths_female = data_prep.getDeathsForNewestData(infectionsDBFemale);
-			const deaths_male = data_prep.getDeathsForNewestData(infectionsDBMale);
-			const deaths_agegroup1 = data_prep.getDeathsForNewestData(infectionsDBAgeGroup1);
-			const deaths_agegroup2 = data_prep.getDeathsForNewestData(infectionsDBAgeGroup2);
-			const deaths_agegroup3 = data_prep.getDeathsForNewestData(infectionsDBAgeGroup3);
-			const deaths_agegroup4 = data_prep.getDeathsForNewestData(infectionsDBAgeGroup4);
-			const deaths_agegroup5 = data_prep.getDeathsForNewestData(infectionsDBAgeGroup5);
-			const deathsPerWeek = data_prep.getDeathsPerWeek(historyDeathsDB);
+			const deaths_female = data_prep.getDeathsPerWeekCSV(infectionsDBFemale);
+			const deaths_male = data_prep.getDeathsPerWeekCSV(infectionsDBMale);
+			const deaths_agegroup1 =data_prep.getDeathsPerWeekCSV(infectionsDBAgeGroup1);
+			const deaths_agegroup2 =data_prep.getDeathsPerWeekCSV(infectionsDBAgeGroup2);
+			const deaths_agegroup3 =data_prep.getDeathsPerWeekCSV(infectionsDBAgeGroup3);
+			const deaths_agegroup4 =data_prep.getDeathsPerWeekCSV(infectionsDBAgeGroup4);
+			const deaths_agegroup5 =data_prep.getDeathsPerWeekCSV(infectionsDBAgeGroup5);
+			const deathsPerWeek = data_prep.getDeathsPerWeekRKI(historyDeathsDB);
 			const casesPerWeek = data_prep.getCasesPerWeek(historyCasesDB);
 			const vaccinatedPerWeek = data_prep.getVaccinatedPerWeek(vaccinationAll);
 			const incidencePerWeek = data_prep.getIncidenceThisWeek(districtsBWDB);
@@ -159,7 +159,33 @@ router.get('/news', async (req, res) => {
 	}
 })
 
+//Zugriff über /data/geocode/distance?lat1=X&long1=Y&lat2=C&long2=B
+router.get('/geocode/distance', (req,res) =>{
+	const lat1=req.query.lat1;
+	const lat2=req.query.lat2;
+	const lon1=req.query.long1;
+	const lon2=req.query.long2
+	if(lat1==undefined || lat2== undefined || lon1 == undefined|| lon2==undefined) res.send("Parameters not defined")
+	res.send(String(getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2)))
+})
 
+function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+		var R = 6371; // Radius of the earth in km
+		var dLat = deg2rad(lat2 - lat1);  // deg2rad below
+		var dLon = deg2rad(lon2 - lon1);
+		var a =
+			Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+			Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+			Math.sin(dLon / 2) * Math.sin(dLon / 2)
+			;
+		var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+		var d = R * c; // Distance in km
+		return d;
+	}
+	
+	function deg2rad(deg) {
+		return deg * (Math.PI / 180)
+	}
 //Sends back {error:true,{no_data_from:X}} in case of error
 async function getDistrictsFormated() {
 	const dbData_collection = "districtsBW"

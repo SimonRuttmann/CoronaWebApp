@@ -1,11 +1,11 @@
-module.exports = {getOverview,getVaccinatedPerWeek,getDeathsPerWeek,getIncidenceThisWeek,getCasesPerWeek,getDeathsForNewestData};
+module.exports = { getOverview, getVaccinatedPerWeek, getDeathsPerWeekRKI, getIncidenceThisWeek, getCasesPerWeek, getDeathsPerWeekCSV };
 
 function getOverview(data, ags) {
 	let infected = 0, immune = 0, vaccinated = 0, recovered = 0, deaths = 0
 	let response;
 	let found = false
 	if (ags) {
-		
+
 		for (let i in data) {
 			if (data[i].ags == ags) {
 				found = true;
@@ -18,16 +18,16 @@ function getOverview(data, ags) {
 			}
 		}
 	}
-	else{
+	else {
 		for (let i in data) {
-		infected += Number(data[i].infizierte);
-		immune += Number(data[i].immune);
-		vaccinated += Number(data[i].geimpft);
-		recovered += Number(data[i].genesen);
-		deaths += Number(data[i].todesfaelle);
+			infected += Number(data[i].infizierte);
+			immune += Number(data[i].immune);
+			vaccinated += Number(data[i].geimpft);
+			recovered += Number(data[i].genesen);
+			deaths += Number(data[i].todesfaelle);
+		}
 	}
-	}
-	if ((ags && !found) || !data>0) {
+	if ((ags && !found) || !data > 0) {
 		response = ("Could not find requested data");
 		return;
 	}
@@ -50,9 +50,9 @@ function getVaccinatedPerWeek(data) {
 		let tmpDate1, tmpDate2, sortedData = [];
 		mainloop:
 		for (let i in data) {
-			tmpDate1 = new Date((data[i].impfdatum).replace("-", "."));
+			tmpDate1 = new Date((data[i].impfdatum).replaceAll("-", "."));
 			for (let j in sortedData) {
-				tmpDate2 = new Date(String(sortedData[j].date).replace("-", "."));
+				tmpDate2 = new Date(String(sortedData[j].date).replaceAll("-", "."));
 				if (tmpDate1 == tmpDate2) {
 					sortedData[j].anzahl += data[i].anzahl;
 					continue mainloop;
@@ -60,7 +60,7 @@ function getVaccinatedPerWeek(data) {
 			}
 			sortedData.push({ "date": tmpDate1, "anzahl": data[i].anzahl })
 		}
-		console.log(sortedData);
+		//console.log(sortedData);
 
 		var aufaddieren = 0;
 		for (let i in sortedData) {
@@ -75,7 +75,7 @@ function getVaccinatedPerWeek(data) {
 	return response;
 }
 
-function getDeathsPerWeek(data) {
+function getDeathsPerWeekRKI(data) {
 	//date ist immer das startdatum der woche, die aktuelle Woche kann weniger als 7 Tage beinhalten
 	let response = [];
 	if (!data.length > 0) response = { "error": true, "no_data_from": "csvRKI" }
@@ -118,26 +118,42 @@ function getCasesPerWeek(data) {
 	return response;
 }
 
-function getDeathsForNewestData(data) {
+function getDeathsPerWeekCSV(data) {
 	//Es könnte sein das der Date Vergleich zu genau ist, dann müssen Studen gerundet werden
-	let response = 0;
+	let response = [];
+	let sortedData = []
 	if (!data.length > 0) response = { "error": true, "no_data_from": "infectionsCSVBW" };
 	else {
-		let newestDate = new Date(data[0].date);
-		let compareDate;
-
-		let filteredData = [];
-
+		let tmpDate1, tmpDate2;
+		mainloop:
 		for (let i in data) {
-			compareDate = new Date(data[i].date);
-			if (newestDate < compareDate) {
-				newestDate = compareDate;
-				filteredData = [data[i]];
+			console.log("RunNr:" + i + " von " + data.length)
+			tmpDate1 = data[i].meldedatum
+			for (let j in sortedData) {
+				tmpDate2 = sortedData[j].date
+				if (tmpDate1 == tmpDate2) {
+					sortedData[j].cases += Number(data[i].anzahlfall);
+					sortedData[j].deaths += Number(data[i].anzahltodesfall);
+					sortedData[j].recovered += Number(data[i].anzahlgenesen);
+					continue mainloop;
+				}
 			}
-			else if (compareDate == newestDate) filteredData.push(data[i])
+			sortedData.push({ "date": tmpDate1, "cases": Number(data[i].anzahlfall), "deaths": Number(data[i].anzahltodesfall), "recovered": Number(data[i].anzahlgenesen) })
 		}
-		for (let i in filteredData) {
-			response += Number(filteredData[i].anzahltodesfall);
+		let aufaddierenCases = 0;
+		let aufaddierenDeaths= 0;
+		let aufaddierenRec = 0;
+		for (let i in sortedData) {
+			aufaddierenCases += Number(sortedData[i].cases);
+			aufaddierenRec += Number(sortedData[i].deaths)
+			aufaddierenDeaths += Number(sortedData[i].deaths)
+			if ((i % 7) == 6) {
+				response.push({ "date": (sortedData[i].date).replaceAll("-","."), "cases": aufaddierenCases, "deaths": aufaddierenDeaths, "recovered": aufaddierenRec })
+				aufaddierenCases = 0;
+				aufaddierenRec = 0;
+				aufaddierenDeaths = 0;
+			}
+			if (i == data.length - 1) response.push({ "date": (sortedData[i].date).replaceAll("-","."), "cases": aufaddierenCases, "deaths": aufaddierenDeaths, "recovered": aufaddierenRec })
 		}
 	}
 	return response;
