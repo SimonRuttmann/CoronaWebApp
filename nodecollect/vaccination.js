@@ -1,7 +1,6 @@
 const fetch = require('node-fetch');
 const fs = require('fs');
 const db = require('./db');
-const geocode = require('../nodeexpressapi/routes/geocoding');
 
 module.exports = { getVaccinationPlaces, getVaccinationDates, saveHistoryPlaces, saveHistoryDates };
 
@@ -62,12 +61,10 @@ async function getVaccinationPlaces(saveToDB, mqttClient) {
             }
 
             if (!found) {
-                await db.insertOne(data[i]);
+                await db.insertOne(data[i], "vaccinationPlacesBW");
                 mqttClient.publish("refresh", "vaccinationPlacesBW");
             }
         }
-
-        geocode.calcGeocodeForCompleteDB();
     }
 
     return data;

@@ -6,6 +6,7 @@ const csvInfections = require('./csvInfections');
 const csvVaccinations = require('./csvVaccinations');
 const agsBW = require('./ags');
 const csvRKI = require('./csvRKI');
+const geocode = require('./geocoding');
 
 var mqttClient;
 var failedMethods = [];
@@ -30,6 +31,8 @@ async function init() {
     await csvVaccinationsAll();
     await csvVaccinationsMethod();
     await csvrki();
+
+    geocode.calcGeocodeForCompleteDB();
 
     console.log("---------End Setup---------");
     console.log("---------" + failedMethods.length + " Failed Methods---------");
@@ -300,6 +303,8 @@ const intervalWeek = setInterval(async () => {
 
     await vaccinationPlaces();
     await vaccinationPlacesHistory();
+
+    geocode.calcGeocodeForCompleteDB();
 }, 604800000);
 
 // clearInterval(interval);
