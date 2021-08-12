@@ -26,8 +26,8 @@ async function getSessionData(callbacks) {
 
 }
 
-function setLoginStatus(data){
-    if(data.authenticated){
+function setLoginStatus(data) {
+    if (data.authenticated) {
         console.log(data)
         //Display feedback at footer
         document.getElementById("loginStatus").textContent = "Sie sind angemeldet als: " + data.name;
@@ -279,56 +279,70 @@ async function changeChart(name) {
     var result = await response.text();
     var json = JSON.parse(result);
 
-    var dataTote = [];
-    for (var i = 0; i < json.Tote_pro_Woche.length; i++) {
+    var dataW = [];
+    for (var i = 0; i < json.Weiblich_perWeek.length; i++) {
         var tmp = {};
 
-        var date = new Date(json.Tote_pro_Woche[i].date);
+        var date = new Date(json.Weiblich_perWeek[i].date);
         tmp.month = date.getUTCMonth() + 1;
         tmp.year = date.getUTCFullYear();
-        tmp.deaths = json.Tote_pro_Woche[i].deaths;
+        tmp.deaths = json.Weiblich_perWeek[i].deaths;
+        tmp.cases = json.Weiblich_perWeek[i].cases;
+        tmp.recovered = json.Weiblich_perWeek[i].recovered;
 
         var found = false;
-        for (var j = 0; j < dataTote.length; j++) {
-            if (dataTote[j].month == tmp.month && dataTote[j].year == tmp.year) {
-                dataTote[j].deaths = dataTote[j].deaths + tmp.deaths;
+        for (var j = 0; j < dataW.length; j++) {
+            if (dataW[j].month == tmp.month && dataW[j].year == tmp.year) {
+                dataW[j].deaths = dataW[j].deaths + tmp.deaths;
+                dataW[j].cases = dataW[j].cases + tmp.cases;
+                dataW[j].recovered = dataW[j].recovered + tmp.recovered;
+
                 found = true;
                 break;
             }
         }
 
-        if (!found) dataTote.push(tmp);
+        if (!found) dataW.push(tmp);
     }
 
-    var dataInfected = [];
-    for (var i = 0; i < json.Fälle_pro_Woche.length; i++) {
+    dataW.reverse();
+
+    var dataM = [];
+    for (var i = 0; i < json.Männlich_perWeek.length; i++) {
         var tmp = {};
 
-        var date = new Date(json.Fälle_pro_Woche[i].date);
+        var date = new Date(json.Männlich_perWeek[i].date);
         tmp.month = date.getUTCMonth() + 1;
         tmp.year = date.getUTCFullYear();
-        tmp.cases = json.Fälle_pro_Woche[i].cases;
+        tmp.deaths = json.Männlich_perWeek[i].deaths;
+        tmp.cases = json.Männlich_perWeek[i].cases;
+        tmp.recovered = json.Männlich_perWeek[i].recovered;
 
         var found = false;
-        for (var j = 0; j < dataInfected.length; j++) {
-            if (dataInfected[j].month == tmp.month && dataInfected[j].year == tmp.year) {
-                dataInfected[j].cases = dataInfected[j].cases + tmp.cases;
+        for (var j = 0; j < dataM.length; j++) {
+            if (dataM[j].month == tmp.month && dataM[j].year == tmp.year) {
+                dataM[j].deaths = dataM[j].deaths + tmp.deaths;
+                dataM[j].cases = dataM[j].cases + tmp.cases;
+                dataM[j].recovered = dataM[j].recovered + tmp.recovered;
+
                 found = true;
                 break;
             }
         }
 
-        if (!found) dataInfected.push(tmp);
+        if (!found) dataM.push(tmp);
     }
+
+    dataM.reverse();
 
     var dataVaccinated = [];
-    for (var i = 0; i < json.Geimpte_pro_Woche.length; i++) {
+    for (var i = 0; i < json.Geimpte_per_Week.length; i++) {
         var tmp = {};
 
-        var date = new Date(json.Geimpte_pro_Woche[i].date);
+        var date = new Date(json.Geimpte_per_Week[i].date);
         tmp.month = date.getUTCMonth() + 1;
         tmp.year = date.getUTCFullYear();
-        tmp.anzahl = json.Geimpte_pro_Woche[i].anzahl;
+        tmp.anzahl = json.Geimpte_per_Week[i].anzahl;
 
         var found = false;
         for (var j = 0; j < dataVaccinated.length; j++) {
@@ -344,16 +358,56 @@ async function changeChart(name) {
 
     dataVaccinated.reverse();
 
-    var dataLabelsInfected = getLabels(dataInfected);
+    var labelsW = getLabels(dataW);
+    var labelsM = getLabels(dataM);
 
-    var dataPointsTote = [];
-    for (var i = 0; i < dataTote.length; i++) {
-        dataPointsTote.push(dataTote[i].deaths);
+    var labels;
+    if (labelsM.length < labelsW.length) {
+        labels = labelsW;
+    } else {
+        labels = labelsM;
     }
 
-    var dataPointsInfected = [];
-    for (var i = 0; i < dataInfected.length; i++) {
-        dataPointsInfected.push(dataInfected[i].cases);
+    var dataPointsToteW = [];
+    for (var i = 0; i < dataM.length - dataW.length; i++) {
+        dataPointsToteW.push(0);
+    }
+    for (var i = 0; i < dataW.length; i++) {
+        dataPointsToteW.push(dataW[i].deaths);
+    }
+
+    var dataPointsToteM = [];
+    for (var i = 0; i < dataW.length - dataM.length; i++) {
+        dataPointsToteM.push(0);
+    }
+    for (var i = 0; i < dataM.length; i++) {
+        dataPointsToteM.push(dataM[i].deaths);
+    }
+
+    var dataPointsToteG = [];
+    for (var i = 0; i < dataPointsToteM.length; i++) {
+        dataPointsToteG.push(dataPointsToteM[i] + dataPointsToteW[i]);
+    }
+
+    var dataPointsInfectedW = [];
+    for (var i = 0; i < dataM.length - dataW.length; i++) {
+        dataPointsInfectedW.push(0);
+    }
+    for (var i = 0; i < dataW.length; i++) {
+        dataPointsInfectedW.push(dataW[i].cases);
+    }
+
+    var dataPointsInfectedM = [];
+    for (var i = 0; i < dataW.length - dataM.length; i++) {
+        dataPointsInfectedM.push(0);
+    }
+    for (var i = 0; i < dataM.length; i++) {
+        dataPointsInfectedM.push(dataM[i].cases);
+    }
+
+    var dataPointsInfectedG = [];
+    for (var i = 0; i < dataPointsInfectedM.length; i++) {
+        dataPointsInfectedG.push(dataPointsInfectedM[i] + dataPointsInfectedW[i]);
     }
 
     var dataPointsVaccinated = [];
@@ -362,25 +416,25 @@ async function changeChart(name) {
     }
 
     var tmpVacc = [];
-    var tmpVaccLength = dataLabelsInfected.length - dataPointsVaccinated.length;
+    var tmpVaccLength = labels.length - dataPointsVaccinated.length;
     for (var i = 0; i < tmpVaccLength; i++) {
         tmpVacc.push(0);
     }
     dataPointsVaccinated = tmpVacc.concat(dataPointsVaccinated);
 
     const data = {
-        labels: dataLabelsInfected,
+        labels: labels,
         datasets: [{
             label: 'Deaths',
             backgroundColor: 'rgb(255, 99, 132)',
             borderColor: 'rgb(255, 99, 132)',
-            data: dataPointsTote,
+            data: dataPointsToteG,
         },
         {
             label: 'Infected',
             backgroundColor: 'rgb(123, 255, 132)',
             borderColor: 'rgb(123, 255, 132)',
-            data: dataPointsInfected,
+            data: dataPointsInfectedG,
             hidden: true,
         },
         {

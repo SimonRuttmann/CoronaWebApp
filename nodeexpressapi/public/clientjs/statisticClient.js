@@ -306,15 +306,15 @@ function resetTables() {
 
 function fillCharts(name, json) {
     var dataW = [];
-    for (var i = 0; i < json.todesfälle_Weiblich.length; i++) {
+    for (var i = 0; i < json.Weiblich_perWeek.length; i++) {
         var tmp = {};
 
-        var date = new Date(json.todesfälle_Weiblich[i].date);
+        var date = new Date(json.Weiblich_perWeek[i].date);
         tmp.month = date.getUTCMonth() + 1;
         tmp.year = date.getUTCFullYear();
-        tmp.deaths = json.todesfälle_Weiblich[i].deaths;
-        tmp.cases = json.todesfälle_Weiblich[i].cases;
-        tmp.recovered = json.todesfälle_Weiblich[i].recovered;
+        tmp.deaths = json.Weiblich_perWeek[i].deaths;
+        tmp.cases = json.Weiblich_perWeek[i].cases;
+        tmp.recovered = json.Weiblich_perWeek[i].recovered;
 
         var found = false;
         for (var j = 0; j < dataW.length; j++) {
@@ -334,15 +334,15 @@ function fillCharts(name, json) {
     dataW.reverse();
 
     var dataM = [];
-    for (var i = 0; i < json.todesfälle_Männlich.length; i++) {
+    for (var i = 0; i < json.Männlich_perWeek.length; i++) {
         var tmp = {};
 
-        var date = new Date(json.todesfälle_Männlich[i].date);
+        var date = new Date(json.Männlich_perWeek[i].date);
         tmp.month = date.getUTCMonth() + 1;
         tmp.year = date.getUTCFullYear();
-        tmp.deaths = json.todesfälle_Männlich[i].deaths;
-        tmp.cases = json.todesfälle_Männlich[i].cases;
-        tmp.recovered = json.todesfälle_Männlich[i].recovered;
+        tmp.deaths = json.Männlich_perWeek[i].deaths;
+        tmp.cases = json.Männlich_perWeek[i].cases;
+        tmp.recovered = json.Männlich_perWeek[i].recovered;
 
         var found = false;
         for (var j = 0; j < dataM.length; j++) {
@@ -362,13 +362,13 @@ function fillCharts(name, json) {
     dataM.reverse();
 
     var dataVaccinated = [];
-    for (var i = 0; i < json.Geimpte_pro_Woche.length; i++) {
+    for (var i = 0; i < json.Geimpte_per_Week.length; i++) {
         var tmp = {};
 
-        var date = new Date(json.Geimpte_pro_Woche[i].date);
+        var date = new Date(json.Geimpte_per_Week[i].date);
         tmp.month = date.getUTCMonth() + 1;
         tmp.year = date.getUTCFullYear();
-        tmp.anzahl = json.Geimpte_pro_Woche[i].anzahl;
+        tmp.anzahl = json.Geimpte_per_Week[i].anzahl;
 
         var found = false;
         for (var j = 0; j < dataVaccinated.length; j++) {
@@ -538,15 +538,15 @@ function fillCharts(name, json) {
     };
 
     var alter00_04 = [];
-    for (var i = 0; i < json["todesfälle_Alter00-04"].length; i++) {
+    for (var i = 0; i < json["Alter00-04_perWeek"].length; i++) {
         var tmp = {};
 
-        var date = new Date(json["todesfälle_Alter00-04"][i].date);
+        var date = new Date(json["Alter00-04_perWeek"][i].date);
         tmp.month = date.getUTCMonth() + 1;
         tmp.year = date.getUTCFullYear();
-        tmp.deaths = json["todesfälle_Alter00-04"][i].deaths;
-        tmp.cases = json["todesfälle_Alter00-04"][i].cases;
-        tmp.recovered = json["todesfälle_Alter00-04"][i].recovered;
+        tmp.deaths = json["Alter00-04_perWeek"][i].deaths;
+        tmp.cases = json["Alter00-04_perWeek"][i].cases;
+        tmp.recovered = json["Alter00-04_perWeek"][i].recovered;
 
         var found = false;
         for (var j = 0; j < alter00_04.length; j++) {
@@ -564,15 +564,15 @@ function fillCharts(name, json) {
     }
 
     var alter05_14 = [];
-    for (var i = 0; i < json["todesfälle_Alter05-14"].length; i++) {
+    for (var i = 0; i < json["Alter05-14:perWeek"].length; i++) {
         var tmp = {};
 
-        var date = new Date(json["todesfälle_Alter05-14"][i].date);
+        var date = new Date(json["Alter05-14:perWeek"][i].date);
         tmp.month = date.getUTCMonth() + 1;
         tmp.year = date.getUTCFullYear();
-        tmp.deaths = json["todesfälle_Alter05-14"][i].deaths;
-        tmp.cases = json["todesfälle_Alter05-14"][i].cases;
-        tmp.recovered = json["todesfälle_Alter05-14"][i].recovered;
+        tmp.deaths = json["Alter05-14:perWeek"][i].deaths;
+        tmp.cases = json["Alter05-14:perWeek"][i].cases;
+        tmp.recovered = json["Alter05-14:perWeek"][i].recovered;
 
         var found = false;
         for (var j = 0; j < alter05_14.length; j++) {
@@ -590,15 +590,15 @@ function fillCharts(name, json) {
     }
 
     var alter15_34 = [];
-    for (var i = 0; i < json["todesfälle_Alter15-34"].length; i++) {
+    for (var i = 0; i < json["Alter15-34_perWeek"].length; i++) {
         var tmp = {};
 
-        var date = new Date(json["todesfälle_Alter15-34"][i].date);
+        var date = new Date(json["Alter15-34_perWeek"][i].date);
         tmp.month = date.getUTCMonth() + 1;
         tmp.year = date.getUTCFullYear();
-        tmp.deaths = json["todesfälle_Alter15-34"][i].deaths;
-        tmp.cases = json["todesfälle_Alter15-34"][i].cases;
-        tmp.recovered = json["todesfälle_Alter15-34"][i].recovered;
+        tmp.deaths = json["Alter15-34_perWeek"][i].deaths;
+        tmp.cases = json["Alter15-34_perWeek"][i].cases;
+        tmp.recovered = json["Alter15-34_perWeek"][i].recovered;
 
         var found = false;
         for (var j = 0; j < alter15_34.length; j++) {
@@ -616,15 +616,15 @@ function fillCharts(name, json) {
     }
 
     var alter35_59 = [];
-    for (var i = 0; i < json["todesfälle_Alter35-59"].length; i++) {
+    for (var i = 0; i < json["Alter35-59_perWeek"].length; i++) {
         var tmp = {};
 
-        var date = new Date(json["todesfälle_Alter35-59"][i].date);
+        var date = new Date(json["Alter35-59_perWeek"][i].date);
         tmp.month = date.getUTCMonth() + 1;
         tmp.year = date.getUTCFullYear();
-        tmp.deaths = json["todesfälle_Alter35-59"][i].deaths;
-        tmp.cases = json["todesfälle_Alter35-59"][i].cases;
-        tmp.recovered = json["todesfälle_Alter35-59"][i].recovered;
+        tmp.deaths = json["Alter35-59_perWeek"][i].deaths;
+        tmp.cases = json["Alter35-59_perWeek"][i].cases;
+        tmp.recovered = json["Alter35-59_perWeek"][i].recovered;
 
         var found = false;
         for (var j = 0; j < alter35_59.length; j++) {
@@ -642,15 +642,15 @@ function fillCharts(name, json) {
     }
 
     var alter60_79 = [];
-    for (var i = 0; i < json["todesfälle_Alter60-79"].length; i++) {
+    for (var i = 0; i < json["Alter60-79_perWeek"].length; i++) {
         var tmp = {};
 
-        var date = new Date(json["todesfälle_Alter60-79"][i].date);
+        var date = new Date(json["Alter60-79_perWeek"][i].date);
         tmp.month = date.getUTCMonth() + 1;
         tmp.year = date.getUTCFullYear();
-        tmp.deaths = json["todesfälle_Alter60-79"][i].deaths;
-        tmp.cases = json["todesfälle_Alter60-79"][i].cases;
-        tmp.recovered = json["todesfälle_Alter60-79"][i].recovered;
+        tmp.deaths = json["Alter60-79_perWeek"][i].deaths;
+        tmp.cases = json["Alter60-79_perWeek"][i].cases;
+        tmp.recovered = json["Alter60-79_perWeek"][i].recovered;
 
         var found = false;
         for (var j = 0; j < alter60_79.length; j++) {
@@ -666,6 +666,33 @@ function fillCharts(name, json) {
 
         if (!found) alter60_79.push(tmp);
     }
+
+    var alter80Plus = [];
+    for (var i = 0; i < json["Alter80+_perWeek"].length; i++) {
+        var tmp = {};
+
+        var date = new Date(json["Alter80+_perWeek"][i].date);
+        tmp.month = date.getUTCMonth() + 1;
+        tmp.year = date.getUTCFullYear();
+        tmp.deaths = json["Alter80+_perWeek"][i].deaths;
+        tmp.cases = json["Alter80+_perWeek"][i].cases;
+        tmp.recovered = json["Alter80+_perWeek"][i].recovered;
+
+        var found = false;
+        for (var j = 0; j < alter80Plus.length; j++) {
+            if (alter80Plus[j].month == tmp.month && alter80Plus[j].year == tmp.year) {
+                alter80Plus[j].deaths = alter80Plus[j].deaths + tmp.deaths;
+                alter80Plus[j].cases = alter80Plus[j].cases + tmp.cases;
+                alter80Plus[j].recovered = alter80Plus[j].recovered + tmp.recovered;
+
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) alter80Plus.push(tmp);
+    }
+
 
     var gesamtDeaths00_04 = 0;
     for (var i = 0; i < alter00_04.length; i++) {
@@ -692,13 +719,18 @@ function fillCharts(name, json) {
         gesamtDeaths60_79 = gesamtDeaths60_79 + alter60_79[i].deaths;
     }
 
+    var gesamtDeaths80Plus = 0;
+    for (var i = 0; i < alter80Plus.length; i++) {
+        gesamtDeaths80Plus = gesamtDeaths80Plus + alter80Plus[i].deaths;
+    }
+
     const altersgruppenDeaths = {
-        labels: ["0-4", "5-14", "15-34", "35-59", "60-79"],
+        labels: ["0-4", "5-14", "15-34", "35-59", "60-79", "80+"],
         datasets: [{
             label: 'Gender ' + name,
-            backgroundColor: ['rgb(255, 99, 132)', 'rgb(123, 12, 231)', 'rgb(123, 45, 123)', 'rgb(45, 255, 43)', 'rgb(255, 54, 255)'],
-            borderColor: ['rgb(255, 99, 132)', 'rgb(123, 12, 231)', 'rgb(123, 45, 123)', 'rgb(45, 255, 43)', 'rgb(255, 54, 255)'],
-            data: [gesamtDeaths00_04, gesamtDeaths05_14, gesamtDeaths15_34, gesamtDeaths35_59, gesamtDeaths60_79],
+            backgroundColor: ['rgb(255, 99, 132)', 'rgb(123, 12, 231)', 'rgb(123, 45, 123)', 'rgb(45, 255, 43)', 'rgb(255, 54, 255)', 'rgb(128, 255, 230)'],
+            borderColor: ['rgb(255, 99, 132)', 'rgb(123, 12, 231)', 'rgb(123, 45, 123)', 'rgb(45, 255, 43)', 'rgb(255, 54, 255)', 'rgb(128, 255, 230)'],
+            data: [gesamtDeaths00_04, gesamtDeaths05_14, gesamtDeaths15_34, gesamtDeaths35_59, gesamtDeaths60_79, gesamtDeaths80Plus],
         }]
     };
 
@@ -727,13 +759,18 @@ function fillCharts(name, json) {
         gesamtCases60_79 = gesamtCases60_79 + alter60_79[i].cases;
     }
 
+    var gesamtCases80Plus = 0;
+    for (var i = 0; i < alter80Plus.length; i++) {
+        gesamtCases80Plus = gesamtCases80Plus + alter80Plus[i].cases;
+    }
+
     const altersgruppenCases = {
-        labels: ["0-4", "5-14", "15-34", "35-59", "60-79"],
+        labels: ["0-4", "5-14", "15-34", "35-59", "60-79", "80+"],
         datasets: [{
             label: 'Gender ' + name,
-            backgroundColor: ['rgb(255, 99, 132)', 'rgb(123, 12, 231)', 'rgb(123, 45, 123)', 'rgb(45, 255, 43)', 'rgb(255, 54, 255)'],
-            borderColor: ['rgb(255, 99, 132)', 'rgb(123, 12, 231)', 'rgb(123, 45, 123)', 'rgb(45, 255, 43)', 'rgb(255, 54, 255)'],
-            data: [gesamtCases00_04, gesamtCases05_14, gesamtCases15_34, gesamtCases35_59, gesamtCases60_79],
+            backgroundColor: ['rgb(255, 99, 132)', 'rgb(123, 12, 231)', 'rgb(123, 45, 123)', 'rgb(45, 255, 43)', 'rgb(255, 54, 255)', 'rgb(128, 255, 230)'],
+            borderColor: ['rgb(255, 99, 132)', 'rgb(123, 12, 231)', 'rgb(123, 45, 123)', 'rgb(45, 255, 43)', 'rgb(255, 54, 255)', 'rgb(128, 255, 230)'],
+            data: [gesamtCases00_04, gesamtCases05_14, gesamtCases15_34, gesamtCases35_59, gesamtCases60_79, gesamtCases80Plus],
         }]
     };
 
@@ -817,6 +854,22 @@ function fillCharts(name, json) {
         }
     }
 
+    var dataPointsAges80PlusInfected = [];
+    for (var j = 0; j < dataW.length; j++) {
+        var found = false;
+        for (var i = 0; i < alter80Plus.length; i++) {
+            if (dataW[j].month == alter80Plus[i].month && dataW[j].year == alter80Plus[i].year) {
+                found = true;
+                dataPointsAges80PlusInfected.push(alter80Plus[i].cases);
+                break;
+            }
+        }
+
+        if (!found) {
+            dataPointsAges80PlusInfected.push(0);
+        }
+    }
+
     const agesInfected = {
         labels: labelsW,
         datasets: [{
@@ -843,6 +896,11 @@ function fillCharts(name, json) {
             label: '60-79',
             backgroundColor: 'rgb(255, 54, 255)',
             borderColor: 'rgb(255, 54, 255)',
+            data: dataPointsAges60_79Infected,
+        }, {
+            label: '80+',
+            backgroundColor: 'rgb(128, 255, 230)',
+            borderColor: 'rgb(128, 255, 230)',
             data: dataPointsAges60_79Infected,
         }]
     };
@@ -927,6 +985,22 @@ function fillCharts(name, json) {
         }
     }
 
+    var dataPointsAges80PlusDeaths = [];
+    for (var j = 0; j < dataW.length; j++) {
+        var found = false;
+        for (var i = 0; i < alter80Plus.length; i++) {
+            if (dataW[j].month == alter80Plus[i].month && dataW[j].year == alter80Plus[i].year) {
+                found = true;
+                dataPointsAges80PlusDeaths.push(alter80Plus[i].deaths);
+                break;
+            }
+        }
+
+        if (!found) {
+            dataPointsAges80PlusDeaths.push(0);
+        }
+    }
+
     const agesDeaths = {
         labels: labelsW,
         datasets: [{
@@ -954,6 +1028,11 @@ function fillCharts(name, json) {
             backgroundColor: 'rgb(255, 54, 255)',
             borderColor: 'rgb(255, 54, 255)',
             data: dataPointsAges60_79Deaths,
+        }, {
+            label: '80+',
+            backgroundColor: 'rgb(128, 255, 230)',
+            borderColor: 'rgb(128, 255, 230)',
+            data: dataPointsAges80PlusDeaths,
         }]
     };
 
