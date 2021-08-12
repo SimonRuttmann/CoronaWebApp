@@ -1,6 +1,6 @@
 module.exports = { calcGeocodeForCompleteDB, calcGeocodeForAdress, getDistanceFromLatLonInKm, filterGermanLetters};
 
-const MongoDB = require('../db.js');
+const MongoDB = require('./db.js');
 const fetch = require('node-fetch')
 
 const APIKey_geocodeapi = "76595980-f617-11eb-933b-bbbe22f4a3df"
