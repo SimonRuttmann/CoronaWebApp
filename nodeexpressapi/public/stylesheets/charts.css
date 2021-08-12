@@ -1,0 +1,44 @@
+.content {
+    width: 50rem;
+}
+
+body {
+    color: white;
+}
+
+#map {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    margin-bottom: 3rem;
+}
+
+table {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+th, td {
+    padding: 1rem;
+    text-align: center;
+}
+
+.containercontent {
+    height: 11rem;
+    width: 30%;
+    /* border: 2px solid; */
+    /* background-color: rgb(46, 46, 46); */
+    /* float: left; */
+    margin-right: 5rem;
+    padding: 1rem;
+}
+
+.container {
+    color: white;
+    display: flex;
+    /* align-items: center; */
+    justify-content: center;
+    padding: 1rem;
+}

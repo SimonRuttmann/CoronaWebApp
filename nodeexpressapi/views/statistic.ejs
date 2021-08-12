@@ -1,27 +1,125 @@
 <html>
-    <head>
-        <title>Statistik</title>
-        <link rel = "stylesheet" href = "./stylesheets/statistic.css" type="text/css"> </link>
-        <script type = "text/javascript" src = "./clientjs/statisticClient.js"> </script>
-    </head>
-    
-    <body>
-        <div class="navigationbar">
-            <ul>
-                <li><a href="/index">Startseite</a></li>
-                <li><a id="RefToLogin" href="/login">Anmelden</a></li>
-                <li><a id="active" href="#">Statistik</a></li>
-                <li><a href="/coronaChat">Corona-Chat</a></li>
-                <li><a href="/vaccination">Impfangebote</a></li>
-                <li><a href="/news">News</a></li>
-                <li><a href="/profile">Profil</a></li>
-            </ul>
-        </div>
- 
 
+<head>
+    <title>Statistik</title>
+    <link rel="stylesheet" href="./stylesheets/statistic.css" type="text/css">
+    </link>
 
-        <div class="footer-box">
-            <p class="description" id="loginStatus">Sie sind momentan nicht angemeldet. </p>
+    <link rel="stylesheet" href="./stylesheets/charts.css">
+</head>
+
+<body onresize="reset()">
+    <div class="navigationbar">
+        <ul>
+            <li><a href="/index">Startseite</a></li>
+            <li><a id="RefToLogin" href="/login">Anmelden</a></li>
+            <li><a id="active" href="#">Statistik</a></li>
+            <li><a href="/coronaChat">Corona-Chat</a></li>
+            <li><a href="/vaccination">Impfangebote</a></li>
+            <li><a href="/news">News</a></li>
+            <li><a href="/profile">Profil</a></li>
+        </ul>
+    </div>
+
+    <table id="tabelleLandkreise">
+        <tr>
+            <th>Landkreis</th>
+            <th>Todesfälle</th>
+            <th>Genesene</th>
+            <th>Infizierte</th>
+            <th>Geimpfte</th>
+            <th>Immune</th>
+            <th>Bevölkerung</th>
+            <th>Wocheninzidenz</th>
+        </tr>
+    </table>
+
+    <hr>
+
+    <div class="container">
+        <div class="containercontent">
+            <br />
+            <b>Aktuelle Zahlen in Baden-Württemberg</b>
+            <br />
+            <br />
+            <p id="replaceContentBW"></p>
         </div>
-    </body>
+        <div class="containercontent">
+            <br />
+            <b id="replaceHeader">Wähle einen Landkreis aus!</b>
+            <br />
+            <br />
+            <p id="replaceContent"></p>
+        </div>
+    </div>
+
+    <div id="map"></div>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"> </script>
+
+    <p id="hinweis" style="display: flex; align-items: center; justify-content: center;">
+        Für weitere Statistiken wählen sie bitte einen Landkreis aus!
+    </p>
+
+    <hr>
+
+    <div id="diagrams" style="display: none;">
+        <div class="content">
+            <p>Todesfälle:</p>
+            <table id="tabelleTote"></table>
+            <canvas id="deaths"></canvas>
+            <p class="loading" style="display: block;">Loading...</p>
+        </div>
+        <hr>
+        <div class="content">
+            <p>Infizierte:</p>
+            <table id="tabelleInfected"></table>
+            <canvas id="infected"></canvas>
+            <p class="loading" style="display: block;">Loading...</p>
+        </div>
+        <hr>
+        <div class="content">
+            <p>Geimpfte:</p>
+            <table id="tabelleVaccinated"></table>
+            <canvas id="vaccinated"></canvas>
+            <p class="loading" style="display: block;">Loading...</p>
+        </div>
+        <hr>
+        <div class="content">
+            <p>Todesfälle:</p>
+            <canvas id="genderDeaths"></canvas>
+            <p>Infizierte:</p>
+            <canvas id="genderCases"></canvas>
+            <p class="loading" style="display: block;">Loading...</p>
+        </div>
+        <hr>
+        <div class="content">
+            <p>Todesfälle:</p>
+            <canvas id="altersgruppenDeaths"></canvas>
+            <p>Infizierte:</p>
+            <canvas id="altersgruppenCases"></canvas>
+            <p class="loading" style="display: block;">Loading...</p>
+        </div>
+        <hr>
+        <div class="content">
+            <p>Ages Infected:</p>
+            <table id="tabelleAgesInfected"></table>
+            <canvas id="agesInfected"></canvas>
+            <p class="loading" style="display: block;">Loading...</p>
+        </div>
+        <div class="content">
+            <p>Ages Deaths:</p>
+            <table id="tabelleAgesDeaths"></table>
+            <canvas id="agesDeaths"></canvas>
+            <p class="loading" style="display: block;">Loading...</p>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script type="text/javascript" src="./clientjs/statisticClient.js"> </script>
+
+    <div class="footer-box">
+        <p class="description" id="loginStatus">Sie sind momentan nicht angemeldet. </p>
+    </div>
+</body>
+
 </html>
