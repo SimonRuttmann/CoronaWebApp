@@ -292,6 +292,7 @@ async function getfilter(){
 
     var gefiltertResult = [];
 //erstmal nur nach stadt sortieren und Distance
+    abbruch:
     if(document.getElementById("city").value == ""){
         gefiltertResult=filterImpfstoff(realResult);
         fillTable(gefiltertResult);
@@ -311,13 +312,15 @@ async function getfilter(){
         
         //unction getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
         //test:
-        profile.city= "Stuttgart";
-        profile.latitude = 48.7758;
-        profile.longitude = 9.1829;
+        //profile.city= "Stuttgart";
+        //profile.latitude = 48.7758;
+        //profile.longitude = 9.1829;
 
-        if(city == profile.city){
+        if(city == profile.city && !isNaN(profile.latitude) && !isNaN(profile.longitude) ){
+            
             lat1=profile.latitude;
             lon1=profile.longitude;
+      
         }
         else{// berechnung der lat und lon vom Standort 
             var query="/data/geocode/city?c="+city;
@@ -333,7 +336,7 @@ async function getfilter(){
                     
                    lon1= geo.features[0].geometry.coordinates[0];
                    lat1= geo.features[0].geometry.coordinates[1];
-                   console.log("test abfrage geo " +lon1);
+                   console.log(city+"  " +lon1+ "lat1 "+lat1);
                    console.log(geo);
 
                 }
@@ -349,24 +352,38 @@ async function getfilter(){
             // berechnung mit koordinaten von city
             for(var i in copyResult){
                 console.log(i);
-                var lon2=copyResult[i].Geocode.coordinates[0];
-                var lat2=copyResult[i].Geocode.coordinates[1];
-                //console.log("long "+lon2+" lat "+lat2);
-                //console.log("lat1"+lat1+"&long1="+lon1+"&lat2="+lat2+"&long2="+lon2);
-                var query="/data/geocode/distance?lat1="+lat1+"&long1="+lon1+"&lat2="+lat2+"&long2="+lon2;
-                try{
-                    var d= await fetch(query);
-                    dist = await d.text();
-                    console.log("dist: "+dist+" d: "+d);
-                    
-                }catch(e){
-                    console.log("Server is not responing"+e);
-                }
-                if (dist != undefined){
-                    
-                    copyResult[i].Distance = dist;
+                if(lon2=copyResult[i].Geocode != undefined && copyResult[i].Geocode != undefined ){
+                    var lon2=copyResult[i].Geocode.coordinates[0];
+                    var lat2=copyResult[i].Geocode.coordinates[1];
+                    //console.log("long "+lon2+" lat "+lat2);
+                    //console.log("lat1"+lat1+"&long1="+lon1+"&lat2="+lat2+"&long2="+lon2);
+                    var query="/data/geocode/distance?lat1="+lat1+"&long1="+lon1+"&lat2="+lat2+"&long2="+lon2;
+                    try{
+                        var d= await fetch(query);
+                        dist = await d.text();
+                        //console.log("dist: "+dist+" d: "+d);
+                        
+                    }catch(e){
+                        console.log("Server is not responing"+e);
+                    }
+                    if (dist != undefined){
+                        
+                        copyResult[i].Distance = dist;
 
+                    }    
                 }
+                else{
+                    var a = document.createElement("caption");
+                    a.textContent="Die Distanze kann gerade nicht berechnet werden. Alle Impfangebote werden angezeigt.";
+                    a.classList.add('error');
+                    var table =document.getElementsByTagName("table")[0];
+                    table.insertBefore(a, table.firstChild);
+
+                    gefiltertResult=filterImpfstoff(realResult);
+                    fillTable(gefiltertResult);
+                    break abbruch;
+                }
+                
  
             }
             //realResult=sortJSON(realResult,"Distance",123);
