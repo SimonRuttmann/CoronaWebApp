@@ -51,8 +51,11 @@ router.get('/vaccination', async (req, res) => {
 			"Adresse": data[i].Adress,
 			"PLZ": data[i].PLZ,
 			"Ort": data[i].Ort,
+			"Tel": data[i].Phone,
+			"Distance": null,
 			"BookingURL": data[i].BookingURL,
-			"Vaccines": data[i].Vaccines
+			"Vaccines": data[i].Vaccines,
+			"Geocode" : data[i].Geocode
 		}
 		for(let j in tmp.Vaccines){
 			data2 = (await MongoDB.find({"Slug":tmp.Vaccines[j].Slug}, "vaccinationDatesBW"))[0];
@@ -94,32 +97,36 @@ router.get('/district', async (req, res) => {
 			const infectionsDBAgeGroup3 = await MongoDB.find({ "ags": param, "altersgruppe": "A15-A34" }, "infectionsCSVBWAll");	//A15-A34
 			const infectionsDBAgeGroup4 = await MongoDB.find({ "ags": param, "altersgruppe": "A35-A59" }, "infectionsCSVBWAll");	//A35-A59
 			const infectionsDBAgeGroup5 = await MongoDB.find({ "ags": param, "altersgruppe": "A60-A79" }, "infectionsCSVBWAll");	//A60-A79
+			const infectionsDBAgeGroup6 = await MongoDB.find({ "ags": param, "altersgruppe": "A80+" }, "infectionsCSVBWAll") 
 			const districtsBWDB = await MongoDB.find({ "ags": param }, "districtsBW")
 			const vaccinationAll = await MongoDB.find({ "ags": param }, "vaccinationsCSVBWAll")
 
 			const deaths_female = data_prep.getDeathsPerWeekCSV(infectionsDBFemale);
 			const deaths_male = data_prep.getDeathsPerWeekCSV(infectionsDBMale);
-			const deaths_agegroup1 =data_prep.getDeathsPerWeekCSV(infectionsDBAgeGroup1);
-			const deaths_agegroup2 =data_prep.getDeathsPerWeekCSV(infectionsDBAgeGroup2);
-			const deaths_agegroup3 =data_prep.getDeathsPerWeekCSV(infectionsDBAgeGroup3);
-			const deaths_agegroup4 =data_prep.getDeathsPerWeekCSV(infectionsDBAgeGroup4);
-			const deaths_agegroup5 =data_prep.getDeathsPerWeekCSV(infectionsDBAgeGroup5);
+			const agegroup1 =data_prep.getDeathsPerWeekCSV(infectionsDBAgeGroup1);
+			const agegroup2 =data_prep.getDeathsPerWeekCSV(infectionsDBAgeGroup2);
+			const agegroup3 =data_prep.getDeathsPerWeekCSV(infectionsDBAgeGroup3);
+			const agegroup4 =data_prep.getDeathsPerWeekCSV(infectionsDBAgeGroup4);
+			const agegroup5 =data_prep.getDeathsPerWeekCSV(infectionsDBAgeGroup5);
+			const agegroup6 =data_prep.getDeathsPerWeekCSV(infectionsDBAgeGroup6)
 			const deathsPerWeek = data_prep.getDeathsPerWeekRKI(historyDeathsDB);
 			const casesPerWeek = data_prep.getCasesPerWeek(historyCasesDB);
 			const vaccinatedPerWeek = data_prep.getVaccinatedPerWeek(vaccinationAll);
 			const incidencePerWeek = data_prep.getIncidenceThisWeek(districtsBWDB);
+			
 
 			response = {
-				"todesfälle_Weiblich": deaths_female,
-				"todesfälle_Männlich": deaths_male,
-				"todesfälle_Alter00-04": deaths_agegroup1,
-				"todesfälle_Alter05-14": deaths_agegroup2,
-				"todesfälle_Alter15-34": deaths_agegroup3,
-				"todesfälle_Alter35-59": deaths_agegroup4,
-				"todesfälle_Alter60-79": deaths_agegroup5,
-				"Tote_pro_Woche": deathsPerWeek,
-				"Fälle_pro_Woche": casesPerWeek,
-				"Geimpte_pro_Woche": vaccinatedPerWeek,
+				"Weiblich_perWeek": deaths_female,
+				"Männlich_perWeek": deaths_male,
+				"Alter00-04_perWeek": agegroup1,
+				"Alter05-14:perWeek": agegroup2,
+				"Alter15-34_perWeek": agegroup3,
+				"Alter35-59_perWeek": agegroup4,
+				"Alter60-79_perWeek": agegroup5,
+				"Alter80+_perWeek"  : agegroup6,
+				//"Tote_pro_Woche": deathsPerWeek,
+				//"Fälle_pro_Woche": casesPerWeek,
+				"Geimpte_per_Week": vaccinatedPerWeek,
 				"Inzidenz_aktuell": incidencePerWeek
 			};
 
@@ -156,7 +163,46 @@ router.get('/news', async (req, res) => {
 	}
 })
 
+//Zugriff über /data/geocode/distance?lat1=X&long1=Y&lat2=C&long2=B
+router.get('/geocode/distance', (req,res) =>{
+	const lat1=req.query.lat1;
+	const lat2=req.query.lat2;
+	const lon1=req.query.long1;
+	const lon2=req.query.long2;
+	if(lat1==undefined || lat2== undefined || lon1 == undefined|| lon2==undefined) res.send("Parameters not defined")
+	res.send(String(getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2)))
+})
 
+
+//Zugriff über /data/geocode/city?c=X
+router.get('/geocode/city', async (req,res) =>{
+	const city = req.query.c;
+	adress={
+		"Ort":city,
+		"Land":"Musterland"
+	}
+	if(city == undefined) res.send("Paramerers not defied");
+
+	res.send(await geocode.calcGeocodeForAdress(adress));
+})
+
+function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+		var R = 6371; // Radius of the earth in km
+		var dLat = deg2rad(lat2 - lat1);  // deg2rad below
+		var dLon = deg2rad(lon2 - lon1);
+		var a =
+			Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+			Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+			Math.sin(dLon / 2) * Math.sin(dLon / 2)
+			;
+		var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+		var d = R * c; // Distance in km
+		return d;
+	}
+	
+	function deg2rad(deg) {
+		return deg * (Math.PI / 180)
+	}
 //Sends back {error:true,{no_data_from:X}} in case of error
 async function getDistrictsFormated() {
 	const dbData_collection = "districtsBW"

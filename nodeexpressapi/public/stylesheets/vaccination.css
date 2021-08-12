@@ -326,3 +326,13 @@ th{
     font-weight: bold;
     color: #ECF0F5;
 }
+.error{
+    background: #222;
+    padding: 0.25em 1em;
+    margin-bottom: 15px;
+    color:red; 
+    text-align: center;
+}
+.links:visited{
+    color: 	#9933ff;
+}
