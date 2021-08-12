@@ -171,10 +171,21 @@ function getProfile(){
     profile.johnson = document.getElementById("johnson").checked;
     profile.city = document.getElementById("city").value;
     profile.radius = slider.value;
-    profile.latitude = 0;               //TODO
-    profile.longitude = 0;              //TODO
+    const latLong = getLatLong(profile.city);
+    profile.latitude = latLong.lat;               //TODO
+    profile.longitude = latLong.long;              //TODO
 }
 
+async function getLatLong(city){
+    let response = await fetch("/data/geocode/city?c="+city);
+    response = await response.text();
+    response = JSON.parse(response)
+    console.log(response)
+    response = {"lat" : response.features[0].geometry.coordinates[0],
+                "long" : response.features[0].geometry.coordinates[1]}
+    console.log(response)            
+    return response;
+}
 
 var profile = 
 {

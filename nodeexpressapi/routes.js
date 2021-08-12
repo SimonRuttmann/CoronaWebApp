@@ -68,11 +68,11 @@ router.get('/user/getUserData', authenticate.checkAuthenticated, controller.getU
 router.post('/user/updateUser', authenticate.checkAuthenticated, controller.updateUser)
 //Expects as input:                         Example response:
 //{
-//  id:             '4324222424',           {
-//  biontech:        true,                      updated: true
-//  moderna:         false,                 }
-//  astra:           false,                 or
-//  johnson:         true,                  {
+//                                          {
+//  biontech:        1,                      updated: true
+//  moderna:         1,                     }
+//  astra:           0,                     or
+//  johnson:         0,                     {
 //  latitude:        '7.2342341',               updated: false
 //  longitude:       '4.1232131',           }
 //  city:            'Aalen',
