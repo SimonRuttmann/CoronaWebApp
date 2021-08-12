@@ -303,7 +303,7 @@ function resetTables() {
     document.getElementById("tabelleTote").innerHTML = "";
     document.getElementById("tabelleInfected").innerHTML = "";
     document.getElementById("tabelleVaccinated").innerHTML = "";
-    document.getElementById("tabelleVaccinated").innerHTML = "";
+    document.getElementById("tabelleRecovered").innerHTML = "";
 }
 
 function fillCharts(name, json) {
