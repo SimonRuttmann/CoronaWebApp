@@ -241,7 +241,7 @@ function createAccountTable(){
                 reject(false);
             }
             else if (resultrows.length == 0){
-                awaitcreateDBandTableCon.end();
+                createDBandTableCon.end();
                 resolve(true);
             }
             else{

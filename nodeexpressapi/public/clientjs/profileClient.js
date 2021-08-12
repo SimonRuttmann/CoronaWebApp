@@ -122,6 +122,21 @@ function updateProfileDOM(){
 async function sendToServer(){
     let result;
     console.log(profile);
+
+    if(profile.biontech) profile.biontech = 1;
+    else profile.biontech = 0;
+
+
+    if(profile.moderna) profile.moderna = 1;
+    else profile.moderna = 0;
+
+    if(profile.astra) profile.astra = 1;
+    else profile.astra = 0;
+
+    if(profile.johnson) profile.johnson = 1;
+    else profile.johnson = 0;
+ 
+    console.log(profile)
     try{
         let response = await fetch('/user/updateUser',{
             method: 'POST',
@@ -150,6 +165,7 @@ async function sendToServer(){
 
 function getProfile(){
     profile.biontech = document.getElementById("biontech").checked;
+    console.log(profile.biontech)
     profile.moderna = document.getElementById("moderna").checked;
     profile.astra = document.getElementById("astra").checked;
     profile.johnson = document.getElementById("johnson").checked;
