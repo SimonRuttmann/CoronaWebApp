@@ -840,6 +840,31 @@ function fillCharts(name, json) {
         if (!found) alter80Plus.push(tmp);
     }
 
+    var alterUnknown = [];
+    for (var i = 0; i < json["AlterUnknown_perWeek"].length; i++) {
+        var tmp = {};
+
+        var date = new Date(json["AlterUnknown_perWeek"][i].date);
+        tmp.month = date.getUTCMonth() + 1;
+        tmp.year = date.getUTCFullYear();
+        tmp.deaths = json["AlterUnknown_perWeek"][i].deaths;
+        tmp.cases = json["AlterUnknown_perWeek"][i].cases;
+        tmp.recovered = json["AlterUnknown_perWeek"][i].recovered;
+
+        var found = false;
+        for (var j = 0; j < alterUnknown.length; j++) {
+            if (alterUnknown[j].month == tmp.month && alterUnknown[j].year == tmp.year) {
+                alterUnknown[j].deaths = alterUnknown[j].deaths + tmp.deaths;
+                alterUnknown[j].cases = alterUnknown[j].cases + tmp.cases;
+                alterUnknown[j].recovered = alterUnknown[j].recovered + tmp.recovered;
+
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) alterUnknown.push(tmp);
+    }
 
     var gesamtDeaths00_04 = 0;
     for (var i = 0; i < alter00_04.length; i++) {
@@ -871,13 +896,18 @@ function fillCharts(name, json) {
         gesamtDeaths80Plus = gesamtDeaths80Plus + alter80Plus[i].deaths;
     }
 
+    var gesamtDeathsUnknown = 0;
+    for (var i = 0; i < alterUnknown.length; i++) {
+        gesamtDeathsUnknown = gesamtDeathsUnknown + alterUnknown[i].deaths;
+    }
+
     const altersgruppenDeaths = {
-        labels: ["0-4", "5-14", "15-34", "35-59", "60-79", "80+"],
+        labels: ["0-4", "5-14", "15-34", "35-59", "60-79", "80+", "Unknown"],
         datasets: [{
             label: 'Gender ' + name,
-            backgroundColor: ['rgb(255, 99, 132)', 'rgb(123, 12, 231)', 'rgb(123, 45, 123)', 'rgb(45, 255, 43)', 'rgb(255, 54, 255)', 'rgb(128, 255, 230)'],
-            borderColor: ['rgb(255, 99, 132)', 'rgb(123, 12, 231)', 'rgb(123, 45, 123)', 'rgb(45, 255, 43)', 'rgb(255, 54, 255)', 'rgb(128, 255, 230)'],
-            data: [gesamtDeaths00_04, gesamtDeaths05_14, gesamtDeaths15_34, gesamtDeaths35_59, gesamtDeaths60_79, gesamtDeaths80Plus],
+            backgroundColor: ['rgb(255, 99, 132)', 'rgb(123, 12, 231)', 'rgb(123, 45, 123)', 'rgb(45, 255, 43)', 'rgb(255, 54, 255)', 'rgb(128, 255, 230)', 'rgb(255, 100, 10)'],
+            borderColor: ['rgb(255, 99, 132)', 'rgb(123, 12, 231)', 'rgb(123, 45, 123)', 'rgb(45, 255, 43)', 'rgb(255, 54, 255)', 'rgb(128, 255, 230)', 'rgb(255, 100, 10)'],
+            data: [gesamtDeaths00_04, gesamtDeaths05_14, gesamtDeaths15_34, gesamtDeaths35_59, gesamtDeaths60_79, gesamtDeaths80Plus, gesamtDeathsUnknown],
         }]
     };
 
@@ -911,13 +941,18 @@ function fillCharts(name, json) {
         gesamtCases80Plus = gesamtCases80Plus + alter80Plus[i].cases;
     }
 
+    var gesamtCasesUnknown = 0;
+    for (var i = 0; i < alterUnknown.length; i++) {
+        gesamtCasesUnknown = gesamtCasesUnknown + alterUnknown[i].cases;
+    }
+
     const altersgruppenCases = {
-        labels: ["0-4", "5-14", "15-34", "35-59", "60-79", "80+"],
+        labels: ["0-4", "5-14", "15-34", "35-59", "60-79", "80+", "Unknown"],
         datasets: [{
             label: 'Gender ' + name,
-            backgroundColor: ['rgb(255, 99, 132)', 'rgb(123, 12, 231)', 'rgb(123, 45, 123)', 'rgb(45, 255, 43)', 'rgb(255, 54, 255)', 'rgb(128, 255, 230)'],
-            borderColor: ['rgb(255, 99, 132)', 'rgb(123, 12, 231)', 'rgb(123, 45, 123)', 'rgb(45, 255, 43)', 'rgb(255, 54, 255)', 'rgb(128, 255, 230)'],
-            data: [gesamtCases00_04, gesamtCases05_14, gesamtCases15_34, gesamtCases35_59, gesamtCases60_79, gesamtCases80Plus],
+            backgroundColor: ['rgb(255, 99, 132)', 'rgb(123, 12, 231)', 'rgb(123, 45, 123)', 'rgb(45, 255, 43)', 'rgb(255, 54, 255)', 'rgb(128, 255, 230)', 'rgb(255, 100, 10)'],
+            borderColor: ['rgb(255, 99, 132)', 'rgb(123, 12, 231)', 'rgb(123, 45, 123)', 'rgb(45, 255, 43)', 'rgb(255, 54, 255)', 'rgb(128, 255, 230)', 'rgb(255, 100, 10)'],
+            data: [gesamtCases00_04, gesamtCases05_14, gesamtCases15_34, gesamtCases35_59, gesamtCases60_79, gesamtCases80Plus, gesamtCasesUnknown],
         }]
     };
 
@@ -1017,6 +1052,22 @@ function fillCharts(name, json) {
         }
     }
 
+    var dataPointsAgesUnknownInfected = [];
+    for (var j = 0; j < dataW.length; j++) {
+        var found = false;
+        for (var i = 0; i < alterUnknown.length; i++) {
+            if (dataW[j].month == alterUnknown[i].month && dataW[j].year == alterUnknown[i].year) {
+                found = true;
+                dataPointsAgesUnknownInfected.push(alterUnknown[i].cases);
+                break;
+            }
+        }
+
+        if (!found) {
+            dataPointsAgesUnknownInfected.push(0);
+        }
+    }
+
     const agesInfected = {
         labels: labelsW,
         datasets: [{
@@ -1048,7 +1099,12 @@ function fillCharts(name, json) {
             label: '80+',
             backgroundColor: 'rgb(128, 255, 230)',
             borderColor: 'rgb(128, 255, 230)',
-            data: dataPointsAges60_79Infected,
+            data: dataPointsAges80PlusInfected,
+        }, {
+            label: 'Unknown',
+            backgroundColor: 'rgb(255, 100, 10)',
+            borderColor: 'rgb(255, 100, 10)',
+            data: dataPointsAgesUnknownInfected,
         }]
     };
 
@@ -1148,6 +1204,22 @@ function fillCharts(name, json) {
         }
     }
 
+    var dataPointsAgesUnknownDeaths = [];
+    for (var j = 0; j < dataW.length; j++) {
+        var found = false;
+        for (var i = 0; i < alterUnknown.length; i++) {
+            if (dataW[j].month == alterUnknown[i].month && dataW[j].year == alterUnknown[i].year) {
+                found = true;
+                dataPointsAgesUnknownDeaths.push(alterUnknown[i].deaths);
+                break;
+            }
+        }
+
+        if (!found) {
+            dataPointsAgesUnknownDeaths.push(0);
+        }
+    }
+
     const agesDeaths = {
         labels: labelsW,
         datasets: [{
@@ -1180,6 +1252,11 @@ function fillCharts(name, json) {
             backgroundColor: 'rgb(128, 255, 230)',
             borderColor: 'rgb(128, 255, 230)',
             data: dataPointsAges80PlusDeaths,
+        }, {
+            label: 'Unknown',
+            backgroundColor: 'rgb(255, 100, 10)',
+            borderColor: 'rgb(255, 100, 10)',
+            data: dataPointsAgesUnknownDeaths,
         }]
     };
 
