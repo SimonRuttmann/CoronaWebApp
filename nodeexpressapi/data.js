@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const MongoDB = require('../db.js');
+const MongoDB = require('./db.js');
 const geocode = require('./geocoding.js');
 const data_prep = require('./data_preparation_functions.js');
 

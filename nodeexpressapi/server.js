@@ -4,7 +4,7 @@ const expresssession = require('express-session')    //Stores and persists sessi
 const passport = require('passport')
 const routes = require("./routes.js")
 const authentificationSetup = require("./authentificationSetup");
-const dataRoute = require("./routes/data.js")
+const dataRoute = require("./data.js")
 
 console.log("test1")
 
