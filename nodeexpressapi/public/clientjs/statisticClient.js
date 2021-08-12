@@ -242,8 +242,6 @@ async function fillContainer(name) {
         tode: ""
     };
 
-    document.getElementById("replaceContent").innerText = "Infizierte: Loading...\nGenesen: Loading...\nGeimpft: Loading...\nImmun: Loading...\nTodesfälle: Loading...";
-
     var overview = await getOverview(name);
     tmp.infizierte = overview.infizierte;
     tmp.genesen = overview.genesen;
@@ -274,6 +272,8 @@ async function getOverview(district) {
 }
 
 function reset() {
+    document.getElementById("replaceContent").innerText = "Infizierte: Loading...\nGenesen: Loading...\nGeimpft: Loading...\nImmun: Loading...\nTodesfälle: Loading...";
+    document.getElementById("replaceHeader").innerText = "Aktuelle Zahlen vom Landkreis: Loading...";
     document.getElementById("diagrams").style = "display: none;";
     document.getElementById("hinweis").style = "display: flex; align-items: center; justify-content: center;";
     resetCharts();
@@ -297,6 +297,7 @@ function resetCharts() {
     document.getElementById("agesInfected").outerHTML = '<canvas id="agesInfected"></canvas>';
     document.getElementById("agesDeaths").outerHTML = '<canvas id="agesDeaths"></canvas>';
     document.getElementById("recovered").outerHTML = '<canvas id="recovered"></canvas>';
+    document.getElementById("agesRecovered").outerHTML = '<canvas id="agesRecovered"></canvas>';
 }
 
 function resetTables() {
@@ -1260,6 +1261,158 @@ function fillCharts(name, json) {
         }]
     };
 
+    var dataPointsAges00_04Recovered = [];
+    for (var j = 0; j < dataW.length; j++) {
+        var found = false;
+        for (var i = 0; i < alter00_04.length; i++) {
+            if (dataW[j].month == alter00_04[i].month && dataW[j].year == alter00_04[i].year) {
+                found = true;
+                dataPointsAges00_04Recovered.push(alter00_04[i].recovered);
+                break;
+            }
+        }
+
+        if (!found) {
+            dataPointsAges00_04Recovered.push(0);
+        }
+    }
+
+    var dataPointsAges05_14Recovered = [];
+    for (var j = 0; j < dataW.length; j++) {
+        var found = false;
+        for (var i = 0; i < alter05_14.length; i++) {
+            if (dataW[j].month == alter05_14[i].month && dataW[j].year == alter05_14[i].year) {
+                found = true;
+                dataPointsAges05_14Recovered.push(alter05_14[i].recovered);
+                break;
+            }
+        }
+
+        if (!found) {
+            dataPointsAges05_14Recovered.push(0);
+        }
+    }
+
+    var dataPointsAges15_34Recovered = [];
+    for (var j = 0; j < dataW.length; j++) {
+        var found = false;
+        for (var i = 0; i < alter15_34.length; i++) {
+            if (dataW[j].month == alter15_34[i].month && dataW[j].year == alter15_34[i].year) {
+                found = true;
+                dataPointsAges15_34Recovered.push(alter15_34[i].recovered);
+                break;
+            }
+        }
+
+        if (!found) {
+            dataPointsAges15_34Recovered.push(0);
+        }
+    }
+
+    var dataPointsAges35_59Recovered = [];
+    for (var j = 0; j < dataW.length; j++) {
+        var found = false;
+        for (var i = 0; i < alter35_59.length; i++) {
+            if (dataW[j].month == alter35_59[i].month && dataW[j].year == alter35_59[i].year) {
+                found = true;
+                dataPointsAges35_59Recovered.push(alter35_59[i].recovered);
+                break;
+            }
+        }
+
+        if (!found) {
+            dataPointsAges35_59Recovered.push(0);
+        }
+    }
+
+    var dataPointsAges60_79Recovered = [];
+    for (var j = 0; j < dataW.length; j++) {
+        var found = false;
+        for (var i = 0; i < alter60_79.length; i++) {
+            if (dataW[j].month == alter60_79[i].month && dataW[j].year == alter60_79[i].year) {
+                found = true;
+                dataPointsAges60_79Recovered.push(alter60_79[i].recovered);
+                break;
+            }
+        }
+
+        if (!found) {
+            dataPointsAges60_79Recovered.push(0);
+        }
+    }
+
+    var dataPointsAges80PlusRecovered = [];
+    for (var j = 0; j < dataW.length; j++) {
+        var found = false;
+        for (var i = 0; i < alter80Plus.length; i++) {
+            if (dataW[j].month == alter80Plus[i].month && dataW[j].year == alter80Plus[i].year) {
+                found = true;
+                dataPointsAges80PlusRecovered.push(alter80Plus[i].recovered);
+                break;
+            }
+        }
+
+        if (!found) {
+            dataPointsAges80PlusRecovered.push(0);
+        }
+    }
+
+    var dataPointsAgesUnknownRecovered = [];
+    for (var j = 0; j < dataW.length; j++) {
+        var found = false;
+        for (var i = 0; i < alterUnknown.length; i++) {
+            if (dataW[j].month == alterUnknown[i].month && dataW[j].year == alterUnknown[i].year) {
+                found = true;
+                dataPointsAgesUnknownRecovered.push(alterUnknown[i].recovered);
+                break;
+            }
+        }
+
+        if (!found) {
+            dataPointsAgesUnknownRecovered.push(0);
+        }
+    }
+
+    const agesRecovered = {
+        labels: labelsW,
+        datasets: [{
+            label: '0-4',
+            backgroundColor: 'rgb(255, 99, 132)',
+            borderColor: 'rgb(255, 99, 132)',
+            data: dataPointsAges00_04Recovered,
+        }, {
+            label: '5-14',
+            backgroundColor: 'rgb(123, 12, 231)',
+            borderColor: 'rgb(123, 12, 231)',
+            data: dataPointsAges05_14Recovered,
+        }, {
+            label: '15-34',
+            backgroundColor: 'rgb(123, 45, 123)',
+            borderColor: 'rgb(123, 45, 123)',
+            data: dataPointsAges15_34Recovered,
+        }, {
+            label: '35-59',
+            backgroundColor: 'rgb(45, 255, 43)',
+            borderColor: 'rgb(45, 255, 43)',
+            data: dataPointsAges35_59Recovered,
+        }, {
+            label: '60-79',
+            backgroundColor: 'rgb(255, 54, 255)',
+            borderColor: 'rgb(255, 54, 255)',
+            data: dataPointsAges60_79Recovered,
+        }, {
+            label: '80+',
+            backgroundColor: 'rgb(128, 255, 230)',
+            borderColor: 'rgb(128, 255, 230)',
+            data: dataPointsAges80PlusRecovered,
+        }, {
+            label: 'Unknown',
+            backgroundColor: 'rgb(255, 100, 10)',
+            borderColor: 'rgb(255, 100, 10)',
+            data: dataPointsAgesUnknownRecovered,
+        }]
+    };
+
     const config1 = {
         type: 'line',
         data: deaths,
@@ -1360,6 +1513,16 @@ function fillCharts(name, json) {
         }
     };
 
+    const config11 = {
+        type: 'line',
+        data: agesRecovered,
+        options: {
+            layout: {
+                padding: 10
+            }
+        }
+    };
+
     Chart.defaults.color = 'rgb(255, 255, 255)';
     Chart.defaults.borderColor = 'rgb(255, 255, 255, 0.1)';
     Chart.defaults.backgroundColor = 'rgb(255, 255, 255)';
@@ -1412,6 +1575,11 @@ function fillCharts(name, json) {
     new Chart(
         document.getElementById('recovered'),
         config10
+    );
+
+    new Chart(
+        document.getElementById('agesRecovered'),
+        config11
     );
 }
 
