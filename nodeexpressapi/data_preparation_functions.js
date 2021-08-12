@@ -50,9 +50,9 @@ function getVaccinatedPerWeek(data) {
 		let tmpDate1, tmpDate2, sortedData = [];
 		mainloop:
 		for (let i in data) {
-			tmpDate1 = new Date((data[i].impfdatum).replaceAll("-", "."));
+			tmpDate1 = new Date((data[i].impfdatum).replace("-", "."));
 			for (let j in sortedData) {
-				tmpDate2 = new Date(String(sortedData[j].date).replaceAll("-", "."));
+				tmpDate2 = new Date(String(sortedData[j].date).replace("-", "."));
 				if (tmpDate1 == tmpDate2) {
 					sortedData[j].anzahl += data[i].anzahl;
 					continue mainloop;
@@ -141,19 +141,19 @@ function getDeathsPerWeekCSV(data) {
 			sortedData.push({ "date": tmpDate1, "cases": Number(data[i].anzahlfall), "deaths": Number(data[i].anzahltodesfall), "recovered": Number(data[i].anzahlgenesen) })
 		}
 		let aufaddierenCases = 0;
-		let aufaddierenDeaths= 0;
+		let aufaddierenDeaths = 0;
 		let aufaddierenRec = 0;
 		for (let i in sortedData) {
 			aufaddierenCases += Number(sortedData[i].cases);
-			aufaddierenRec += Number(sortedData[i].deaths)
+			aufaddierenRec += Number(sortedData[i].recovered)
 			aufaddierenDeaths += Number(sortedData[i].deaths)
 			if ((i % 7) == 6) {
-				response.push({ "date": (sortedData[i].date).replaceAll("-","."), "cases": aufaddierenCases, "deaths": aufaddierenDeaths, "recovered": aufaddierenRec })
+				response.push({ "date": sortedData[i].date, "cases": aufaddierenCases, "deaths": aufaddierenDeaths, "recovered": aufaddierenRec })
 				aufaddierenCases = 0;
 				aufaddierenRec = 0;
 				aufaddierenDeaths = 0;
 			}
-			if (i == data.length - 1) response.push({ "date": (sortedData[i].date).replaceAll("-","."), "cases": aufaddierenCases, "deaths": aufaddierenDeaths, "recovered": aufaddierenRec })
+			if (i == data.length - 1) response.push({ "date": sortedData[i].date, "cases": aufaddierenCases, "deaths": aufaddierenDeaths, "recovered": aufaddierenRec })
 		}
 	}
 	return response;

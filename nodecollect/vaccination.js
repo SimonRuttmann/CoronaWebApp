@@ -30,15 +30,41 @@ async function getVaccinationPlaces(saveToDB, mqttClient) {
 
     if (data.length == 0) return undefined;
 
+    for (var i = 0; i < data.length; i++) {
+        if (data[i].Adress.includes("  ")) {
+            data[i].Adress = data[i].Adress.replace("  ", " ");
+        } else if (!data[i].Adress.includes(" ") && data[i].Adress.length > 0) {
+            var index = -1;
+            for (var j = 0; j < data[i].Adress.length; j++) {
+                if (!isNaN(Number(data[i].Adress[j]))) {
+                    index = j;
+                    break;
+                }
+            }
+
+            if (index != -1) {
+                data[i].Adress = data[i].Adress.substring(0, index) + " " + data[i].Adress.substring(index, data[i].Adress.length);
+            }
+        }
+    }
+
     if (saveToDB) {
         var oldData = await db.find({}, "vaccinationPlacesBW");
 
-        if (oldData.length == 0 || data.length != oldData.length) {
-            mqttClient.publish("refresh", "vaccinationPlacesBW");
-        }
+        for (var i = 0; i < data.length; i++) {
+            var found = false;
+            for (var j = 0; j < oldData.length; j++) {
+                if (oldData[j].Slug == data[i].Slug) {
+                    found = true;
+                    break;
+                }
+            }
 
-        await db.dropCollection("vaccinationPlacesBW");
-        await db.insertMany(data, "vaccinationPlacesBW");
+            if (!found) {
+                await db.insertOne(data[i], "vaccinationPlacesBW");
+                mqttClient.publish("refresh", "vaccinationPlacesBW");
+            }
+        }
     }
 
     return data;

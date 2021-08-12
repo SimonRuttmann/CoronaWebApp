@@ -62,7 +62,8 @@ function MessageArrived(message) {
     console.log(message.destinationName +" : " + message.payloadString);
     // implementierung
     console.log("mqtt message"+message);
-    if(massage == "newsCoronaBW"){
+    var mes = JSON.parse(message);
+    if(mes == "newsCoronaBW"){
         
         getNewsToday(setNewsToday);
         
@@ -184,7 +185,7 @@ function setNewsToday(result){
     for(var j=0; j<anzahlArrays; j++){
         for( var l =0; l < result[j].articles.length && eingefügteArtikel <5; l++){
             
-            var art = buildNewsblock(result[j].articles[l]);
+            var art = buildNewsblock(result[j].articles[l],result[j]);
             var section =document.getElementsByTagName("section")[0];
             section.appendChild(art);
             eingefügteArtikel++;
@@ -255,7 +256,7 @@ function countArticles(result){
 */
 
 
-function buildNewsblock(artikel){
+function buildNewsblock(artikel,datum){
     //console.log("buildnewsblock");
     //console.log(artikel);
 
@@ -263,7 +264,7 @@ function buildNewsblock(artikel){
     var newsblock = document.createElement("details");
     var summary = document.createElement("summary");
     var title = document.createElement("b")
-    title.textContent =artikel.title;
+    title.textContent =artikel.title+"---"+datum.date;
     var umbruch = document.createElement("br");
     var zus = document.createElement("p");
     zus.textContent =artikel.description;  
@@ -274,6 +275,7 @@ function buildNewsblock(artikel){
     var url = document.createElement("a")
     url.textContent = "Zum Originalartikel";
     url.href=artikel.url;
+    url.classList.add('links');
     summary.appendChild(title);
     summary.appendChild(umbruch);
     summary.appendChild(zus);
@@ -358,7 +360,7 @@ function aufSeite2(){
             for( var l =0; l < result[j].articles.length && eingefügteArtikel <5; l++){
                     spring++
                     if(spring > 5){
-                        var art = buildNewsblock(result[j].articles[l]);
+                        var art = buildNewsblock(result[j].articles[l],result[j]);
                         var section =document.getElementsByTagName("section")[0];
                         section.appendChild(art);
                         eingefügteArtikel++;

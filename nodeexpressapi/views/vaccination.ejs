@@ -2,7 +2,7 @@
     <head>
         <title>Impfangebote</title>
         <link rel = "stylesheet" href = "./stylesheets/vaccination.css" type="text/css"> </link>
-        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.2/mqttws31.min.js"></script> 
     </head>
     
     <body>
@@ -20,11 +20,18 @@
         <div class="infobox">
             <h2 class = "heading"> Impfangebote </h2>
             <p class="description">Wenn Sie eingeloggt sind, werden die Ergebnisse bereits nach Ihren Profilangaben gefiltert. 
-                <br>Weitere Filteranfragen sind natürlich möglich. </p>
+                <br>Weitere Filteranfragen sind natürlich möglich. 
+                <br> Für die Distanzberechnung ist die Orteingabe notwendig.</p>
+        </div>
+        <div id="load" class="loadBox">
+            <div class="abstand">
+                <div class="loader"></div>
+            </div>
+            
         </div>
         <div class="buttonbox">
             <button class="button" id="filter" onclick="filtermenu()" type="button">Filter</button> 
-            <button class="button"  id="refresh" onclick="refresh()" type="button">Aktualisieren</button>
+            
             <div class="filterOption">
                 <div class="label">
                     <label for="Impfstoff"class="impfstofflabel">Impfstoffe</label>
@@ -76,19 +83,20 @@
                     
                 </div>
                 <div class="buttonfilterBox">
-                    <button class= "buttonfilter" id="filterOK" onclick="getfilter" type="button">übernehmen</button> 
+                    <button class= "buttonfilter" id="filterOK" onclick="getfilter()" type="button">übernehmen</button> 
                 </div>
                 
             </div>
         </div>
+        
     
-        <table id="tableID" class="tabelle">
+        <table id="tableID" class="tabelle">          
             <tr>
                 <th id="distance" >Distanz</th>
                 <th>Impfzentrum</th>
                 <th>Impfstoff</th>
                 <th>Adresse</th>
-                <th>BookingURL</th>
+                <th>Kontakt</th>
             </tr>
             
           </table>
@@ -99,5 +107,6 @@
             <p class="description" id="loginStatus">Sie sind momentan nicht angemeldet. </p>
         </div>
         <script type = "text/javascript" src = "./clientjs/vaccinationClient.js"> </script>
+        
     </body>
 </html>
