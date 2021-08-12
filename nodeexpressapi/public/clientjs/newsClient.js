@@ -62,7 +62,8 @@ function MessageArrived(message) {
     console.log(message.destinationName +" : " + message.payloadString);
     // implementierung
     console.log("mqtt message"+message);
-    if(massage == "newsCoronaBW"){
+    var mes = JSON.parse(message);
+    if(mes == "newsCoronaBW"){
         
         getNewsToday(setNewsToday);
         

@@ -336,3 +336,77 @@ th{
 .links:visited{
     color: 	#9933ff;
 }
+
+.loadBox{
+    
+    text-align: center;
+    color : #A8A8A8;
+    display: block;
+    
+    padding-top: 10px;
+    border: 1px solid #222;
+    margin-left: auto;
+    margin-right: auto;
+    width: 1000px;
+    margin-top: 50px;
+    height: 120px;
+    background: #222;
+    
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+   
+.abstand{
+    position: fixed;
+    display: block;
+    
+    margin-left: 400px;
+
+}
+
+
+
+.loader {
+    display: block;
+    position:fixed;
+
+    
+    
+    width: 100px;
+    height: 100px;
+    border: 10px solid #777;
+    border-top: 10px solid #0DB8DE;
+    border-bottom: 10px solid #0DB8DE;
+    border-radius: 50%;
+    
+    -webkit-animation: spin 1s linear infinite;
+    animation: spin 1s linear infinite;
+  }
+  
+  @-webkit-keyframes spin {
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  /* Add animation to "page content" */
+  .animate-bottom {
+    position: relative;
+    -webkit-animation-name: animatebottom;
+    -webkit-animation-duration: 1s;
+    animation-name: animatebottom;
+    animation-duration: 1s
+  }
+  
+  @-webkit-keyframes animatebottom {
+    from { bottom:-100px; opacity:0 } 
+    to { bottom:0px; opacity:1 }
+  }
+  
+  @keyframes animatebottom { 
+    from{ bottom:-100px; opacity:0 } 
+    to{ bottom:0; opacity:1 }
+  }

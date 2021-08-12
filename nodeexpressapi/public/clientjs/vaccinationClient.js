@@ -35,6 +35,66 @@ function init(){
     
 };
 
+// mqtt hier hinzufügen:
+var host= "localhost";
+var port= 1884;
+var clientId= "client-vaccination";
+var sus= "refresh";
+client = new Paho.MQTT.Client(host, Number(port), clientId);
+                                    console.log("wurde benutzt paho"+client);
+client.onMessageArrived = MessageArrived;
+client.onConnectionLost = ConnectionLost;
+Connect();
+
+/*Initiates a connection to the MQTT broker*/
+function Connect(){
+    client.connect({
+    onSuccess: Connected,
+    onFailure: ConnectionFailed,
+    //keepAliveInterval: 10,
+    //userName: username,
+    //useSSL: true,
+    //password: password
+    });
+}
+
+/*Callback for successful MQTT connection */
+function Connected() {
+    console.log("Connected");
+    client.subscribe(sus);
+}
+
+/*Callback for failed connection*/
+function ConnectionFailed(res) {
+    console.log("Connect failed:" + res.errorMessage);
+}
+
+/*Callback for lost connection*/
+function ConnectionLost(res) {
+    if (res.errorCode !== 0) {
+        console.log("Connection lost:" + res.errorMessage);
+        Connect();
+    }
+}
+
+/*Callback for incoming message processing */ // messages machen
+function MessageArrived(message) {
+    console.log(message.destinationName +" : " + message.payloadString);
+    // implementierung
+    console.log("mqtt message"+message);
+    if(massage == "vaccinationPlacesBW"){
+    
+        
+        getImpfData(prepareVaccinationData);
+        
+    }
+    else{
+        //do nothing
+    }
+
+    
+}
+
 async function getImpfData(callback){
     console.log("komme in function ImpfData");
     
@@ -152,6 +212,9 @@ async function prepareVaccinationData(result){
 </tr>
 */
 function fillTable(result){
+    document.getElementById("load").style.display="none";
+    
+        
 
     //oldResult=[];
     for(var i=0; i<result.length; i++ ){
@@ -159,14 +222,10 @@ function fillTable(result){
         //if(td instanceof Object){
         var table = document.getElementById("tableID");
         table.appendChild(td);
-            // if(all){
-            //     oldResult.push(result[i]);
-            // }   
-        //}
-        // else{
-        //     console.log("ist keine Impfung an stelle "+i);
-        // }
+     
     } 
+   
+    
     //console.log("hier das vorherige Ergebnis");
     //console.log(oldResult);
 }
@@ -276,6 +335,10 @@ function filtermenu(){
 }
 
 async function getfilter(){
+    if(document.getElementById("load").style.display != "block"){
+        document.getElementById("load").style.display="block";
+    }
+    
     if(document.getElementsByTagName("caption")[0] != undefined){
         var e= document.getElementsByTagName("caption")[0];
         console.log("hier wurde caption gelöscht "+e);
