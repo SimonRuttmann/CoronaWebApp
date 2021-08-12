@@ -5,8 +5,8 @@ const geocode = require('./geocoding.js');
 const data_prep = require('./data_preparation_functions.js');
 
 router.get('/', async (req, res) => {
-	res.send(await geocode.calcGeocodeForAdress({ "Ort": "Tuebingen", "Platz": "72072", "Land": "Deutschland" }));
-	//res.send(await geocode.calcGeocodeForCompleteDB())
+	//res.send(await geocode.calcGeocodeForAdress({ "Ort": "Tuebingen", "Platz": "72072", "Land": "Deutschland" }));
+	res.send(await geocode.calcGeocodeForCompleteDB())
 });
 router.get('/overview', async (req, res) => {
 	let param;
@@ -92,6 +92,7 @@ router.get('/district', async (req, res) => {
 			const historyCasesDB = await MongoDB.find({ "ags": param }, "csvRKI", { "historyCasesRKI": 1, "_id": 0 });
 			const infectionsDBFemale = await MongoDB.find({ "ags": param, "geschlecht": "W" }, "infectionsCSVBWAll");
 			const infectionsDBMale = await MongoDB.find({ "ags": param, "geschlecht": "M" }, "infectionsCSVBWAll");
+			const infectionsDBUnknown = await MongoDB.find({ "ags": param, "geschlecht": "unbekannt" }, "infectionsCSVBWAll");
 			const infectionsDBAgeGroup1 = await MongoDB.find({ "ags": param, "altersgruppe": "A00-A04" }, "infectionsCSVBWAll"); 	//A00-A04
 			const infectionsDBAgeGroup2 = await MongoDB.find({ "ags": param, "altersgruppe": "A05-A14" }, "infectionsCSVBWAll");	//A05-A14
 			const infectionsDBAgeGroup3 = await MongoDB.find({ "ags": param, "altersgruppe": "A15-A34" }, "infectionsCSVBWAll");	//A15-A34
@@ -103,14 +104,15 @@ router.get('/district', async (req, res) => {
 
 			const deaths_female = data_prep.getDeathsPerWeekCSV(infectionsDBFemale);
 			const deaths_male = data_prep.getDeathsPerWeekCSV(infectionsDBMale);
+			const deaths_unknown = data_prep.getDeathsPerWeekCSV(infectionsDBUnknown);
 			const agegroup1 =data_prep.getDeathsPerWeekCSV(infectionsDBAgeGroup1);
 			const agegroup2 =data_prep.getDeathsPerWeekCSV(infectionsDBAgeGroup2);
 			const agegroup3 =data_prep.getDeathsPerWeekCSV(infectionsDBAgeGroup3);
 			const agegroup4 =data_prep.getDeathsPerWeekCSV(infectionsDBAgeGroup4);
 			const agegroup5 =data_prep.getDeathsPerWeekCSV(infectionsDBAgeGroup5);
-			const agegroup6 =data_prep.getDeathsPerWeekCSV(infectionsDBAgeGroup6)
-			const deathsPerWeek = data_prep.getDeathsPerWeekRKI(historyDeathsDB);
-			const casesPerWeek = data_prep.getCasesPerWeek(historyCasesDB);
+			const agegroup6 =data_prep.getDeathsPerWeekCSV(infectionsDBAgeGroup6);
+			//const deathsPerWeek = data_prep.getDeathsPerWeekRKI(historyDeathsDB);
+			//const casesPerWeek = data_prep.getCasesPerWeek(historyCasesDB);
 			const vaccinatedPerWeek = data_prep.getVaccinatedPerWeek(vaccinationAll);
 			const incidencePerWeek = data_prep.getIncidenceThisWeek(districtsBWDB);
 			
@@ -118,6 +120,7 @@ router.get('/district', async (req, res) => {
 			response = {
 				"Weiblich_perWeek": deaths_female,
 				"Männlich_perWeek": deaths_male,
+				"Unknown_perWeek": deaths_unknown,
 				"Alter00-04_perWeek": agegroup1,
 				"Alter05-14:perWeek": agegroup2,
 				"Alter15-34_perWeek": agegroup3,
@@ -129,7 +132,6 @@ router.get('/district', async (req, res) => {
 				"Geimpte_per_Week": vaccinatedPerWeek,
 				"Inzidenz_aktuell": incidencePerWeek
 			};
-
 		};
 		res.send(response);
 	} catch (e) {

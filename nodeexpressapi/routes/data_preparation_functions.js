@@ -145,7 +145,7 @@ function getDeathsPerWeekCSV(data) {
 		let aufaddierenRec = 0;
 		for (let i in sortedData) {
 			aufaddierenCases += Number(sortedData[i].cases);
-			aufaddierenRec += Number(sortedData[i].deaths)
+			aufaddierenRec += Number(sortedData[i].recovered)
 			aufaddierenDeaths += Number(sortedData[i].deaths)
 			if ((i % 7) == 6) {
 				response.push({ "date": sortedData[i].date, "cases": aufaddierenCases, "deaths": aufaddierenDeaths, "recovered": aufaddierenRec })
