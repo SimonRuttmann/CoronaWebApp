@@ -296,12 +296,14 @@ function resetCharts() {
     document.getElementById("altersgruppenCases").outerHTML = '<canvas id="altersgruppenCases"></canvas>';
     document.getElementById("agesInfected").outerHTML = '<canvas id="agesInfected"></canvas>';
     document.getElementById("agesDeaths").outerHTML = '<canvas id="agesDeaths"></canvas>';
+    document.getElementById("recovered").outerHTML = '<canvas id="recovered"></canvas>';
 }
 
 function resetTables() {
     document.getElementById("tabelleTote").innerHTML = "";
     document.getElementById("tabelleInfected").innerHTML = "";
     document.getElementById("tabelleVaccinated").innerHTML = "";
+    document.getElementById("tabelleRecovered").innerHTML = "";
 }
 
 function fillCharts(name, json) {
@@ -361,6 +363,34 @@ function fillCharts(name, json) {
 
     dataM.reverse();
 
+    var dataU = [];
+    for (var i = 0; i < json.Unknown_perWeek.length; i++) {
+        var tmp = {};
+
+        var date = new Date(json.Unknown_perWeek[i].date);
+        tmp.month = date.getUTCMonth() + 1;
+        tmp.year = date.getUTCFullYear();
+        tmp.deaths = json.Unknown_perWeek[i].deaths;
+        tmp.cases = json.Unknown_perWeek[i].cases;
+        tmp.recovered = json.Unknown_perWeek[i].recovered;
+
+        var found = false;
+        for (var j = 0; j < dataU.length; j++) {
+            if (dataU[j].month == tmp.month && dataU[j].year == tmp.year) {
+                dataU[j].deaths = dataU[j].deaths + tmp.deaths;
+                dataU[j].cases = dataU[j].cases + tmp.cases;
+                dataU[j].recovered = dataU[j].recovered + tmp.recovered;
+
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) dataU.push(tmp);
+    }
+
+    dataU.reverse();
+
     var dataVaccinated = [];
     for (var i = 0; i < json.Geimpte_per_Week.length; i++) {
         var tmp = {};
@@ -388,6 +418,7 @@ function fillCharts(name, json) {
     var vaccLabels = getLabels(dataVaccinated);
     var labelsW = getLabels(dataW);
     var labelsM = getLabels(dataM);
+    var labelsU = getLabels(dataU);
 
     var labels;
     if (labelsM.length < labelsW.length) {
@@ -412,12 +443,28 @@ function fillCharts(name, json) {
         dataPointsToteM.push(dataM[i].deaths);
     }
 
-    var dataPointsToteG = [];
-    for (var i = 0; i < dataPointsToteM.length; i++) {
-        dataPointsToteG.push(dataPointsToteM[i] + dataPointsToteW[i]);
+    var dataPointsToteU = [];
+    for (var i = 0; i < labels.length; i++) {
+        for (var j = 0; j < dataU.length; j++) {
+            var found = false;
+            if (labels[i] == labelsU[j]) {
+                found = true;
+                dataPointsToteU.push(dataU[j].deaths);
+                break;
+            }
+        }
+
+        if (!found) {
+            dataPointsToteU.push(0);
+        }
     }
 
-    fillTableTote(dataPointsToteW, dataPointsToteM, dataPointsToteG);
+    var dataPointsToteG = [];
+    for (var i = 0; i < dataPointsToteM.length; i++) {
+        dataPointsToteG.push(dataPointsToteM[i] + dataPointsToteW[i] + dataPointsToteU[i]);
+    }
+
+    fillTableTote(dataPointsToteW, dataPointsToteM, dataPointsToteG, dataPointsToteU);
 
     const deaths = {
         labels: labels,
@@ -436,6 +483,11 @@ function fillCharts(name, json) {
             backgroundColor: 'rgb(0, 200, 255)',
             borderColor: 'rgb(0, 200, 255)',
             data: dataPointsToteG,
+        }, {
+            label: 'Unknown',
+            backgroundColor: 'rgb(200, 100, 155)',
+            borderColor: 'rgb(200, 100, 155)',
+            data: dataPointsToteU,
         }]
     };
 
@@ -455,12 +507,28 @@ function fillCharts(name, json) {
         dataPointsInfectedM.push(dataM[i].cases);
     }
 
-    var dataPointsInfectedG = [];
-    for (var i = 0; i < dataPointsInfectedM.length; i++) {
-        dataPointsInfectedG.push(dataPointsInfectedM[i] + dataPointsInfectedW[i]);
+    var dataPointsInfectedU = [];
+    for (var i = 0; i < labels.length; i++) {
+        for (var j = 0; j < dataU.length; j++) {
+            var found = false;
+            if (labels[i] == labelsU[j]) {
+                found = true;
+                dataPointsInfectedU.push(dataU[j].cases);
+                break;
+            }
+        }
+
+        if (!found) {
+            dataPointsInfectedU.push(0);
+        }
     }
 
-    fillTableInfected(dataPointsInfectedW, dataPointsInfectedM, dataPointsInfectedG);
+    var dataPointsInfectedG = [];
+    for (var i = 0; i < dataPointsInfectedM.length; i++) {
+        dataPointsInfectedG.push(dataPointsInfectedM[i] + dataPointsInfectedW[i] + dataPointsInfectedU[i]);
+    }
+
+    fillTableInfected(dataPointsInfectedW, dataPointsInfectedM, dataPointsInfectedG, dataPointsInfectedU);
 
     const infected = {
         labels: labelsW,
@@ -479,6 +547,75 @@ function fillCharts(name, json) {
             backgroundColor: 'rgb(0, 200, 255)',
             borderColor: 'rgb(0, 200, 255)',
             data: dataPointsInfectedG,
+        }, {
+            label: 'Unknown',
+            backgroundColor: 'rgb(200, 100, 155)',
+            borderColor: 'rgb(200, 100, 155)',
+            data: dataPointsInfectedU,
+        }]
+    };
+
+    var dataPointsRecoveredW = [];
+    for (var i = 0; i < dataM.length - dataW.length; i++) {
+        dataPointsRecoveredW.push(0);
+    }
+    for (var i = 0; i < dataW.length; i++) {
+        dataPointsRecoveredW.push(dataW[i].recovered);
+    }
+
+    var dataPointsRecoveredM = [];
+    for (var i = 0; i < dataW.length - dataM.length; i++) {
+        dataPointsRecoveredM.push(0);
+    }
+    for (var i = 0; i < dataM.length; i++) {
+        dataPointsRecoveredM.push(dataM[i].recovered);
+    }
+
+    var dataPointsRecoveredU = [];
+    for (var i = 0; i < labels.length; i++) {
+        for (var j = 0; j < dataU.length; j++) {
+            var found = false;
+            if (labels[i] == labelsU[j]) {
+                found = true;
+                dataPointsRecoveredU.push(dataU[j].cases);
+                break;
+            }
+        }
+
+        if (!found) {
+            dataPointsRecoveredU.push(0);
+        }
+    }
+
+    var dataPointsRecoveredG = [];
+    for (var i = 0; i < dataPointsRecoveredM.length; i++) {
+        dataPointsRecoveredG.push(dataPointsRecoveredM[i] + dataPointsRecoveredW[i] + dataPointsRecoveredU[i]);
+    }
+
+    fillTableRecovered(dataPointsRecoveredW, dataPointsRecoveredM, dataPointsRecoveredG, dataPointsRecoveredU);
+
+    const recovered = {
+        labels: labelsW,
+        datasets: [{
+            label: 'Männlich',
+            backgroundColor: 'rgb(255, 255, 132)',
+            borderColor: 'rgb(255, 255, 132)',
+            data: dataPointsRecoveredM,
+        }, {
+            label: 'Weiblich',
+            backgroundColor: 'rgb(255, 99, 132)',
+            borderColor: 'rgb(255, 99, 132)',
+            data: dataPointsRecoveredW,
+        }, {
+            label: 'Gesamt',
+            backgroundColor: 'rgb(0, 200, 255)',
+            borderColor: 'rgb(0, 200, 255)',
+            data: dataPointsRecoveredG,
+        }, {
+            label: 'Unknown',
+            backgroundColor: 'rgb(200, 100, 155)',
+            borderColor: 'rgb(200, 100, 155)',
+            data: dataPointsRecoveredU,
         }]
     };
 
@@ -507,13 +644,18 @@ function fillCharts(name, json) {
         toteGesamtW = toteGesamtW + dataW[i].deaths;
     }
 
+    var toteGesamtU = 0;
+    for (var i = 0; i < dataU.length; i++) {
+        toteGesamtU = toteGesamtU + dataU[i].deaths;
+    }
+
     const genderDeaths = {
-        labels: ["Männlich", "Weiblich"],
+        labels: ["Männlich", "Weiblich", "Unknown"],
         datasets: [{
             label: 'Gender ' + name,
-            backgroundColor: ['rgb(255, 99, 132)', 'rgb(123, 12, 231)'],
-            borderColor: ['rgb(255, 99, 132)', 'rgb(123, 12, 231)'],
-            data: [toteGesamtM, toteGesamtW],
+            backgroundColor: ['rgb(255, 99, 132)', 'rgb(123, 12, 231)', 'rgb(123, 255, 255)'],
+            borderColor: ['rgb(255, 99, 132)', 'rgb(123, 12, 231)', 'rgb(123, 255, 255)'],
+            data: [toteGesamtM, toteGesamtW, toteGesamtU],
         }]
     };
 
@@ -527,13 +669,18 @@ function fillCharts(name, json) {
         casesGesamtW = casesGesamtW + dataW[i].cases;
     }
 
+    var casesGesamtU = 0;
+    for (var i = 0; i < dataU.length; i++) {
+        casesGesamtU = casesGesamtU + dataU[i].cases;
+    }
+
     const genderCases = {
-        labels: ["Männlich", "Weiblich"],
+        labels: ["Männlich", "Weiblich", "Unknown"],
         datasets: [{
             label: 'Gender ' + name,
-            backgroundColor: ['rgb(255, 99, 132)', 'rgb(123, 12, 231)'],
-            borderColor: ['rgb(255, 99, 132)', 'rgb(123, 12, 231)'],
-            data: [casesGesamtM, casesGesamtW],
+            backgroundColor: ['rgb(255, 99, 132)', 'rgb(123, 12, 231)', 'rgb(123, 255, 255)'],
+            borderColor: ['rgb(255, 99, 132)', 'rgb(123, 12, 231)', 'rgb(123, 255, 255)'],
+            data: [casesGesamtM, casesGesamtW, casesGesamtU],
         }]
     };
 
@@ -693,6 +840,31 @@ function fillCharts(name, json) {
         if (!found) alter80Plus.push(tmp);
     }
 
+    var alterUnknown = [];
+    for (var i = 0; i < json["AlterUnknown_perWeek"].length; i++) {
+        var tmp = {};
+
+        var date = new Date(json["AlterUnknown_perWeek"][i].date);
+        tmp.month = date.getUTCMonth() + 1;
+        tmp.year = date.getUTCFullYear();
+        tmp.deaths = json["AlterUnknown_perWeek"][i].deaths;
+        tmp.cases = json["AlterUnknown_perWeek"][i].cases;
+        tmp.recovered = json["AlterUnknown_perWeek"][i].recovered;
+
+        var found = false;
+        for (var j = 0; j < alterUnknown.length; j++) {
+            if (alterUnknown[j].month == tmp.month && alterUnknown[j].year == tmp.year) {
+                alterUnknown[j].deaths = alterUnknown[j].deaths + tmp.deaths;
+                alterUnknown[j].cases = alterUnknown[j].cases + tmp.cases;
+                alterUnknown[j].recovered = alterUnknown[j].recovered + tmp.recovered;
+
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) alterUnknown.push(tmp);
+    }
 
     var gesamtDeaths00_04 = 0;
     for (var i = 0; i < alter00_04.length; i++) {
@@ -724,13 +896,18 @@ function fillCharts(name, json) {
         gesamtDeaths80Plus = gesamtDeaths80Plus + alter80Plus[i].deaths;
     }
 
+    var gesamtDeathsUnknown = 0;
+    for (var i = 0; i < alterUnknown.length; i++) {
+        gesamtDeathsUnknown = gesamtDeathsUnknown + alterUnknown[i].deaths;
+    }
+
     const altersgruppenDeaths = {
-        labels: ["0-4", "5-14", "15-34", "35-59", "60-79", "80+"],
+        labels: ["0-4", "5-14", "15-34", "35-59", "60-79", "80+", "Unknown"],
         datasets: [{
             label: 'Gender ' + name,
-            backgroundColor: ['rgb(255, 99, 132)', 'rgb(123, 12, 231)', 'rgb(123, 45, 123)', 'rgb(45, 255, 43)', 'rgb(255, 54, 255)', 'rgb(128, 255, 230)'],
-            borderColor: ['rgb(255, 99, 132)', 'rgb(123, 12, 231)', 'rgb(123, 45, 123)', 'rgb(45, 255, 43)', 'rgb(255, 54, 255)', 'rgb(128, 255, 230)'],
-            data: [gesamtDeaths00_04, gesamtDeaths05_14, gesamtDeaths15_34, gesamtDeaths35_59, gesamtDeaths60_79, gesamtDeaths80Plus],
+            backgroundColor: ['rgb(255, 99, 132)', 'rgb(123, 12, 231)', 'rgb(123, 45, 123)', 'rgb(45, 255, 43)', 'rgb(255, 54, 255)', 'rgb(128, 255, 230)', 'rgb(255, 100, 10)'],
+            borderColor: ['rgb(255, 99, 132)', 'rgb(123, 12, 231)', 'rgb(123, 45, 123)', 'rgb(45, 255, 43)', 'rgb(255, 54, 255)', 'rgb(128, 255, 230)', 'rgb(255, 100, 10)'],
+            data: [gesamtDeaths00_04, gesamtDeaths05_14, gesamtDeaths15_34, gesamtDeaths35_59, gesamtDeaths60_79, gesamtDeaths80Plus, gesamtDeathsUnknown],
         }]
     };
 
@@ -764,13 +941,18 @@ function fillCharts(name, json) {
         gesamtCases80Plus = gesamtCases80Plus + alter80Plus[i].cases;
     }
 
+    var gesamtCasesUnknown = 0;
+    for (var i = 0; i < alterUnknown.length; i++) {
+        gesamtCasesUnknown = gesamtCasesUnknown + alterUnknown[i].cases;
+    }
+
     const altersgruppenCases = {
-        labels: ["0-4", "5-14", "15-34", "35-59", "60-79", "80+"],
+        labels: ["0-4", "5-14", "15-34", "35-59", "60-79", "80+", "Unknown"],
         datasets: [{
             label: 'Gender ' + name,
-            backgroundColor: ['rgb(255, 99, 132)', 'rgb(123, 12, 231)', 'rgb(123, 45, 123)', 'rgb(45, 255, 43)', 'rgb(255, 54, 255)', 'rgb(128, 255, 230)'],
-            borderColor: ['rgb(255, 99, 132)', 'rgb(123, 12, 231)', 'rgb(123, 45, 123)', 'rgb(45, 255, 43)', 'rgb(255, 54, 255)', 'rgb(128, 255, 230)'],
-            data: [gesamtCases00_04, gesamtCases05_14, gesamtCases15_34, gesamtCases35_59, gesamtCases60_79, gesamtCases80Plus],
+            backgroundColor: ['rgb(255, 99, 132)', 'rgb(123, 12, 231)', 'rgb(123, 45, 123)', 'rgb(45, 255, 43)', 'rgb(255, 54, 255)', 'rgb(128, 255, 230)', 'rgb(255, 100, 10)'],
+            borderColor: ['rgb(255, 99, 132)', 'rgb(123, 12, 231)', 'rgb(123, 45, 123)', 'rgb(45, 255, 43)', 'rgb(255, 54, 255)', 'rgb(128, 255, 230)', 'rgb(255, 100, 10)'],
+            data: [gesamtCases00_04, gesamtCases05_14, gesamtCases15_34, gesamtCases35_59, gesamtCases60_79, gesamtCases80Plus, gesamtCasesUnknown],
         }]
     };
 
@@ -870,6 +1052,22 @@ function fillCharts(name, json) {
         }
     }
 
+    var dataPointsAgesUnknownInfected = [];
+    for (var j = 0; j < dataW.length; j++) {
+        var found = false;
+        for (var i = 0; i < alterUnknown.length; i++) {
+            if (dataW[j].month == alterUnknown[i].month && dataW[j].year == alterUnknown[i].year) {
+                found = true;
+                dataPointsAgesUnknownInfected.push(alterUnknown[i].cases);
+                break;
+            }
+        }
+
+        if (!found) {
+            dataPointsAgesUnknownInfected.push(0);
+        }
+    }
+
     const agesInfected = {
         labels: labelsW,
         datasets: [{
@@ -901,7 +1099,12 @@ function fillCharts(name, json) {
             label: '80+',
             backgroundColor: 'rgb(128, 255, 230)',
             borderColor: 'rgb(128, 255, 230)',
-            data: dataPointsAges60_79Infected,
+            data: dataPointsAges80PlusInfected,
+        }, {
+            label: 'Unknown',
+            backgroundColor: 'rgb(255, 100, 10)',
+            borderColor: 'rgb(255, 100, 10)',
+            data: dataPointsAgesUnknownInfected,
         }]
     };
 
@@ -1001,6 +1204,22 @@ function fillCharts(name, json) {
         }
     }
 
+    var dataPointsAgesUnknownDeaths = [];
+    for (var j = 0; j < dataW.length; j++) {
+        var found = false;
+        for (var i = 0; i < alterUnknown.length; i++) {
+            if (dataW[j].month == alterUnknown[i].month && dataW[j].year == alterUnknown[i].year) {
+                found = true;
+                dataPointsAgesUnknownDeaths.push(alterUnknown[i].deaths);
+                break;
+            }
+        }
+
+        if (!found) {
+            dataPointsAgesUnknownDeaths.push(0);
+        }
+    }
+
     const agesDeaths = {
         labels: labelsW,
         datasets: [{
@@ -1033,6 +1252,11 @@ function fillCharts(name, json) {
             backgroundColor: 'rgb(128, 255, 230)',
             borderColor: 'rgb(128, 255, 230)',
             data: dataPointsAges80PlusDeaths,
+        }, {
+            label: 'Unknown',
+            backgroundColor: 'rgb(255, 100, 10)',
+            borderColor: 'rgb(255, 100, 10)',
+            data: dataPointsAgesUnknownDeaths,
         }]
     };
 
@@ -1126,6 +1350,16 @@ function fillCharts(name, json) {
         }
     };
 
+    const config10 = {
+        type: 'line',
+        data: recovered,
+        options: {
+            layout: {
+                padding: 10
+            }
+        }
+    };
+
     Chart.defaults.color = 'rgb(255, 255, 255)';
     Chart.defaults.borderColor = 'rgb(255, 255, 255, 0.1)';
     Chart.defaults.backgroundColor = 'rgb(255, 255, 255)';
@@ -1173,6 +1407,11 @@ function fillCharts(name, json) {
     new Chart(
         document.getElementById('agesDeaths'),
         config9
+    );
+
+    new Chart(
+        document.getElementById('recovered'),
+        config10
     );
 }
 
@@ -1385,6 +1624,65 @@ function fillTableInfected(dataW, dataM, dataG) {
     tr.appendChild(td);
 
     document.getElementById("tabelleInfected").getElementsByTagName("tbody")[0].appendChild(tr);
+}
+
+function fillTableRecovered(dataW, dataM, dataG) {
+    document.getElementById("tabelleRecovered").innerHTML = "";
+
+    var recoveredG = 0;
+    for (var i = 0; i < dataG.length; i++) {
+        recoveredG = recoveredG + dataG[i];
+    }
+
+    var recoveredM = 0;
+    for (var i = 0; i < dataM.length; i++) {
+        recoveredM = recoveredM + dataM[i];
+    }
+
+    var recoveredW = 0;
+    for (var i = 0; i < dataW.length; i++) {
+        recoveredW = recoveredW + dataW[i];
+    }
+
+    var tbody = document.createElement("tbody");
+    document.getElementById("tabelleRecovered").appendChild(tbody);
+
+    var td;
+    var tr = document.createElement("tr");
+
+    td = document.createElement("td");
+    td.innerText = "Gesamt";
+    tr.appendChild(td);
+
+    td = document.createElement("td");
+    td.innerText = recoveredG;
+    tr.appendChild(td);
+
+    document.getElementById("tabelleRecovered").getElementsByTagName("tbody")[0].appendChild(tr);
+
+    tr = document.createElement("tr");
+
+    td = document.createElement("td");
+    td.innerText = "Männlich";
+    tr.appendChild(td);
+
+    td = document.createElement("td");
+    td.innerText = recoveredM;
+    tr.appendChild(td);
+
+    document.getElementById("tabelleRecovered").getElementsByTagName("tbody")[0].appendChild(tr);
+
+    tr = document.createElement("tr");
+
+    td = document.createElement("td");
+    td.innerText = "Weiblich";
+    tr.appendChild(td);
+
+    td = document.createElement("td");
+    td.innerText = recoveredW;
+    tr.appendChild(td);
+
+    document.getElementById("tabelleRecovered").getElementsByTagName("tbody")[0].appendChild(tr);
 }
 
 function fillTableVaccinated(data) {

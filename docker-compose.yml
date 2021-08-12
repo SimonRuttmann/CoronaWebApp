@@ -1,14 +1,18 @@
 version: "3.3"
 services:
     nodecollect:
+        container_name: nodecollect
         restart: on-failure 
         build:
-            context: ./nodecollect
+            context: .
+            dockerfile: ./nodecollect/Dockerfile
 
     nodeexpressapi:
+        container_name: nodeexpressapi
         restart: on-failure:5
         build:
-            context: ./nodeexpressapi
+            context: .
+            dockerfile: ./nodeexpressapi/Dockerfile
         ports: 
             - "6969:6969"    
         depends_on: 
@@ -16,6 +20,7 @@ services:
                 condition: service_healthy     
 
     nginx:
+        container_name: nginx
         build:
             context: ./nginx
         ports:
@@ -23,6 +28,7 @@ services:
             - "8080:8080"
 
     mqtt:
+        container_name: mqtt
         build:
             context: ./mqtt
         ports:
