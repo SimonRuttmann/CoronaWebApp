@@ -99,6 +99,7 @@ router.get('/district', async (req, res) => {
 			const infectionsDBAgeGroup4 = await MongoDB.find({ "ags": param, "altersgruppe": "A35-A59" }, "infectionsCSVBWAll");	//A35-A59
 			const infectionsDBAgeGroup5 = await MongoDB.find({ "ags": param, "altersgruppe": "A60-A79" }, "infectionsCSVBWAll");	//A60-A79
 			const infectionsDBAgeGroup6 = await MongoDB.find({ "ags": param, "altersgruppe": "A80+" }, "infectionsCSVBWAll") 
+			const infectionsDBAgeGroup7 = await MongoDB.find({ "ags": param, "altersgruppe": "unbekannt" }, "infectionsCSVBWAll") 
 			const districtsBWDB = await MongoDB.find({ "ags": param }, "districtsBW")
 			const vaccinationAll = await MongoDB.find({ "ags": param }, "vaccinationsCSVBWAll")
 
@@ -111,6 +112,7 @@ router.get('/district', async (req, res) => {
 			const agegroup4 =data_prep.getDeathsPerWeekCSV(infectionsDBAgeGroup4);
 			const agegroup5 =data_prep.getDeathsPerWeekCSV(infectionsDBAgeGroup5);
 			const agegroup6 =data_prep.getDeathsPerWeekCSV(infectionsDBAgeGroup6);
+			const agegroup7 =data_prep.getDeathsPerWeekCSV(infectionsDBAgeGroup7);
 			//const deathsPerWeek = data_prep.getDeathsPerWeekRKI(historyDeathsDB);
 			//const casesPerWeek = data_prep.getCasesPerWeek(historyCasesDB);
 			const vaccinatedPerWeek = data_prep.getVaccinatedPerWeek(vaccinationAll);
@@ -127,6 +129,7 @@ router.get('/district', async (req, res) => {
 				"Alter35-59_perWeek": agegroup4,
 				"Alter60-79_perWeek": agegroup5,
 				"Alter80+_perWeek"  : agegroup6,
+				"AlterUnknown_perWeek": agegroup7,
 				//"Tote_pro_Woche": deathsPerWeek,
 				//"Fälle_pro_Woche": casesPerWeek,
 				"Geimpte_per_Week": vaccinatedPerWeek,
