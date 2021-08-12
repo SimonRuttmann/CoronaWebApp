@@ -1,6 +1,7 @@
 FROM node
 
-COPY . /node
+COPY ./nodeexpressapi/ /node/
+COPY ./general/ /node/
 
 WORKDIR /node
 

@@ -51,12 +51,20 @@ async function getVaccinationPlaces(saveToDB, mqttClient) {
     if (saveToDB) {
         var oldData = await db.find({}, "vaccinationPlacesBW");
 
-        if (oldData.length == 0 || data.length != oldData.length) {
-            mqttClient.publish("refresh", "vaccinationPlacesBW");
-        }
+        for (var i = 0; i < data.length; i++) {
+            var found = false;
+            for (var j = 0; j < oldData.length; j++) {
+                if (oldData[j].Slug == data[i].Slug) {
+                    found = true;
+                    break;
+                }
+            }
 
-        await db.dropCollection("vaccinationPlacesBW");
-        await db.insertMany(data, "vaccinationPlacesBW");
+            if (!found) {
+                await db.insertOne(data[i], "vaccinationPlacesBW");
+                mqttClient.publish("refresh", "vaccinationPlacesBW");
+            }
+        }
     }
 
     return data;
