@@ -61,10 +61,12 @@ function ConnectionLost(res) {
 function MessageArrived(message) {
     console.log(message.destinationName +" : " + message.payloadString);
     // implementierung
-    console.log("mqtt message"+message);
-    var mes = JSON.parse(message);
-    if(mes == "newsCoronaBW"){
-        
+    console.log("mqtt message");
+    console.log(message);
+    //var mes = JSON.parse(message.payloadString);
+    //console.log(mes);
+    if(message.payloadString == "newsCoronaBW"){
+        console.log("komme hier rein");
         getNewsToday(setNewsToday);
         
     }
@@ -264,7 +266,7 @@ function buildNewsblock(artikel,datum){
     var newsblock = document.createElement("details");
     var summary = document.createElement("summary");
     var title = document.createElement("b")
-    title.textContent =artikel.title+"---"+datum.date;
+    title.textContent =artikel.title+"  ---  "+datum.date;
     var umbruch = document.createElement("br");
     var zus = document.createElement("p");
     zus.textContent =artikel.description;  

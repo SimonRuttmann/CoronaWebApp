@@ -91,9 +91,8 @@ function MessageArrived(message) {
     console.log(message.destinationName +" : " + message.payloadString);
     // implementierung
     console.log("mqtt message"+message);
-    var mas = Json.parse(message);
-    if(mas == "vaccinationPlacesBW"){
-    
+    //var mas = Json.parse(message);
+    if(message.payloadString == "vaccinationPlacesBW"){
         
         getImpfData(prepareVaccinationData);
         
@@ -468,7 +467,7 @@ async function getfilter(){
                 if(zahler ==0){
                     console.log("ko");
                     var a = document.createElement("caption");
-                    a.textContent="Die Distanze kann gerade nicht berechnet werden. Alle Impfangebote werden angezeigt.";
+                    a.textContent="Die Distanze kann gerade nicht berechnet werden. Alle Impfangebote entsprechend der gewählten Impfstoffen werden angezeigt.";
                     a.classList.add('error');
                     var table =document.getElementsByTagName("table")[0];
                     table.insertBefore(a, table.firstChild);
