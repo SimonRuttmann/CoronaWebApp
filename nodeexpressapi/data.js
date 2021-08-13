@@ -3,6 +3,7 @@ const router = express.Router();
 const MongoDB = require('./db.js');
 const geocode = require('./geocoding.js');
 const data_prep = require('./data_preparation_functions.js');
+const { response } = require('express');
 
 router.get('/', async (req, res) => {
 	//res.send(await geocode.calcGeocodeForAdress({ "Ort": "Tuebingen", "Platz": "72072", "Land": "Deutschland" }));
@@ -37,10 +38,12 @@ router.get('/overview', async (req, res) => {
 		}
 		console.log(param)
 		response = data_prep.getOverview(data, param)
+		response = await MongoDB.find({"ags":param},"overview")
 	}
 	else { //Pfad ohne Parameter -> schreibt alle Landkreisdaten zusammen
-		response = data_prep.getOverview(data)
+		response = await MongoDB.find({"ags":-"1"},"overview")
 	}
+	if(response.length==0) response={"error":true,"reason":"no data found"}; 
 	res.send(response);
 });
 
