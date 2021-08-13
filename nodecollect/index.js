@@ -7,6 +7,7 @@ const csvVaccinations = require('./csvVaccinations');
 const agsBW = require('./ags');
 const csvRKI = require('./csvRKI');
 const geocode = require('./geocoding');
+const dpf = require('./data_preparation_functions');
 
 var mqttClient;
 var failedMethods = [];
@@ -33,6 +34,7 @@ async function init() {
     await csvrki();
 
     geocode.calcGeocodeForCompleteDB();
+    dpf.getOverview();
 
     console.log("---------End Setup---------");
     console.log("---------" + failedMethods.length + " Failed Methods---------");
@@ -53,7 +55,10 @@ async function ags() {
 async function district() {
     console.log("District");
     result = await districts.getDistricts(true, mqttClient);
-    if (result != undefined && result.length > 0) console.log("Done District");
+    if (result != undefined && result.length > 0) {
+        console.log("Done District");
+        dpf.getOverview();
+    }
     else {
         console.log("Failed District");
         failedMethods.push("District");
@@ -197,6 +202,8 @@ async function csvrki() {
 
 // alle fehlerhaften methoden neu versuchen
 const interval30sec = setInterval(async () => {
+    if (failedMethods.length == 0) return;
+
     console.log("---------Fixing Methods---------");
 
     var tmp = [];
