@@ -17,6 +17,14 @@ slider.oninput = function() {
   output.innerHTML = this.value + " km";
 }
 
+var input = document.getElementById("city");
+input.addEventListener("keyup", function(event) {
+  if (event.keyCode === 13) {
+   event.preventDefault();
+   document.getElementById("filterOK").click();
+  }
+});
+
 var profile = 
 {
     biontech:        false,                     
@@ -27,6 +35,7 @@ var profile =
     longitude:       '0',           
     city:            'none',
     radius:           0
+    
 }
 
 function init(){
@@ -82,7 +91,8 @@ function MessageArrived(message) {
     console.log(message.destinationName +" : " + message.payloadString);
     // implementierung
     console.log("mqtt message"+message);
-    if(massage == "vaccinationPlacesBW"){
+    var mas = Json.parse(message);
+    if(mas == "vaccinationPlacesBW"){
     
         
         getImpfData(prepareVaccinationData);
@@ -112,6 +122,7 @@ async function getImpfData(callback){
     }
     // wenn error kommt
     if(result.error != undefined){
+        document.getElementById("load").style.display="none";
         var a = document.createElement("caption");
         a.textContent="Aktuell können keine Impfangebote angezeigt werden";
         a.classList.add('error');
@@ -156,7 +167,8 @@ async function getUserData(){
         profile.city = userData.city;
         profile.radius = userData.radius;
         profile.latitude = userData.latitude;            
-        profile.longitude = userData.longitude;   
+        profile.longitude = userData.longitude; 
+        console.log("was ist in userDate lat"+userData.latitude+" und das ist in long"+userData.longitude );  
         setFilter();
         user=true;
     }
@@ -170,11 +182,16 @@ function setFilter(){
     if(profile.johnson) document.getElementById("johnson").checked = true;
     
 
-    if(profile.district != "none"){
-         document.getElementById("city").value = profile.district;
+    if(profile.city != "none" && profile.city != undefined){
+         document.getElementById("city").value = profile.city;
     }
     if(profile.radius != null ){
-        document.getElementById("radius").value = profile.radius + " km";
+        console.log("profilradius "+ profile.radius);
+        var t =document.getElementById("radius").value = profile.radius;
+        console.log(document.getElementById("radius").value);
+        var output = document.getElementById("slidervalue");
+        output.innerHTML = t+ " km";
+        console.log("hier ist der Slieder gesetzt "+ t);
     }
     
 }
@@ -191,6 +208,7 @@ async function prepareVaccinationData(result){
     }
     realResult.sort(GetSortOrder("Zentrumsname"));
     if(await user){//filer durchgehen
+        console.log("es werden hier userdaten verwedndt");
         getfilter()
     }
     else{
@@ -380,27 +398,30 @@ async function getfilter(){
         //profile.longitude = 9.1829;
 
         if(city == profile.city && !isNaN(profile.latitude) && !isNaN(profile.longitude) ){
-            
+            console.log("city daten übernommen");
             lat1=profile.latitude;
             lon1=profile.longitude;
+            console.log("komme hier in den Vergleich"+city+" lon1 " +lon1+ "lat1 "+lat1);
       
         }
         else{// berechnung der lat und lon vom Standort 
+            console.log("hier wird city neu berechent");
             var query="/data/geocode/city?c="+city;
                 try{
                     var geoData= await fetch(query);
                     geo = await geoData.text();
                     geo = JSON.parse(geo);
+                    console.log(geo);
                     
                 }catch(e){
                     console.log("Server is not responing: geoDaten einer city"+e);
                 }
-                if (geo != undefined){
+                if (geo.features != undefined && geo.features.length >0){
                     
                    lon1= geo.features[0].geometry.coordinates[0];
                    lat1= geo.features[0].geometry.coordinates[1];
-                   console.log(city+"  " +lon1+ "lat1 "+lat1);
-                   console.log(geo);
+                   //console.log(city+"  " +lon1+ "lat1 "+lat1);
+                   //console.log(geo);
 
                 }
                 else{
@@ -409,22 +430,30 @@ async function getfilter(){
                     a.classList.add('error');
                     var table =document.getElementsByTagName("table")[0];
                     table.insertBefore(a, table.firstChild); 
+                    //stop load
+                    document.getElementById("load").style.display="none";
+                    break abbruch;
                 }
         }
-            
             // berechnung mit koordinaten von city
+            console.log("ab hier berechnung der Stäte mit der city");
+            var zahler =0;
             for(var i in copyResult){
                 console.log(i);
-                if(lon2=copyResult[i].Geocode != undefined && copyResult[i].Geocode != undefined ){
+                console.log("stadtname"+copyResult[i].Ort);
+                
+                if(copyResult[i].Geocode != undefined ){
+                    console.log("hier reingekommen");
+                    zahler++;
                     var lon2=copyResult[i].Geocode.coordinates[0];
                     var lat2=copyResult[i].Geocode.coordinates[1];
                     //console.log("long "+lon2+" lat "+lat2);
-                    //console.log("lat1"+lat1+"&long1="+lon1+"&lat2="+lat2+"&long2="+lon2);
+                    console.log("lat1 ="+lat1+"&long1="+lon1+"&lat2="+lat2+"&long2="+lon2);
                     var query="/data/geocode/distance?lat1="+lat1+"&long1="+lon1+"&lat2="+lat2+"&long2="+lon2;
                     try{
                         var d= await fetch(query);
                         dist = await d.text();
-                        //console.log("dist: "+dist+" d: "+d);
+                        console.log("dist: "+dist+" d: "+d);
                         
                     }catch(e){
                         console.log("Server is not responing"+e);
@@ -435,7 +464,9 @@ async function getfilter(){
 
                     }    
                 }
-                else{
+                //console.log(zahler);
+                if(zahler ==0){
+                    console.log("ko");
                     var a = document.createElement("caption");
                     a.textContent="Die Distanze kann gerade nicht berechnet werden. Alle Impfangebote werden angezeigt.";
                     a.classList.add('error');
@@ -444,6 +475,9 @@ async function getfilter(){
 
                     gefiltertResult=filterImpfstoff(realResult);
                     fillTable(gefiltertResult);
+                    console.log("hier würden wir breaken");
+                    //stoppen load
+
                     break abbruch;
                 }
                 
@@ -459,9 +493,13 @@ async function getfilter(){
                 if(Number(copyResult[i].Distance) <= distValue ) gefiltertResult.push(copyResult[i]);
             }
             gefiltertResult = filterImpfstoff(gefiltertResult);
+            console.log("gefiltertResult");
+            console.log(gefiltertResult);
+            console.log("distValue"+distValue);
             
 
             if (!gefiltertResult.length > 0){
+                document.getElementById("load").style.display="none";
                 var a = document.createElement("caption");
                 a.textContent="Im angegebenen Ort und Umgebung sind derzeit keine Impftermine vorhanden";
                 a.classList.add('error');
@@ -469,7 +507,7 @@ async function getfilter(){
                 table.insertBefore(a, table.firstChild);  
                 }
             else{
-                console.log(gefiltertResult);
+                //console.log(gefiltertResult);
                 
                 fillTable(gefiltertResult);
             }
@@ -521,9 +559,9 @@ function filterImpfstoff(gefiltertResult){
     for(var j =0 ;j< gefiltertResult.length;j++ ){
         label:
         for(var i =0; i < gefiltertResult[j].Vaccines.length; i++){
-            console.log("Vaccineslänge: "+gefiltertResult[j].Vaccines.length);
+            //console.log("Vaccineslänge: "+gefiltertResult[j].Vaccines.length);
             var stoff= gefiltertResult[j].Vaccines[i].ID
-            console.log(stoff);
+            //console.log(stoff);
             if(gefiltertResult[j].Vaccines[i].Available !=undefined && gefiltertResult[j].Vaccines[i].Available){
                 switch (stoff){
                     case "biontech":
