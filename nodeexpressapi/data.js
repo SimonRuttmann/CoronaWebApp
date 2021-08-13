@@ -28,7 +28,11 @@ router.get('/overview', async (req, res) => {
 		response = (await MongoDB.find({ "ags": param }, "overview"))[0];
 	}
 	else { //Pfad ohne Parameter -> schreibt alle Landkreisdaten zusammen
-		response = (await MongoDB.find({ "ags": "-1" }, "overview"))[0];
+		try{
+			response = (await MongoDB.find({ "ags": "-1" }, "overview"))[0];
+		}catch(e){
+			res.send({ "error": true, "reason": "Couldnt communicate with MongoDB" });
+		}
 	}
 	if (response.length == 0) response = { "error": true, "reason": "no data found" };
 	res.send(response);
