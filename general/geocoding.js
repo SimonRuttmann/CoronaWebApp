@@ -67,10 +67,10 @@ adress={
 
 async function calcGeocodeForAdress(adress) {
     let response = "ERROR NO RESPONSE SET";
-    let strasse = filterGermanLetters(adress.Adress);
+    //let strasse = filterGermanLetters(adress.Adress);
     let ort = filterGermanLetters(adress.Ort);
     let land = "Germany";
-    let platz = adress.Platz;
+    let platz = adress.PLZ;
     const link = "https://app.geocodeapi.io/api/v1/search?apikey=" + APIKey_geocodeapi + "&text=" + ort + "," + platz + "," + land
     console.log(link);
     response = await fetch(link, requestOptions);

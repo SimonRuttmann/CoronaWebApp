@@ -182,9 +182,10 @@ router.get('/geocode/distance', (req,res) =>{
 //Zugriff über /data/geocode/city?c=X
 router.get('/geocode/city', async (req,res) =>{
 	const city = req.query.c;
+	const PLZ = req.query.p;
 	adress={
 		"Ort":city,
-		"Land":"Musterland"
+		"PLZ": PLZ
 	}
 	if(city == undefined) res.send("Paramerers not defied");
 

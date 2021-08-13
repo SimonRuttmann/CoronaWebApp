@@ -114,9 +114,11 @@ function updateProfileDOM(){
     if(vaccineTranslated === "") vaccineTranslated = "Keine Angabe";
 
     document.getElementById("vaccineOutput").value = vaccineTranslated;
-    document.getElementById("districtOutput").value = profile.district;
-    document.getElementById("radiusOutput").value = profile.radius + " km";
+    if(profile.city!="none") document.getElementById("districtOutput").value = profile.city;
+    else document.getElementById("districtOutput").value = "Keine Angabe";
 
+    if(profile.radius!=null) document.getElementById("radiusOutput").value = profile.radius + " km";
+    else document.getElementById("radiusOutput").value = "Keine Angabe";
 }
 
 async function sendToServer(){
@@ -163,7 +165,8 @@ async function sendToServer(){
     }
 };
 
-function getProfile(){
+async function getProfile(){
+    let latLong =null
     profile.biontech = document.getElementById("biontech").checked;
     console.log(profile.biontech)
     profile.moderna = document.getElementById("moderna").checked;
@@ -171,19 +174,19 @@ function getProfile(){
     profile.johnson = document.getElementById("johnson").checked;
     profile.city = document.getElementById("city").value;
     profile.radius = slider.value;
-    const latLong = getLatLong(profile.city);
-    profile.latitude = latLong.lat;               //TODO
-    profile.longitude = latLong.long;              //TODO
+    latLong = await getLatLong(profile.city);
+    profile.latitude = latLong.lat;              
+    profile.longitude = latLong.long;             
+    //console.log("Profile: "+profile.latitude+" "+profile.longitude)
 }
 
-async function getLatLong(city){
-    let response = await fetch("/data/geocode/city?c="+city);
+async function getLatLong(city,plz){
+    let response = await fetch("/data/geocode/city?c="+city+"&p="+plz);
     response = await response.text();
     response = JSON.parse(response)
     console.log(response)
     response = {"lat" : response.features[0].geometry.coordinates[0],
-                "long" : response.features[0].geometry.coordinates[1]}
-    console.log(response)            
+                "long" : response.features[0].geometry.coordinates[1]}          
     return response;
 }
 
