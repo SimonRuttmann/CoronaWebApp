@@ -201,12 +201,12 @@ async function getLatLong(city,plz){
     
     if(response.features.length==0) throw "No matching Geocode has been found";
     
-    console.log(response)
-    response = {"lat" : response.features[0].geometry.coordinates[0],
-                "long" : response.features[0].geometry.coordinates[1]} 
+    
+    response = {"lat" : response.features[0].geometry.coordinates[1],
+                "long" : response.features[0].geometry.coordinates[0]} 
     }
     catch(e){response={"error":true,"reason":e}}
-    if(response.length==0) throw "Nothing given"         
+    if(response.length==0) throw "Nothing given"    
     return response;
 }
 
