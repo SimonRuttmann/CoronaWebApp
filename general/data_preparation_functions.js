@@ -19,14 +19,14 @@ async function getDistrictsFormated() {
 			for (let j in dbData2) {
 				vaccinated = vaccinated + Number(dbData2[j].anzahl);
 			}
-			const immune = vaccinated + dbData[i].recovered;
+			const immun = vaccinated + dbData[i].recovered;
 			response = response +
 				'{"Landkreis":"' + dbData[i].name +
 				'","ags":"' + dbData[i].ags +
 				'","infizierte":"' + dbData[i].cases +
 				'","genesen":"' + dbData[i].recovered +
 				'","geimpft":"' + vaccinated + //vaccinationsCSVBWCombined
-				'","immune":"' + immune + //vaccinationsCSVBWCombined
+				'","immun":"' + immun + //vaccinationsCSVBWCombined
 				'","todesfaelle":"' + dbData[i].deaths +
 				'","gesamtbevoelkerung":"' + dbData[i].population +
 				'","wochen_inzidenz":"' + dbData[i].weekIncidence +
@@ -42,19 +42,20 @@ async function getDistrictsFormated() {
 
 async function getOverview() {
 	var data = await getDistrictsFormated();
-	data = data["Landkreise"];
 
 	if (data.error) {
 		console.log("problem1");
 		return;
 	}
 
-	let infected = 0, immune = 0, vaccinated = 0, recovered = 0, deaths = 0;
+	data = data["Landkreise"];
+
+	let infected = 0, immun = 0, vaccinated = 0, recovered = 0, deaths = 0;
 	let response;
 
 	for (let i in data) {
 		infected += Number(data[i].infizierte);
-		immune += Number(data[i].immune);
+		immun += Number(data[i].immun);
 		vaccinated += Number(data[i].geimpft);
 		recovered += Number(data[i].genesen);
 		deaths += Number(data[i].todesfaelle);
@@ -65,14 +66,14 @@ async function getOverview() {
 		"infizierte": infected,
 		"genesen": recovered,
 		"geimpft": vaccinated,
-		"immun": immune,
+		"immun": immun,
 		"todesfaelle": deaths
 	};
 
 	let length = await MongoDB.find({}, "overview").length;
 	if (length == data.length + 1) {
 		for (var i = 0; i < data.length; i++) {
-			await MongoDB.updateOne({ ags: data[i].ags }, { $set: { infizierte: data[i].infizierte, genesen: data[i].genesen, geimpft: data[i].geimpft, immun: data[i].immune, todesfaelle: data[i].tode } }, "overview");
+			await MongoDB.updateOne({ ags: data[i].ags }, { $set: { infizierte: data[i].infizierte, genesen: data[i].genesen, geimpft: data[i].geimpft, immun: data[i].immun, todesfaelle: data[i].tode } }, "overview");
 		}
 		await MongoDB.updateOne({ ags: "-1" }, { $set: { infizierte: response.infizierte, genesen: response.genesen, geimpft: response.geimpft, immun: response.immun, todesfaelle: response.tode } }, "overview");
 	} else {
