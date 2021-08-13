@@ -17,7 +17,7 @@ router.get('/overview', async (req, res) => {
 	}
 
 	if (data == undefined || data.error) {
-		res.send("Couldnt find data")
+		res.send({"error":true,"reason":"Couldnt find data"});
 		return;
 	}
 
@@ -29,7 +29,11 @@ router.get('/overview', async (req, res) => {
 		else {
 			try {
 				param = (await MongoDB.find({ "name": req.query.district }, "agsBW", { "ags": 1, "_id": 0 }))[0].ags;
-			} catch (e) { console.log(e) }
+			} catch (e) { 
+				console.log(e) 
+				res.send({"error":true,"reason":"Couldnt communicate with MongoDB"})
+				return;
+			}
 		}
 		console.log(param)
 		response = data_prep.getOverview(data, param)
@@ -66,7 +70,7 @@ router.get('/vaccination', async (req, res) => {
 		response.push(tmp)
 	}
 
-	if (!response.length > 0) response = ({ "error": true, "no_data_from": "vaccinationPlacesBW" })
+	if (!response.length > 0) response = ({ "error": true, "reason": "No data from vaccinationPlacesBW" })
 	res.send(response);
 });
 
@@ -160,7 +164,7 @@ router.get('/news', async (req, res) => {
 			}
 		}
 
-		if (!response.length > 0) response = ({ "error": true, "no_data_from": dbData_collection })
+		if (!response.length > 0) response = ({ "error": true, "reason": "No data from"+dbData_collection })
 		res.send(response)
 	} catch (e) {
 		console.log(e)
@@ -174,7 +178,7 @@ router.get('/geocode/distance', (req,res) =>{
 	const lat2=req.query.lat2;
 	const lon1=req.query.long1;
 	const lon2=req.query.long2;
-	if(lat1==undefined || lat2== undefined || lon1 == undefined|| lon2==undefined) res.send("Parameters not defined")
+	if(lat1==undefined || lat2== undefined || lon1 == undefined|| lon2==undefined) res.send({"error":true,"reason":"No parameters given"})
 	res.send(String(getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2)))
 })
 
@@ -187,7 +191,7 @@ router.get('/geocode/city', async (req,res) =>{
 		"Ort":city,
 		"PLZ": PLZ
 	}
-	if(city == undefined) res.send("Paramerers not defied");
+	if(city == undefined) res.send({"error":true,"reason":"No parameters given"});
 
 	res.send(await geocode.calcGeocodeForAdress(adress));
 })
@@ -214,7 +218,7 @@ async function getDistrictsFormated() {
 	const dbData_collection = "districtsBW"
 	try {
 		const dbData = await MongoDB.find({}, dbData_collection);
-		if (dbData.length == 0) return ({ "error": true, "no_data_from": dbData_collection })
+		if (dbData.length == 0) return ({ "error": true, "reason": "No data from"+dbData_collection })
 		var dbData2, response, param;
 
 		response = '{"Landkreise":[';
@@ -222,7 +226,7 @@ async function getDistrictsFormated() {
 		for (let i in dbData) {
 			param = JSON.parse('{"ags":"' + dbData[i].ags + '", "impfschutz":"2"}');
 			dbData2 = await MongoDB.find(param, dbData2_collection);
-			if (dbData2.length == 0) return ({ "error": true, "no_data_from": dbData2_collection });
+			if (dbData2.length == 0) return ({ "error": true, "reason": "No data from"+dbData_collection });
 			var vaccinated = 0;
 			for (let j in dbData2) {
 				vaccinated = vaccinated + Number(dbData2[j].anzahl);

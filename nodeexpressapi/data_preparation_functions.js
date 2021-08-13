@@ -28,7 +28,7 @@ function getOverview(data, ags) {
 		}
 	}
 	if ((ags && !found) || !data > 0) {
-		response = ("Could not find requested data");
+		response = ({"error":true,"reason":"Could not find requested data"});
 		return;
 	}
 	else {
@@ -45,7 +45,7 @@ function getOverview(data, ags) {
 
 function getVaccinatedPerWeek(data) {
 	const response = [];
-	if (!data.length > 0) response = ({ "error": true, "no_data_from": dbData_collection })
+	if (!data.length > 0) response = ({"error":true,"reason":"Could not find requested data"})
 	else {
 		let tmpDate1, tmpDate2, sortedData = [];
 		mainloop:
@@ -78,9 +78,9 @@ function getVaccinatedPerWeek(data) {
 function getDeathsPerWeekRKI(data) {
 	//date ist immer das startdatum der woche, die aktuelle Woche kann weniger als 7 Tage beinhalten
 	let response = [];
-	if (!data.length > 0) response = { "error": true, "no_data_from": "csvRKI" }
+	if (!data.length > 0) response = { "error": true, "reason": "No data from csvRKI" }
 	else data = data[0].historyDeathsRKI;
-	if (!data.length > 0) response = { "error": true, "no_data_from": "csvRKI.historyDeathsRKI" }
+	if (!data.length > 0) response = { "error": true, "reason": "No data from csvRKI.historyDeathsRKI" }
 
 	var aufaddieren = 0;
 	for (let i in data) {
@@ -102,9 +102,9 @@ function getIncidenceThisWeek(data) {
 function getCasesPerWeek(data) {
 	//date ist immer das startdatum der woche, die aktuelle Woche kann weniger als 7 Tage beinhalten
 	let response = [];
-	if (!data.length > 0) response = { "error": true, "no_data_from": "csvRKI" }
+	if (!data.length > 0) response = { "error": true, "reason": "No data from csvRKI" }
 	else data = data[0].historyCasesRKI;
-	if (!data.length > 0) response = { "error": true, "no_data_from": "csvRKI.historyCasesRKI" }
+	if (!data.length > 0) response = { "error": true, "reason": "No data from csvRKI.historyCases" }
 
 	var aufaddieren = 0;
 	for (let i in data) {
@@ -122,7 +122,7 @@ function getDeathsPerWeekCSV(data) {
 	//Es könnte sein das der Date Vergleich zu genau ist, dann müssen Studen gerundet werden
 	let response = [];
 	let sortedData = []
-	if (!data.length > 0) response = { "error": true, "no_data_from": "infectionsCSVBW" };
+	if (!data.length > 0) response = { "error": true, "reason": "No data from infectionsCSVBW" };
 	else {
 		let tmpDate1, tmpDate2;
 		mainloop:
