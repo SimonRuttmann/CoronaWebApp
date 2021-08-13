@@ -96,8 +96,8 @@ function setSession(data){
     }
 }
 
-function sendProfile(){
-  getProfile();
+async function sendProfile(){
+  await getProfile();
   sendToServer();
   updateProfileDOM();
 }
@@ -114,6 +114,7 @@ function updateProfileDOM(){
     if(vaccineTranslated === "") vaccineTranslated = "Keine Angabe";
 
     document.getElementById("vaccineOutput").value = vaccineTranslated;
+    console.log(profile.city)
     if(profile.city!="none") document.getElementById("districtOutput").value = profile.city;
     else document.getElementById("districtOutput").value = "Keine Angabe";
 
@@ -174,19 +175,38 @@ async function getProfile(){
     profile.johnson = document.getElementById("johnson").checked;
     profile.city = document.getElementById("city").value;
     profile.radius = slider.value;
-    latLong = await getLatLong(profile.city);
-    profile.latitude = latLong.lat;              
-    profile.longitude = latLong.long;             
+    profile.plz=document.getElementById("plz").value;
+    latLong = await getLatLong(profile.city,profile.plz);
+    if(!latLong.error){
+        profile.latitude = latLong.lat;              
+        profile.longitude = latLong.long;  
+    }   
+    else{
+        console.log(latLong.reason)
+        profile.latitude=0;
+        profile.longitude=0;
+        profile.city="Nicht erkannt"
+    }       
+    return; 
     //console.log("Profile: "+profile.latitude+" "+profile.longitude)
 }
 
 async function getLatLong(city,plz){
-    let response = await fetch("/data/geocode/city?c="+city+"&p="+plz);
+    let response;
+    try{
+    response = await fetch("/data/geocode/city?c="+city+"&p="+plz);
     response = await response.text();
     response = JSON.parse(response)
+    if(city.length==0) throw "No city has been given"
+    
+    if(response.features.length==0) throw "No matching Geocode has been found";
+    
     console.log(response)
     response = {"lat" : response.features[0].geometry.coordinates[0],
-                "long" : response.features[0].geometry.coordinates[1]}          
+                "long" : response.features[0].geometry.coordinates[1]} 
+    }
+    catch(e){response={"error":true,"reason":e}}
+    if(response.length==0) throw "Nothing given"         
     return response;
 }
 
@@ -199,7 +219,8 @@ var profile =
     latitude:        '0',               
     longitude:       '0',           
     city:            'none',
-    radius:           0
+    radius:           0,
+    plz:              "0"
 }
 
 var session = {

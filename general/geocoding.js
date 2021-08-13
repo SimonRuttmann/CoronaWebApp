@@ -70,8 +70,9 @@ async function calcGeocodeForAdress(adress) {
     //let strasse = filterGermanLetters(adress.Adress);
     let ort = filterGermanLetters(adress.Ort);
     let land = "Germany";
+    let bundesland = "Baden Wuettenberg"
     let platz = adress.PLZ;
-    const link = "https://app.geocodeapi.io/api/v1/search?apikey=" + APIKey_geocodeapi + "&text=" + ort + "," + platz + "," + land
+    const link = "https://app.geocodeapi.io/api/v1/search?apikey=" + APIKey_geocodeapi + "&text=" + ort + "," + platz + "," + land +","+bundesland
     console.log(link);
     response = await fetch(link, requestOptions);
 
@@ -84,8 +85,6 @@ async function calcGeocodeForAdress(adress) {
 
     return response
 }
-
-
 
 function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
     lat1 = Number(lat1);
