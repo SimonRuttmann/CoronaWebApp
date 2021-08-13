@@ -35,31 +35,8 @@ router.get('/overview', async (req, res) => {
 });
 
 router.get('/vaccination', async (req, res) => {
-	let response = [];
-	let tmp, data2, data = await MongoDB.find({}, "vaccinationPlacesBW");
-
-	console.log(data.length)
-	for (let i in data) {
-		tmp = {
-			"Zentrumsname": data[i].Zentrumsname,
-			"Adresse": data[i].Adress,
-			"PLZ": data[i].PLZ,
-			"Ort": data[i].Ort,
-			"Tel": data[i].Phone,
-			"Distance": null,
-			"BookingURL": data[i].BookingURL,
-			"Vaccines": data[i].Vaccines,
-			"Geocode": data[i].Geocode
-		}
-		for (let j in tmp.Vaccines) {
-			data2 = (await MongoDB.find({ "Slug": tmp.Vaccines[j].Slug }, "vaccinationDatesBW"))[0];
-			tmp.Vaccines[j].Available = data2.Available;
-			tmp.Vaccines[j].NoBooking = data2.NoBooking;
-		}
-		console.log("Push it" + response.length)
-		response.push(tmp)
-	}
-
+	const response;
+	response= await MongoDB.find({},"vaccination")
 	if (!response.length > 0) response = ({ "error": true, "reason": "No data from vaccinationPlacesBW" })
 	res.send(response);
 });
