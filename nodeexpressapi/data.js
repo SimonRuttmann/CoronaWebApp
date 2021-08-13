@@ -35,8 +35,8 @@ router.get('/overview', async (req, res) => {
 });
 
 router.get('/vaccination', async (req, res) => {
-	const response;
-	response= await MongoDB.find({},"vaccination")
+	let response;
+	response = await MongoDB.find({}, "vaccination")
 	if (!response.length > 0) response = ({ "error": true, "reason": "No data from vaccinationPlacesBW" })
 	res.send(response);
 });
@@ -180,44 +180,5 @@ function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
 function deg2rad(deg) {
 	return deg * (Math.PI / 180)
 }
-//Sends back {error:true,{no_data_from:X}} in case of error
-async function getDistrictsFormated() {
-	const dbData_collection = "districtsBW"
-	try {
-		const dbData = await MongoDB.find({}, dbData_collection);
-		if (dbData.length == 0) return ({ "error": true, "reason": "No data from" + dbData_collection })
-		var dbData2, response, param;
-
-		response = '{"Landkreise":[';
-		const dbData2_collection = "vaccinationsCSVBWCombined";
-		for (let i in dbData) {
-			param = JSON.parse('{"ags":"' + dbData[i].ags + '", "impfschutz":"2"}');
-			dbData2 = await MongoDB.find(param, dbData2_collection);
-			if (dbData2.length == 0) return ({ "error": true, "reason": "No data from" + dbData_collection });
-			var vaccinated = 0;
-			for (let j in dbData2) {
-				vaccinated = vaccinated + Number(dbData2[j].anzahl);
-			}
-			const immune = vaccinated + dbData[i].recovered;
-			response = response +
-				'{"Landkreis":"' + dbData[i].name +
-				'","ags":"' + dbData[i].ags +
-				'","infizierte":"' + dbData[i].cases +
-				'","genesen":"' + dbData[i].recovered +
-				'","geimpft":"' + vaccinated + //vaccinationsCSVBWCombined
-				'","immune":"' + immune + //vaccinationsCSVBWCombined
-				'","todesfaelle":"' + dbData[i].deaths +
-				'","gesamtbevoelkerung":"' + dbData[i].population +
-				'","wochen_inzidenz":"' + dbData[i].weekIncidence +
-				'"},'
-		}
-		response = response.slice(0, -1) + "]}"
-		return (JSON.parse(response));
-	} catch (e) {
-		console.log(e);
-		return e
-	}
-}
-
 
 module.exports = router;

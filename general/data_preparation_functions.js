@@ -1,6 +1,6 @@
 const MongoDB = require('./db');
 
-module.exports = { getOverview, getVaccinatedPerWeek, getDeathsPerWeekRKI, getIncidenceThisWeek, getCasesPerWeek, getDeathsPerWeekCSV };
+module.exports = { getOverview, getVaccinatedPerWeek, getDeathsPerWeekRKI, getIncidenceThisWeek, getCasesPerWeek, getDeathsPerWeekCSV, vaccinationData };
 
 async function getDistrictsFormated() {
 	const dbData_collection = "districtsBW"
@@ -83,6 +83,35 @@ async function getOverview() {
 	}
 
 	return;
+}
+
+async function vaccinationData() {
+	let response = [];
+	let tmp, data2, data = await MongoDB.find({}, "vaccinationPlacesBW");
+
+	console.log(data.length)
+	for (let i in data) {
+		tmp = {
+			"Zentrumsname": data[i].Zentrumsname,
+			"Adresse": data[i].Adress,
+			"PLZ": data[i].PLZ,
+			"Ort": data[i].Ort,
+			"Tel": data[i].Phone,
+			"Distance": null,
+			"BookingURL": data[i].BookingURL,
+			"Vaccines": data[i].Vaccines,
+			"Geocode": data[i].Geocode
+		}
+		for (let j in tmp.Vaccines) {
+			data2 = (await MongoDB.find({ "Slug": tmp.Vaccines[j].Slug }, "vaccinationDatesBW"))[0];
+			tmp.Vaccines[j].Available = data2.Available;
+			tmp.Vaccines[j].NoBooking = data2.NoBooking;
+		}
+		response.push(tmp)
+	}
+
+	await MongoDB.dropCollection("vaccination");
+	await MongoDB.insertMany(response, "vaccination");
 }
 
 function getVaccinatedPerWeek(data) {

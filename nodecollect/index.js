@@ -35,6 +35,7 @@ async function init() {
 
     geocode.calcGeocodeForCompleteDB();
     dpf.getOverview();
+    dpf.vaccinationData();
 
     console.log("---------End Setup---------");
     console.log("---------" + failedMethods.length + " Failed Methods---------");
@@ -82,7 +83,10 @@ async function districtHistory() {
 async function vaccinationPlaces() {
     console.log("Vaccination Places");
     result = await vaccination.getVaccinationPlaces(true, mqttClient);
-    if (result != undefined && result.length > 0) console.log("Done Vaccination Places");
+    if (result != undefined && result.length > 0) {
+        console.log("Done Vaccination Places");
+        dpf.vaccinationData();
+    }
     else {
         console.log("Failed Vaccination Places");
         failedMethods.push("Vaccination Places");
@@ -94,7 +98,10 @@ async function vaccinationPlaces() {
 async function vaccinationDates() {
     console.log("Vaccination Dates");
     result = await vaccination.getVaccinationDates(true, mqttClient);
-    if (result != undefined && result.length > 0) console.log("Done Vaccination Dates");
+    if (result != undefined && result.length > 0) {
+        console.log("Done Vaccination Dates");
+        dpf.vaccinationData();
+    }
     else {
         console.log("Failed Vaccination Dates");
         failedMethods.push("Vaccination Dates");
