@@ -9,7 +9,7 @@ router.get('/', async (req, res) => {
 	res.send(await geocode.calcGeocodeForCompleteDB())
 });
 router.get('/overview', async (req, res) => {
-	let param, response;
+	let param, response="";
 
 	//Pfad für Param sucht daten eines spezifischen Landkreises
 	console.log("Query: " + req.query);
@@ -32,6 +32,7 @@ router.get('/overview', async (req, res) => {
 			response = (await MongoDB.find({ "ags": "-1" }, "overview"))[0];
 		}catch(e){
 			res.send({ "error": true, "reason": "Couldnt communicate with MongoDB" });
+			return;
 		}
 	}
 	if (response.length == 0) response = { "error": true, "reason": "no data found" };
@@ -59,62 +60,17 @@ router.get('/district', async (req, res) => {
 	try {
 		if (param == null || param == undefined) {
 
-			response = await getDistrictsFormated();
+			response = await MongoDB.find({ags:{$ne:"-1"}},"overview");
 
 		}
 		else {
-			const historyDeathsDB = (await MongoDB.find({ "ags": param }, "csvRKI", { "historyDeathsRKI": 1, "_id": 0 }));
-			const historyCasesDB = await MongoDB.find({ "ags": param }, "csvRKI", { "historyCasesRKI": 1, "_id": 0 });
-			const infectionsDBFemale = await MongoDB.find({ "ags": param, "geschlecht": "W" }, "infectionsCSVBWAll");
-			const infectionsDBMale = await MongoDB.find({ "ags": param, "geschlecht": "M" }, "infectionsCSVBWAll");
-			const infectionsDBUnknown = await MongoDB.find({ "ags": param, "geschlecht": "unbekannt" }, "infectionsCSVBWAll");
-			const infectionsDBAgeGroup1 = await MongoDB.find({ "ags": param, "altersgruppe": "A00-A04" }, "infectionsCSVBWAll"); 	//A00-A04
-			const infectionsDBAgeGroup2 = await MongoDB.find({ "ags": param, "altersgruppe": "A05-A14" }, "infectionsCSVBWAll");	//A05-A14
-			const infectionsDBAgeGroup3 = await MongoDB.find({ "ags": param, "altersgruppe": "A15-A34" }, "infectionsCSVBWAll");	//A15-A34
-			const infectionsDBAgeGroup4 = await MongoDB.find({ "ags": param, "altersgruppe": "A35-A59" }, "infectionsCSVBWAll");	//A35-A59
-			const infectionsDBAgeGroup5 = await MongoDB.find({ "ags": param, "altersgruppe": "A60-A79" }, "infectionsCSVBWAll");	//A60-A79
-			const infectionsDBAgeGroup6 = await MongoDB.find({ "ags": param, "altersgruppe": "A80+" }, "infectionsCSVBWAll")
-			const infectionsDBAgeGroup7 = await MongoDB.find({ "ags": param, "altersgruppe": "unbekannt" }, "infectionsCSVBWAll")
-			const districtsBWDB = await MongoDB.find({ "ags": param }, "districtsBW")
-			const vaccinationAll = await MongoDB.find({ "ags": param }, "vaccinationsCSVBWAll")
 
-			const deaths_female = data_prep.getDeathsPerWeekCSV(infectionsDBFemale);
-			const deaths_male = data_prep.getDeathsPerWeekCSV(infectionsDBMale);
-			const deaths_unknown = data_prep.getDeathsPerWeekCSV(infectionsDBUnknown);
-			const agegroup1 = data_prep.getDeathsPerWeekCSV(infectionsDBAgeGroup1);
-			const agegroup2 = data_prep.getDeathsPerWeekCSV(infectionsDBAgeGroup2);
-			const agegroup3 = data_prep.getDeathsPerWeekCSV(infectionsDBAgeGroup3);
-			const agegroup4 = data_prep.getDeathsPerWeekCSV(infectionsDBAgeGroup4);
-			const agegroup5 = data_prep.getDeathsPerWeekCSV(infectionsDBAgeGroup5);
-			const agegroup6 = data_prep.getDeathsPerWeekCSV(infectionsDBAgeGroup6);
-			const agegroup7 = data_prep.getDeathsPerWeekCSV(infectionsDBAgeGroup7);
-			//const deathsPerWeek = data_prep.getDeathsPerWeekRKI(historyDeathsDB);
-			//const casesPerWeek = data_prep.getCasesPerWeek(historyCasesDB);
-			const vaccinatedPerWeek = data_prep.getVaccinatedPerWeek(vaccinationAll);
-			const incidencePerWeek = data_prep.getIncidenceThisWeek(districtsBWDB);
-
-
-			response = {
-				"Weiblich_perWeek": deaths_female,
-				"Männlich_perWeek": deaths_male,
-				"Unknown_perWeek": deaths_unknown,
-				"Alter00-04_perWeek": agegroup1,
-				"Alter05-14:perWeek": agegroup2,
-				"Alter15-34_perWeek": agegroup3,
-				"Alter35-59_perWeek": agegroup4,
-				"Alter60-79_perWeek": agegroup5,
-				"Alter80+_perWeek": agegroup6,
-				"AlterUnknown_perWeek": agegroup7,
-				//"Tote_pro_Woche": deathsPerWeek,
-				//"Fälle_pro_Woche": casesPerWeek,
-				"Geimpte_per_Week": vaccinatedPerWeek,
-				"Inzidenz_aktuell": incidencePerWeek
-			};
+			response = await MongoDB.find({},"historyData")
 		};
 		res.send(response);
 	} catch (e) {
 		console.log(e);
-		res.send(e);
+		res.send({error:true,reason:e});
 	}
 });
 
