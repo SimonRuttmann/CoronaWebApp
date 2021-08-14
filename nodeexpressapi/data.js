@@ -9,7 +9,7 @@ router.get('/', async (req, res) => {
 	res.send(await geocode.calcGeocodeForCompleteDB())
 });
 router.get('/overview', async (req, res) => {
-	let param, response="";
+	let param, response = "";
 
 	//Pfad für Param sucht daten eines spezifischen Landkreises
 	console.log("Query: " + req.query);
@@ -19,7 +19,6 @@ router.get('/overview', async (req, res) => {
 			try {
 				param = (await MongoDB.find({ "name": req.query.district }, "agsBW", { "ags": 1, "_id": 0 }))[0].ags;
 			} catch (e) {
-				console.log(e);
 				res.send({ "error": true, "reason": "Couldnt communicate with MongoDB" });
 				return;
 			}
@@ -28,14 +27,14 @@ router.get('/overview', async (req, res) => {
 		response = (await MongoDB.find({ "ags": param }, "overview"))[0];
 	}
 	else { //Pfad ohne Parameter -> schreibt alle Landkreisdaten zusammen
-		try{
+		try {
 			response = (await MongoDB.find({ "ags": "-1" }, "overview"))[0];
-		}catch(e){
+		} catch (e) {
 			res.send({ "error": true, "reason": "Couldnt communicate with MongoDB" });
 			return;
 		}
 	}
-	if (response.length == 0) response = { "error": true, "reason": "no data found" };
+	if (response == undefined || response.length == 0) response = { "error": true, "reason": "no data found" };
 	res.send(response);
 });
 
