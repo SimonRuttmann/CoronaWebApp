@@ -6,10 +6,6 @@ async function calcHistoryData() {
 	var ags = await MongoDB.find({}, "agsBW");
 
 	for (var i = 0; i < ags.length; i++) {
-		if (ags[i].name != "Ulm" && ags[i].name != "Biberach") {
-			continue;
-		}
-
 		const infectionsDBFemale = await MongoDB.find({ "ags": ags[i].ags, "geschlecht": "W" }, "infectionsCSVBWAll");
 		const infectionsDBMale = await MongoDB.find({ "ags": ags[i].ags, "geschlecht": "M" }, "infectionsCSVBWAll");
 		const infectionsDBUnknown = await MongoDB.find({ "ags": ags[i].ags, "geschlecht": "unbekannt" }, "infectionsCSVBWAll");
