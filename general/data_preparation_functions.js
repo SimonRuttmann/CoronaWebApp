@@ -1,6 +1,57 @@
 const MongoDB = require('./db');
 
-module.exports = { getOverview, getVaccinatedPerWeek, getDeathsPerWeekRKI, getIncidenceThisWeek, getCasesPerWeek, getDeathsPerWeekCSV, vaccinationData };
+module.exports = { getOverview, getVaccinatedPerWeek, getDeathsPerWeekRKI, getIncidenceThisWeek, getCasesPerWeek, getDeathsPerWeekCSV, vaccinationData, calcHistoryData };
+
+async function calcHistoryData() {
+	var ags = await MongoDB.find({}, "agsBW");
+
+	for (var i = 0; i < ags.length; i++) {
+		const infectionsDBFemale = await MongoDB.find({ "ags": ags[i].ags, "geschlecht": "W" }, "infectionsCSVBWAll");
+		const infectionsDBMale = await MongoDB.find({ "ags": ags[i].ags, "geschlecht": "M" }, "infectionsCSVBWAll");
+		const infectionsDBUnknown = await MongoDB.find({ "ags": ags[i].ags, "geschlecht": "unbekannt" }, "infectionsCSVBWAll");
+		const infectionsDBAgeGroup1 = await MongoDB.find({ "ags": ags[i].ags, "altersgruppe": "A00-A04" }, "infectionsCSVBWAll"); 	//A00-A04
+		const infectionsDBAgeGroup2 = await MongoDB.find({ "ags": ags[i].ags, "altersgruppe": "A05-A14" }, "infectionsCSVBWAll");	//A05-A14
+		const infectionsDBAgeGroup3 = await MongoDB.find({ "ags": ags[i].ags, "altersgruppe": "A15-A34" }, "infectionsCSVBWAll");	//A15-A34
+		const infectionsDBAgeGroup4 = await MongoDB.find({ "ags": ags[i].ags, "altersgruppe": "A35-A59" }, "infectionsCSVBWAll");	//A35-A59
+		const infectionsDBAgeGroup5 = await MongoDB.find({ "ags": ags[i].ags, "altersgruppe": "A60-A79" }, "infectionsCSVBWAll");	//A60-A79
+		const infectionsDBAgeGroup6 = await MongoDB.find({ "ags": ags[i].ags, "altersgruppe": "A80+" }, "infectionsCSVBWAll")
+		const infectionsDBAgeGroup7 = await MongoDB.find({ "ags": ags[i].ags, "altersgruppe": "unbekannt" }, "infectionsCSVBWAll")
+		const districtsBWDB = await MongoDB.find({ "ags": ags[i].ags }, "districtsBW")
+		const vaccinationAll = await MongoDB.find({ "ags": ags[i].ags }, "vaccinationsCSVBWAll")
+
+		const deaths_female = getDeathsPerWeekCSV(infectionsDBFemale);
+		const deaths_male = getDeathsPerWeekCSV(infectionsDBMale);
+		const deaths_unknown = getDeathsPerWeekCSV(infectionsDBUnknown);
+		const agegroup1 = getDeathsPerWeekCSV(infectionsDBAgeGroup1);
+		const agegroup2 = getDeathsPerWeekCSV(infectionsDBAgeGroup2);
+		const agegroup3 = getDeathsPerWeekCSV(infectionsDBAgeGroup3);
+		const agegroup4 = getDeathsPerWeekCSV(infectionsDBAgeGroup4);
+		const agegroup5 = getDeathsPerWeekCSV(infectionsDBAgeGroup5);
+		const agegroup6 = getDeathsPerWeekCSV(infectionsDBAgeGroup6);
+		const agegroup7 = getDeathsPerWeekCSV(infectionsDBAgeGroup7);
+		const vaccinatedPerWeek = getVaccinatedPerWeek(vaccinationAll);
+		const incidencePerWeek = getIncidenceThisWeek(districtsBWDB);
+
+		response = {
+			"ags": ags[i].ags,
+			"Weiblich_perWeek": deaths_female,
+			"Männlich_perWeek": deaths_male,
+			"Unknown_perWeek": deaths_unknown,
+			"Alter00-04_perWeek": agegroup1,
+			"Alter05-14:perWeek": agegroup2,
+			"Alter15-34_perWeek": agegroup3,
+			"Alter35-59_perWeek": agegroup4,
+			"Alter60-79_perWeek": agegroup5,
+			"Alter80+_perWeek": agegroup6,
+			"AlterUnknown_perWeek": agegroup7,
+			"Geimpte_per_Week": vaccinatedPerWeek,
+			"Inzidenz_aktuell": incidencePerWeek
+		};
+
+		await MongoDB.deleteOne({ ags: ags[i].ags }, "historyData");
+		await MongoDB.insertOne(response, "historyData");
+	}
+}
 
 async function getDistrictsFormated() {
 	const dbData_collection = "districtsBW"
@@ -115,34 +166,33 @@ async function vaccinationData() {
 }
 
 function getVaccinatedPerWeek(data) {
-	const response = [];
-	if (!data.length > 0) response = ({ "error": true, "reason": "Could not find requested data" })
-	else {
-		let tmpDate1, tmpDate2, sortedData = [];
-		mainloop:
-		for (let i in data) {
-			tmpDate1 = new Date((data[i].impfdatum).replace("-", "."));
-			for (let j in sortedData) {
-				tmpDate2 = new Date(String(sortedData[j].date).replace("-", "."));
-				if (tmpDate1 == tmpDate2) {
-					sortedData[j].anzahl += data[i].anzahl;
-					continue mainloop;
-				}
-			}
-			sortedData.push({ "date": tmpDate1, "anzahl": data[i].anzahl })
-		}
-		//console.log(sortedData);
+	var response = [];
 
-		var aufaddieren = 0;
-		for (let i in sortedData) {
-			aufaddieren += Number(sortedData[i].anzahl);
-			if ((i % 7) == 6) {
-				response.push({ "date": sortedData[i].date, "anzahl": aufaddieren })
-				aufaddieren = 0;
+	let tmpDate1, tmpDate2, sortedData = [];
+	mainloop:
+	for (let i in data) {
+		tmpDate1 = new Date((data[i].impfdatum).replace("-", "."));
+		for (let j in sortedData) {
+			tmpDate2 = new Date(String(sortedData[j].date).replace("-", "."));
+			if (tmpDate1 == tmpDate2) {
+				sortedData[j].anzahl += data[i].anzahl;
+				continue mainloop;
 			}
-			if (i == data.length - 1) response.push({ "date": sortedData[i].date, "anzahl": aufaddieren })
 		}
+		sortedData.push({ "date": tmpDate1, "anzahl": data[i].anzahl })
 	}
+	//console.log(sortedData);
+
+	var aufaddieren = 0;
+	for (let i in sortedData) {
+		aufaddieren += Number(sortedData[i].anzahl);
+		if ((i % 7) == 6) {
+			response.push({ "date": sortedData[i].date, "anzahl": aufaddieren })
+			aufaddieren = 0;
+		}
+		if (i == data.length - 1) response.push({ "date": sortedData[i].date, "anzahl": aufaddieren })
+	}
+
 	return response;
 }
 

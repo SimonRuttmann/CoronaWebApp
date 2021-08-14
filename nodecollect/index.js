@@ -36,6 +36,7 @@ async function init() {
     geocode.calcGeocodeForCompleteDB();
     dpf.getOverview();
     dpf.vaccinationData();
+    dpf.calcHistoryData();
 
     console.log("---------End Setup---------");
     console.log("---------" + failedMethods.length + " Failed Methods---------");
@@ -59,6 +60,7 @@ async function district() {
     if (result != undefined && result.length > 0) {
         console.log("Done District");
         dpf.getOverview();
+        dpf.calcHistoryData();
     }
     else {
         console.log("Failed District");
@@ -149,7 +151,10 @@ async function newsMethod() {
 async function csvInfectionsAll() {
     console.log("CSVInfectionsAll");
     result = await csvInfections.getDataFromCSVInfectionsAll(true, mqttClient);
-    if (result != undefined && result.length > 0) console.log("Done CSVInfectionsAll");
+    if (result != undefined && result.length > 0) {
+        console.log("Done CSVInfectionsAll");
+        dpf.calcHistoryData();
+    }
     else {
         console.log("Failed CSVInfectionsAll");
         failedMethods.push("CSVInfectionsAll");
@@ -174,7 +179,10 @@ async function csvInfectionsMethod() {
 async function csvVaccinationsAll() {
     console.log("CSVVaccinationsAll");
     result = await csvVaccinations.getDataFromCSVVaccinationsAll(true, mqttClient);
-    if (result != undefined && result.length > 0) console.log("Done CSVVaccinationsAll");
+    if (result != undefined && result.length > 0) {
+        console.log("Done CSVVaccinationsAll");
+        dpf.calcHistoryData();
+    }
     else {
         console.log("Failed CSVVaccinationsAll");
         failedMethods.push("CSVVaccinationsAll");
