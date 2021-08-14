@@ -34,12 +34,55 @@ async function init() {
     await csvrki();
 
     geocode.calcGeocodeForCompleteDB();
-    dpf.getOverview();
-    dpf.vaccinationData();
-    dpf.calcHistoryData();
+
+    await overview();
+    await vaccinationData();
+    await calcHistoryData();
 
     console.log("---------End Setup---------");
     console.log("---------" + failedMethods.length + " Failed Methods---------");
+}
+
+async function overview() {
+    var result = await dpf.getOverview();
+
+    console.log("Overview");
+    if (result == "error") {
+        console.log("Failed Overview");
+        failedMethods.push("Overview");
+    } else {
+        console.log("Done Overview");
+    }
+
+    return "done";
+}
+
+async function vaccinationData() {
+    var result = await dpf.vaccinationData();
+
+    console.log("Vaccination Data");
+    if (result == "error") {
+        console.log("Failed Vaccination Data");
+        failedMethods.push("Vaccination Data");
+    } else {
+        console.log("Done Vaccination Data");
+    }
+
+    return "done";
+}
+
+async function calcHistoryData() {
+    var result = await dpf.calcHistoryData();
+
+    console.log("Calc History Data");
+    if (result == "error") {
+        console.log("Failed Calc History Data");
+        failedMethods.push("Calc History Data");
+    } else {
+        console.log("Done Calc History Data");
+    }
+
+    return "done";
 }
 
 async function ags() {
@@ -60,7 +103,6 @@ async function district() {
     if (result != undefined && result.length > 0) {
         console.log("Done District");
         dpf.getOverview();
-        dpf.calcHistoryData();
     }
     else {
         console.log("Failed District");
@@ -153,7 +195,6 @@ async function csvInfectionsAll() {
     result = await csvInfections.getDataFromCSVInfectionsAll(true, mqttClient);
     if (result != undefined && result.length > 0) {
         console.log("Done CSVInfectionsAll");
-        dpf.calcHistoryData();
     }
     else {
         console.log("Failed CSVInfectionsAll");
@@ -181,7 +222,6 @@ async function csvVaccinationsAll() {
     result = await csvVaccinations.getDataFromCSVVaccinationsAll(true, mqttClient);
     if (result != undefined && result.length > 0) {
         console.log("Done CSVVaccinationsAll");
-        dpf.calcHistoryData();
     }
     else {
         console.log("Failed CSVVaccinationsAll");
@@ -275,6 +315,15 @@ const interval30sec = setInterval(async () => {
             case "CSVRKI":
                 await csvrki();
                 break;
+            case "Calc History Data":
+                await calcHistoryData();
+                break;
+            case "Vaccination Data":
+                await vaccinationData();
+                break;
+            case "Overview":
+                await overview();
+                break;
             default:
                 console.log("Fatal Error! Please contact Systemadmin!");
                 break;
@@ -294,17 +343,17 @@ const intervalMin = setInterval(async () => {
 
 // alle corona news des tages jede stunde aktualisieren
 const intervalHour = setInterval(async () => {
-    if (failedMethods.includes("News") || failedMethods.includes("Vaccination Dates History")) return;
+    if (failedMethods.includes("Vaccination Dates") || failedMethods.includes("News") || failedMethods.includes("Vaccination Dates History")) return;
 
     await newsMethod();
+    await vaccinationDates();
     await vaccinationDatesHistory();
 }, 3600000);
 
 // alle impftermine 5 mal am tag aktualisieren
 const interval5TimesPerDay = setInterval(async () => {
-    if (failedMethods.includes("Vaccination Dates") || failedMethods.includes("CSVInfectionsAll") || failedMethods.includes("CSVInfections") || failedMethods.includes("CSVVaccinationsAll") || failedMethods.includes("CSVVaccinations")) return;
+    if (failedMethods.includes("CSVInfectionsAll") || failedMethods.includes("CSVInfections") || failedMethods.includes("CSVVaccinationsAll") || failedMethods.includes("CSVVaccinations")) return;
 
-    await vaccinationDates();
     await csvInfectionsAll();
     await csvInfectionsMethod();
     await csvVaccinationsAll();
@@ -317,6 +366,8 @@ const intervalDay = setInterval(async () => {
 
     await districtHistory();
     await csvrki();
+
+    dpf.calcHistoryData();
 }, 86400000);
 
 // alle impforte jede woche speichern

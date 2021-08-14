@@ -6,6 +6,10 @@ async function calcHistoryData() {
 	var ags = await MongoDB.find({}, "agsBW");
 
 	for (var i = 0; i < ags.length; i++) {
+		if (ags[i].name != "Ulm" && ags[i].name != "Biberach") {
+			continue;
+		}
+
 		const infectionsDBFemale = await MongoDB.find({ "ags": ags[i].ags, "geschlecht": "W" }, "infectionsCSVBWAll");
 		const infectionsDBMale = await MongoDB.find({ "ags": ags[i].ags, "geschlecht": "M" }, "infectionsCSVBWAll");
 		const infectionsDBUnknown = await MongoDB.find({ "ags": ags[i].ags, "geschlecht": "unbekannt" }, "infectionsCSVBWAll");
@@ -51,6 +55,8 @@ async function calcHistoryData() {
 		await MongoDB.deleteOne({ ags: ags[i].ags }, "historyData");
 		await MongoDB.insertOne(response, "historyData");
 	}
+
+	return "done";
 }
 
 async function getDistrictsFormated() {
@@ -95,8 +101,7 @@ async function getOverview() {
 	var data = await getDistrictsFormated();
 
 	if (data.error) {
-		console.log("problem1");
-		return;
+		return "error";
 	}
 
 	data = data["Landkreise"];
@@ -133,14 +138,13 @@ async function getOverview() {
 		await MongoDB.insertOne(response, "overview");
 	}
 
-	return;
+	return "done";
 }
 
 async function vaccinationData() {
 	let response = [];
 	let tmp, data2, data = await MongoDB.find({}, "vaccinationPlacesBW");
 
-	console.log(data.length)
 	for (let i in data) {
 		tmp = {
 			"Zentrumsname": data[i].Zentrumsname,
@@ -155,6 +159,11 @@ async function vaccinationData() {
 		}
 		for (let j in tmp.Vaccines) {
 			data2 = (await MongoDB.find({ "Slug": tmp.Vaccines[j].Slug }, "vaccinationDatesBW"))[0];
+
+			if (data2 == undefined) {
+				return "error";
+			}
+
 			tmp.Vaccines[j].Available = data2.Available;
 			tmp.Vaccines[j].NoBooking = data2.NoBooking;
 		}
@@ -163,6 +172,8 @@ async function vaccinationData() {
 
 	await MongoDB.dropCollection("vaccination");
 	await MongoDB.insertMany(response, "vaccination");
+
+	return "done";
 }
 
 function getVaccinatedPerWeek(data) {
