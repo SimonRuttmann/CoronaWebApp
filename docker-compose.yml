@@ -60,15 +60,15 @@ services:
             retries: 5
             
     mongodb:
-      container_name: mongodb
-      image: mongo:latest
+        container_name: mongodb
+        image: mongo:latest
     #   environment:
     #       MONGO_INITDB_ROOT_USERNAME: root
     #       MONGO_INITDB_ROOT_PASSWORD: rootpassword
-    volumes:
-        - ./mongodb:/data/db    
-      ports: 
-          - "27017:27017"
+        volumes:
+            - ./mongodb:/data/db    
+        ports: 
+            - "27017:27017"
     #  healthcheck: 
     #    test: echo 'db.runCommand("ping").ok' | mongodb mongo:27017/test --quiet
     #    interval: 5s
