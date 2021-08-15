@@ -55,12 +55,13 @@ async function getDataFromCSVInfectionsAll(saveToDB, mqttClient) {
     if (data.length == 0) return undefined;
 
     if (saveToDB) {
-        var oldData = await db.find({}, "infectionsCSVBWAll");
+        // var oldData = await db.find({}, "infectionsCSVBWAll");
 
-        if (oldData.length == 0) {
-            mqttClient.publish("refresh", "infectionsCSVBWAll");
-            await db.insertMany(data, "infectionsCSVBWAll");
-        } else {
+        // if (oldData.length == 0) {
+        mqttClient.publish("refresh", "infectionsCSVBWAll");
+        await db.dropCollection("infectionsCSVBWAll");
+        await db.insertMany(data, "infectionsCSVBWAll");
+        /* } else {
             for (var i = 0; i < data.length; i++) {
                 var found = false;
 
@@ -82,7 +83,7 @@ async function getDataFromCSVInfectionsAll(saveToDB, mqttClient) {
                     await db.insertOne(data[i], "infectionsCSVBWAll");
                 }
             }
-        }
+        } */
     }
 
     return data;
