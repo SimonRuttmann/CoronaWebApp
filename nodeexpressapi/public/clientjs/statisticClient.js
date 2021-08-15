@@ -217,7 +217,17 @@ async function onClicked(region, name) {
     document.getElementById("diagrams").style = "display: block;";
 
     var data = await fetch("/data/district?district=" + name);
-    var json = JSON.parse(await data.text());
+    var result = await data.text();
+
+    if (result == "") {
+        reset();
+        document.getElementById("hinweis").innerText = "Error!";
+
+        locked = false;
+        return;
+    }
+
+    var json = JSON.parse(result);
 
     var texts = document.getElementsByClassName("loading");
 
@@ -276,6 +286,7 @@ function reset() {
     document.getElementById("replaceHeader").innerText = "Aktuelle Zahlen vom Landkreis: Loading...";
     document.getElementById("diagrams").style = "display: none;";
     document.getElementById("hinweis").style = "display: flex; align-items: center; justify-content: center;";
+    document.getElementById("hinweis").innerText = "Für weitere Statistiken wählen sie bitte einen Landkreis aus!";
     resetCharts();
     resetTables();
 }
@@ -365,29 +376,31 @@ function fillCharts(name, json) {
     dataM.reverse();
 
     var dataU = [];
-    for (var i = 0; i < json.Unknown_perWeek.length; i++) {
-        var tmp = {};
+    if (!json.Unknown_perWeek.error) {
+        for (var i = 0; i < json.Unknown_perWeek.length; i++) {
+            var tmp = {};
 
-        var date = new Date(json.Unknown_perWeek[i].date);
-        tmp.month = date.getUTCMonth() + 1;
-        tmp.year = date.getUTCFullYear();
-        tmp.deaths = json.Unknown_perWeek[i].deaths;
-        tmp.cases = json.Unknown_perWeek[i].cases;
-        tmp.recovered = json.Unknown_perWeek[i].recovered;
+            var date = new Date(json.Unknown_perWeek[i].date);
+            tmp.month = date.getUTCMonth() + 1;
+            tmp.year = date.getUTCFullYear();
+            tmp.deaths = json.Unknown_perWeek[i].deaths;
+            tmp.cases = json.Unknown_perWeek[i].cases;
+            tmp.recovered = json.Unknown_perWeek[i].recovered;
 
-        var found = false;
-        for (var j = 0; j < dataU.length; j++) {
-            if (dataU[j].month == tmp.month && dataU[j].year == tmp.year) {
-                dataU[j].deaths = dataU[j].deaths + tmp.deaths;
-                dataU[j].cases = dataU[j].cases + tmp.cases;
-                dataU[j].recovered = dataU[j].recovered + tmp.recovered;
+            var found = false;
+            for (var j = 0; j < dataU.length; j++) {
+                if (dataU[j].month == tmp.month && dataU[j].year == tmp.year) {
+                    dataU[j].deaths = dataU[j].deaths + tmp.deaths;
+                    dataU[j].cases = dataU[j].cases + tmp.cases;
+                    dataU[j].recovered = dataU[j].recovered + tmp.recovered;
 
-                found = true;
-                break;
+                    found = true;
+                    break;
+                }
             }
-        }
 
-        if (!found) dataU.push(tmp);
+            if (!found) dataU.push(tmp);
+        }
     }
 
     dataU.reverse();
@@ -446,8 +459,8 @@ function fillCharts(name, json) {
 
     var dataPointsToteU = [];
     for (var i = 0; i < labels.length; i++) {
+        var found = false;
         for (var j = 0; j < dataU.length; j++) {
-            var found = false;
             if (labels[i] == labelsU[j]) {
                 found = true;
                 dataPointsToteU.push(dataU[j].deaths);
@@ -510,8 +523,8 @@ function fillCharts(name, json) {
 
     var dataPointsInfectedU = [];
     for (var i = 0; i < labels.length; i++) {
+        var found = false;
         for (var j = 0; j < dataU.length; j++) {
-            var found = false;
             if (labels[i] == labelsU[j]) {
                 found = true;
                 dataPointsInfectedU.push(dataU[j].cases);
@@ -574,8 +587,8 @@ function fillCharts(name, json) {
 
     var dataPointsRecoveredU = [];
     for (var i = 0; i < labels.length; i++) {
+        var found = false;
         for (var j = 0; j < dataU.length; j++) {
-            var found = false;
             if (labels[i] == labelsU[j]) {
                 found = true;
                 dataPointsRecoveredU.push(dataU[j].cases);
@@ -1631,9 +1644,8 @@ function getLabels(newArr) {
 
 async function fillTableLandkreise() {
     var data = await fetch("/data/district");
-    var json = JSON.parse(await data.text());
+    var landkreise = JSON.parse(await data.text());
 
-    var landkreise = json["Landkreise"];
     for (var i = 0; i < landkreise.length; i++) {
         var td;
         var tr = document.createElement("tr");
@@ -1659,7 +1671,7 @@ async function fillTableLandkreise() {
         tr.appendChild(td);
 
         td = document.createElement("td");
-        td.innerText = landkreise[i]["immune"];
+        td.innerText = landkreise[i]["immun"];
         tr.appendChild(td);
 
         td = document.createElement("td");

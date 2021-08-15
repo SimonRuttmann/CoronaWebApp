@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const MongoDB = require('./db.js');
 const geocode = require('./geocoding.js');
-const data_prep = require('./data_preparation_functions.js');
 
 router.get('/', async (req, res) => {
 	//res.send(await geocode.calcGeocodeForAdress({ "Ort": "Tuebingen", "Platz": "72072", "Land": "Deutschland" }));
@@ -58,18 +57,15 @@ router.get('/district', async (req, res) => {
 	}
 	try {
 		if (param == null || param == undefined) {
-
-			response = await MongoDB.find({ags:{$ne:"-1"}},"overview");
-
+			response = await MongoDB.find({ ags: { $ne: "-1" } }, "overview");
 		}
 		else {
-
-			response = await MongoDB.find({},"historyData")
+			response = (await MongoDB.find({ ags: param }, "historyData"))[0];
 		};
 		res.send(response);
 	} catch (e) {
 		console.log(e);
-		res.send({error:true,reason:e});
+		res.send({ error: true, reason: e });
 	}
 });
 
@@ -107,7 +103,6 @@ router.get('/geocode/distance', (req, res) => {
 	if (lat1 == undefined || lat2 == undefined || lon1 == undefined || lon2 == undefined) res.send({ "error": true, "reason": "No parameters given" })
 	res.send(String(getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2)))
 })
-
 
 //Zugriff über /data/geocode/city?c=X
 router.get('/geocode/city', async (req, res) => {
