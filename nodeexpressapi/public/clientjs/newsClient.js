@@ -7,7 +7,8 @@ window.onload = init();
 var zweiSeiten=true;
 var anzahlArtikel;
 var anzahlArrays;
-let result;
+let realResult;
+var onPage =false;
 
 
 function init(){
@@ -19,7 +20,7 @@ function init(){
 var host= "localhost";
 var port= 1884;
 var clientId= "client-News";
-var sus= "refresh";
+var sus= "news";
 client = new Paho.MQTT.Client(host, Number(port), clientId);
                                     console.log("wurde benutzt paho"+client);
 client.onMessageArrived = MessageArrived;
@@ -59,20 +60,43 @@ function ConnectionLost(res) {
 
 /*Callback for incoming message processing */ // messages machen
 function MessageArrived(message) {
-    console.log(message.destinationName +" : " + message.payloadString);
-    // implementierung
-    console.log("mqtt message");
-    console.log(message);
-    //var mes = JSON.parse(message.payloadString);
-    //console.log(mes);
-    if(message.payloadString == "newsCoronaBW"){
-        console.log("komme hier rein");
-        getNewsToday(setNewsToday);
+    //console.log(message.destinationName +" : " + message.payloadString);
+    
+    if(onPage){
+        var mes  = JSON.parse(message.payloadString);
+        
+        if(mes.info == "newNews4Today"){
+             console.log("komme hier rein");
+             console.log("result");
+             console.log(result);
+             console.log("mes");
+             console.log(mes);
+             for(var i = 0; i <mes.data[0].articles.length; i++){
+                for(var j = 0; j< realResult[0].articles.length; j++){
+                    if(mes.data[0].articles[i].title == realResult[0].articles[j].title){
+                        console.log("zum splicen");
+                        mes.data[0].articles.splice(i, 1);
+                    }
+                }
+             }
+             console.log("hier die länge des einzufügenen Arrays"+mes.data[0].articles.length);
+             if(mes.data[0].articles.length >0){
+                for(var i = 0; i <mes.data[0].articles.length; i++){
+                    realResult[0].articles.unshift(mes.data[0].articles[i]);
+                    // aktualisieren anzeige
+                    
+                }
+                setNewsToday(realResult);
+             }
+
+            
+            // console.log(result);
+            //getNewsToday(setNewsToday);
+            
+        }
         
     }
-    else{
-        //do nothing
-    }
+    
 
     
 }
@@ -125,7 +149,7 @@ async function getNewsToday(callback){
         // result[1].articles[0].title="ES HAT GEKLAPPT";
         // console.log("neue result");
         // console.log(result);
-
+        realResult = JSON.parse(JSON.stringify(result));
          callback(result);
     }
 
@@ -175,14 +199,17 @@ function setNewsToday(result){
   
     countArticles(result);
     buttonManager();
-    // if(anzahlArrays == 1 || result[0].articles.length >=5 ){
-    //     for(var i =0;i <5; i++){
-    //         var art = buildNewsblock(result[0].articles[i]);
-    //         var section =document.getElementsByTagName("section")[0];
-    //         section.appendChild(art);
-    //     }
-    // }
-    //else{
+    onPage = true;
+    if(document.getElementsByTagName("details").length>0){
+        var z =document.getElementsByTagName("details").length;
+    
+        for(var o= 0; o< z; o++){
+            var e= document.getElementsByTagName("details")[0];
+            console.log(e);
+            e.remove();
+        }
+    }
+    
     var eingefügteArtikel=0;
     for(var j=0; j<anzahlArrays; j++){
         for( var l =0; l < result[j].articles.length && eingefügteArtikel <5; l++){

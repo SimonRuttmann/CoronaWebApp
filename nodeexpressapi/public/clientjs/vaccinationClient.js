@@ -1,22 +1,21 @@
-//const geocode = require('./geocoding.js');
 
-//const  geocode = require('../../routes/geocoding.js');
-//const geocode = require('./map.js');
 
 window.onload = init();
 var menuDisplay=false;
-//var result;
 var realResult=[];
 var user;
+var rawResult=[];
+var onPage=false;
 
+//Anzeige des Radius wird angezeigt entsprechend der Eingabe
 var slider = document.getElementById("radius");
 var output = document.getElementById("slidervalue");
 output.innerHTML = slider.value + " km";
-
 slider.oninput = function() {
   output.innerHTML = this.value + " km";
 }
 
+//nach Eingabe des Ortes
 var input = document.getElementById("city");
 input.addEventListener("keyup", function(event) {
   if (event.keyCode === 13) {
@@ -34,8 +33,7 @@ var profile =
     latitude:        '0',               
     longitude:       '0',           
     city:            'none',
-    radius:           0
-    
+    radius:           0   
 }
 
 function init(){
@@ -48,7 +46,7 @@ function init(){
 var host= "localhost";
 var port= 1884;
 var clientId= "client-vaccination";
-var sus= "refresh";
+var sus= "vaccination";
 client = new Paho.MQTT.Client(host, Number(port), clientId);
                                     console.log("wurde benutzt paho"+client);
 client.onMessageArrived = MessageArrived;
@@ -90,19 +88,126 @@ function ConnectionLost(res) {
 function MessageArrived(message) {
     console.log(message.destinationName +" : " + message.payloadString);
     // implementierung
-    console.log("mqtt message"+message);
-    //var mas = Json.parse(message);
-    if(message.payloadString == "vaccinationPlacesBW"){
-        
-        getImpfData(prepareVaccinationData);
-        
+    // console.log(message);
+    // console.log(typeof(message));
+    // console.log(typeof(message.payloadString));
+    // console.log(JSON.parse(message.payloadString));
+
+    // var mes = message.text();
+    // console.log(typeof(mes));
+    // console.log(mes);
+    if(onPage){
+        var mes  = JSON.parse(message.payloadString);
+        // console.log(typeof(mes));
+        //console.log(mes);
+
+        //console.log(mes);
+        console.log(mes.von);
+        if(mes.info == "neuesImpfzentrum"){
+            console.log("neuesImpfzentrum hat geklappt");
+            neuesZentrum(mes);    
+        }
+        else if(mes.info == "aenderungTermin"){
+            console.log("Terminaenderung hat geklappt");
+            terminaenderung(mes,false);
+        }
+        else if(mes.info == "neuladen"){
+            getImpfData(prepareVaccinationData);
+        }
+        else if(mes.info == "neuerTermin"){
+            terminaenderung(mes,true);
+        }
+
     }
-    else{
-        //do nothing
+    
+
+    
+}
+
+async function neuesZentrum(mes){
+    console.log("mqtt hat geklappt");
+        tmp={
+			"Zentrumsname": mes.data[0].Zentrumsname,
+			"Adresse": mes.data[0].Adress,
+			"PLZ": mes.data[0].PLZ,
+			"Ort": mes.data[0].Ort,
+			"Tel": mes.data[0].Phone,
+			"Distance": null,
+			"BookingURL": mes.data[0].BookingURL,
+			"Vaccines": mes.data[0].Vaccines,
+			"Geocode" : []
+		}
+        // geodaten holen:
+        console.log("hier werden die geodaten neu berechent des neuen impfzentrums");
+            var query="/data/geocode/city?c="+mes.data[0].Ort;
+            try{
+                var geoData= await fetch(query);
+                geo = await geoData.text();
+                geo = JSON.parse(geo);
+                console.log(geo);
+                
+            }catch(e){
+                console.log("Server is not responing: geoDaten einer city"+e);
+            }
+            if (geo.features != undefined && geo.features.length >0){
+                
+                tmp.Geocode = geo.features[0].geometry
+                //lon1= geo.features[0].geometry.coordinates[0];
+                //lat1= geo.features[0].geometry.coordinates[1];
+                //console.log(city+"  " +lon1+ "lat1 "+lat1);
+                console.log(geo);
+            }
+            rawResult.push(tmp);
+            console.log("hier rawResult");
+            console.log(rawResult);
+           //getImpfData(prepareVaccinationData)
+}
+
+function terminaenderung(mes,neu){
+    
+   
+    const str = mes.data[0].Slug;
+    //const str = q;//'doctolib_47.6922753_10.0419201_moderna';
+    const words = str.split('_');
+    var stringSlug = words[0];
+    for(var i=1; i<words.length-1; i++){
+        stringSlug += "_"+words[i];
+    }
+    console.log("hier wird verändert "+ words[words.length-1]);
+    for(var i =0; i < rawResult.length; i++){
+        if(rawResult[i].Slug == stringSlug){
+            if(neu){ // ganz neuer Impfstoffangebot
+                rawResult[i].Vaccines.push(mes.data[0]);
+                console.log(rawResult[i]);
+                prepareVaccinationData(rawResult);
+            }
+            else{
+                for(var j=0; rawResult[i].Vaccines.length; j++){
+                // console.log("außen abfrage slug")
+                // console.log("rawResult: ");
+                // console.log(rawResult[i]);
+                // console.log("vaccinesSlug: "+rawResult[i].Vaccines[j].Slug);
+                // console.log("mes Slug"+mes.data[0].Slug);
+                if(rawResult[i].Vaccines[j].Slug ==  mes.data[0].Slug){
+                    // console.log("innen abfrage Availabel");
+                    // console.log( rawResult[i].Vaccines[j].Available);
+                    // console.log(mes.data[0].Available);
+                    rawResult[i].Vaccines[j].Available= mes.data[0].Available;
+                    rawResult[i].Vaccines[j].NoBooking= mes.data[0].NoBooking;
+                    prepareVaccinationData(rawResult);
+                    //console.log(rawResult[i]);
+                    break;
+                }
+            }
+            }
+           
+        }
     }
 
     
 }
+
+
 
 async function getImpfData(callback){
     console.log("komme in function ImpfData");
@@ -130,10 +235,8 @@ async function getImpfData(callback){
         
     }
     else if (result != undefined){
-        
-        
+        rawResult= JSON.parse(JSON.stringify(result));
         callback(result);
-        
     }
 
 }
@@ -210,9 +313,12 @@ async function prepareVaccinationData(result){
         console.log("es werden hier userdaten verwedndt");
         getfilter()
     }
-    else{
-       
+    else if(onPage == false){
+        // die Seite neu geöffnet
         fillTable(realResult);
+    }
+    else{
+        getfilter();
     }
     console.log("die vorbereiteten Results");
     console.log(realResult)
@@ -230,6 +336,7 @@ async function prepareVaccinationData(result){
 */
 function fillTable(result){
     document.getElementById("load").style.display="none";
+    onPage=true;
     
         
 

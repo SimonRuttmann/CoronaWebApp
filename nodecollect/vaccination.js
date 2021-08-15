@@ -4,6 +4,14 @@ const db = require('./db');
 
 module.exports = { getVaccinationPlaces, getVaccinationDates, saveHistoryPlaces, saveHistoryDates };
 
+var message=
+{
+    "info":"",
+    "data":[]
+}
+
+
+
 async function getVaccinationPlaces(saveToDB, mqttClient) {
     var data = [];
 
@@ -61,14 +69,22 @@ async function getVaccinationPlaces(saveToDB, mqttClient) {
             }
 
             if (!found) {
+                message.info = "neuesImpfzentrum";
+                message.data = [];
+                message.data.push(data[i]);
                 await db.insertOne(data[i], "vaccinationPlacesBW");
-                mqttClient.publish("refresh", "vaccinationPlacesBW");
+                mqttClient.publish("vaccination", JSON.stringify(message));
             }
         }
     }
 
     return data;
 }
+
+
+
+
+
 
 async function getVaccinationDates(saveToDB, mqttClient) {
     var data = [];
@@ -110,7 +126,9 @@ async function getVaccinationDates(saveToDB, mqttClient) {
         var oldData = await db.find({}, "vaccinationDatesBW");
 
         if (oldData.length == 0) {
-            mqttClient.publish("refresh", "vaccinationDatesBW");
+            message.info= "neuladen";
+            message.data=[];
+            mqttClient.publish("vaccination", JSON.stringify(message)); 
             await db.insertMany(data, "vaccinationDatesBW");
         } else {
             for (var i = 0; i < data.length; i++) {
@@ -121,7 +139,10 @@ async function getVaccinationDates(saveToDB, mqttClient) {
                         found = true;
 
                         if (data[i].Available != oldData[j].Available || data[i].NoBooking != oldData[j].NoBooking) {
-                            mqttClient.publish("refresh", "vaccinationDatesBW");
+                            message.info = "aenderungTermin";
+                            message.data = [];
+                            message.data.push(data[i]);
+                            mqttClient.publish("vaccination", JSON.stringify(message)); 
 
                             await db.deleteOne({ Slug: oldData[j].Slug }, "vaccinationDatesBW");
                             await db.insertOne(data[i], "vaccinationDatesBW");
@@ -130,7 +151,10 @@ async function getVaccinationDates(saveToDB, mqttClient) {
                 }
 
                 if (!found) {
-                    mqttClient.publish("refresh", "vaccinationDatesBW");
+                    message.info = "neuerTermin";
+                    message.data = [];
+                    message.data.push(data[i]);
+                    mqttClient.publish("vaccination", JSON.stringify(message)); 
                     await db.insertOne(data[i], "vaccinationDatesBW");
                 }
             }

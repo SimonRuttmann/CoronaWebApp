@@ -3,6 +3,12 @@ const db = require('./db');
 
 module.exports = { getCoronaNewsToday };
 
+var message=
+{
+    "info":"",
+    "data":[]
+}
+
 async function getCoronaNewsToday(mqttClient) {
     var data = [];
 
@@ -43,7 +49,10 @@ async function getCoronaNewsToday(mqttClient) {
     }
 
     await db.insertOne(save, "newsCoronaBW");
-    mqttClient.publish("refresh", "newsCoronaBW");
+    message.info = "newNews4Today";
+    message.data= [];
+    message.data.push(save);
+    mqttClient.publish("news", JSON.stringify(message));
 
     return data;
 }
