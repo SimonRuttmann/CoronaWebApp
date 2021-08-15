@@ -38,16 +38,20 @@ function insertMany(data, collection) {
     });
 }
 
-function insertOne(data, collection) {
-    connectToDB(async (db) => {
+async function insertOne(data, collection) {
+    await connectToDB(async (db) => {
         await db.collection(collection).insertOne(data);
     });
+
+    return "done";
 }
 
-function deleteOne(data, collection) {
-    connectToDB(async (db) => {
+async function deleteOne(data, collection) {
+    await connectToDB(async (db) => {
         await db.collection(collection).deleteOne(data);
     });
+
+    return "done";
 }
 
 function deleteMany(data, collection) {

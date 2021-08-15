@@ -12,7 +12,7 @@ async function getAGSBW() {
     };
 
     var response = await fetch("https://api.corona-zahlen.org/districts/", requestOptions);
-    if (response.status != 200) return false;
+    if (response.status != 200) return undefined;
 
     var result = await response.text();
     var json = JSON.parse(result);

@@ -6,6 +6,11 @@ services:
         build:
             context: .
             dockerfile: ./nodecollect/Dockerfile
+        #depends_on: 
+            #mongodb:
+            #    condition: service_healthy  
+            #mqtt:
+            #    condition: service_healthy  
 
     nodeexpressapi:
         container_name: nodeexpressapi
@@ -22,7 +27,8 @@ services:
     nginx:
         container_name: nginx
         build:
-            context: ./nginx
+            context: .
+            dockerfile: ./nginx/Dockerfile
         ports:
             - "80:80"
             - "8080:8080"
@@ -34,6 +40,11 @@ services:
         ports:
             - "1884:1884"
             - "1883:1883"
+        #healthcheck:
+        #    test: ["CMD-SHELL", "timeout -t 5 mosquitto_sub -t '$$SYS/#' -C 1 | grep -v Error || exit 1"]    
+        #    interval: 10s
+        #    timeout: 10s
+        #    retries: 5
 
     mysql:
         container_name: mysql
@@ -58,4 +69,11 @@ services:
     #       - ./mongodb:/data/db    
       ports: 
           - "27017:27017"
+    #  healthcheck: 
+    #    test: echo 'db.runCommand("ping").ok' | mongodb mongo:27017/test --quiet
+    #    interval: 5s
+    #    timeout: 10s
+    #    retries: 5  
+    #    start_period: 30s 
+
 # remove volumes if error
