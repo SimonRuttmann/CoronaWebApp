@@ -151,7 +151,8 @@ async function vaccinationData() {
 			"Distance": null,
 			"BookingURL": data[i].BookingURL,
 			"Vaccines": data[i].Vaccines,
-			"Geocode": data[i].Geocode
+			"Geocode": data[i].Geocode,
+			"Slug" 	  : data[i].Slug
 		}
 		for (let j in tmp.Vaccines) {
 			data2 = (await MongoDB.find({ "Slug": tmp.Vaccines[j].Slug }, "vaccinationDatesBW"))[0];

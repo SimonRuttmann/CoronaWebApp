@@ -135,7 +135,8 @@ async function neuesZentrum(mes){
 			"Distance": null,
 			"BookingURL": mes.data[0].BookingURL,
 			"Vaccines": mes.data[0].Vaccines,
-			"Geocode" : []
+			"Geocode" : [],
+            "Slug" 	  : mes.data[0].Slug
 		}
         // geodaten holen:
         console.log("hier werden die geodaten neu berechent des neuen impfzentrums");
