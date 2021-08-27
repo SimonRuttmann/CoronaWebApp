@@ -419,7 +419,6 @@ async function getfilter(){
                     var geoData= await fetch(query);
                     geo = await geoData.text();
                     geo = JSON.parse(geo);
-                    console.log(geo);
                     
                 }catch(e){
                     console.log("Server is not responing: geoDaten einer city"+e);
@@ -452,7 +451,7 @@ async function getfilter(){
                     try{
                         var d= await fetch(query);
                         dist = await d.text();
-                        console.log("dist: "+dist+" d: "+d);
+                      
                         
                     }catch(e){
                         console.log("Server is not responing"+e);
