@@ -13,8 +13,8 @@
   <img src="media/img/docs/Impffilter.png" width="53.5%"/>
 </div>
 <div align="center">
-  <img src="media/img/docs/Impftermin.png" width="40%"/>
-  <img src="media/img/docs/news.png" width="40%"/>
+  <img src="media/img/docs/Impftermin.png" width="45.5%"/>
+  <img src="media/img/docs/news.png" width="53.5%"/>
 </div>
 
 <!-- TOC -->
