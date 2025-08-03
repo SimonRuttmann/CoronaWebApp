@@ -4,17 +4,17 @@
 
 
 <div align="center">
-  <img src="media/img/docs/startseite richtig.png" width="54.2%" height="200px"/>
-  <img src="media/img/docs/statistik_table.png" width="25.3%" height="200px"/>
-  <img src="media/img/docs/statistik.png" width="19%" height="200px"/>
+  <img src="media/img/docs/startseite richtig.png" width="53.2%" height="200px"/>
+  <img src="media/img/docs/statistik_table.png" width="24.3%" height="200px"/>
+  <img src="media/img/docs/statistik.png" width="18%" height="200px"/>
 </div>
 <div align="center">
-  <img src="media/img/docs/chat.png" width="45.5%" height="150px"/>
-  <img src="media/img/docs/Impffilter.png" width="53.5%" height="150px"/>
+  <img src="media/img/docs/chat.png" width="44.5%" height="150px"/>
+  <img src="media/img/docs/Impffilter.png" width="52.5%" height="150px"/>
 </div>
 <div align="center">
-  <img src="media/img/docs/Impftermin.png" width="45.5%" height="150px"/>
-  <img src="media/img/docs/news.png" width="53.5%" height="150px"/>
+  <img src="media/img/docs/Impftermin.png" width="44.5%" height="150px"/>
+  <img src="media/img/docs/news.png" width="52".5%" height="150px"/>
 </div>
 
 <!-- TOC -->
