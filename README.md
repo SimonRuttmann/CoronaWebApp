@@ -14,7 +14,7 @@
 </div>
 <div align="center">
   <img src="media/img/docs/Impftermin.png" width="44.5%" height="150px"/>
-  <img src="media/img/docs/news.png" width="52".5%" height="150px"/>
+  <img src="media/img/docs/news.png" width="52.5%" height="150px"/>
 </div>
 
 <!-- TOC -->
