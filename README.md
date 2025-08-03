@@ -46,6 +46,20 @@ The goal was to build a full-stack web platform leveraging multiple real-time AP
 
 ---
 
+## 🛠️ Technologies Used
+
+- **Node.js** + **Express.js** – Backend framework and routing
+- **WebSockets** – Real-time chat functionality
+- **MongoDB** – NoSQL storage for COVID data and chat
+- **MySQL** – Relational database for user authentication
+- **Passport.js** – Authentication middleware
+- **Docker** & **Docker Compose** – Containerized deployment
+- **EJS** – Templating engine for dynamic HTML
+- **MQTT** – Live data synchronization for news and vaccine data
+- **REST APIs** – Integration of multiple external data sources
+- **GeocodeAPI** – Location and distance calculations
+- **SVG** – Interactive maps for UI visualization
+
 ## 📊 Data Sources
 
 The application aggregates data using the following APIs:
