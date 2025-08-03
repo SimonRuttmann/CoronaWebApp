@@ -86,6 +86,10 @@ Processed data is cached in a MongoDB database and exposed via custom backend AP
 - A simplified state-wide overview is always shown.
 - Users can toggle which graphs and stats to display.
 
+<div align="center">
+  <img src="media/img/docs/startseite richtig.png"/>
+</div>
+
 ---
 
 ## 📈 Statistics Dashboard
@@ -93,6 +97,11 @@ Processed data is cached in a MongoDB database and exposed via custom backend AP
 - District-level data is presented in a sortable table.
 - Graphs for infection rates, hospitalizations, age/gender distribution.
 - Selecting a district from the map updates the visualizations below.
+
+<div align="center">
+  <img src="media/img/docs/statistik.png"/>
+  <img src="media/img/docs/statistik_table.png"/>
+</div>
 
 ---
 
@@ -102,6 +111,10 @@ Processed data is cached in a MongoDB database and exposed via custom backend AP
 - Session handling via **passport.js**, **express-session**, and **flash**.
 - Registered users gain access to chat and vaccine personalization.
 - Login redirects unauthorized users attempting to access protected views.
+
+<div align="center">
+  <img src="media/img/docs/registrieren.png"/>
+</div>
 
 ---
 
@@ -120,6 +133,10 @@ Implemented via **Websockets** (instead of MQTT to diversify the tech stack).
 - Messages include metadata (author, topic, timestamp).
 - Chat data is stored in **MongoDB** with a 24h TTL.
 
+<div align="center">
+  <img src="media/img/docs/chat.png"/>
+</div>
+
 ---
 
 ## 💉 Vaccine Offer Finder
@@ -136,6 +153,11 @@ Implemented via **Websockets** (instead of MQTT to diversify the tech stack).
     - Vaccine types
     - Contact options (URL, phone, email)
 
+<div align="center">
+  <img src="media/img/docs/Impffilter.png"/>
+  <img src="media/img/docs/Impftermin.png"/>
+</div>
+
 ---
 
 ## 📰 Live News Feed
@@ -144,6 +166,11 @@ Implemented via **Websockets** (instead of MQTT to diversify the tech stack).
 - Shows headline, summary, author, and article link.
 - Pagination is supported (5 articles per page).
 - New entries are dynamically added via MQTT when received.
+
+<div align="center">
+  <img src="media/img/docs/news.png"/>
+  <img src="media/img/docs/Impftermin.png"/>
+</div>
 
 ---
 
@@ -160,6 +187,17 @@ Implemented via **Websockets** (instead of MQTT to diversify the tech stack).
 - **Authentication:** Passport.js with bcrypt
 - **Containerization:** Docker & Docker Compose
 - **Live Update:** MQTT-based message delivery
+
+<div align="center">
+  <img src="media/img/docs/InternetbasierteSystemeProjektDiagramm.png"/>
+</div>
+
+To realize the chat via websockes we implemented a subscriber-publisher like protocol from scratch.
+The definition can be seen in the diagram below.
+
+<div align="center">
+  <img src="media/img/docs/chat.png"/>
+</div>
 
 ---
 
