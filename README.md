@@ -239,7 +239,6 @@ Feel free to fork, adapt, or reuse — just give credit. 🤝
 > docker-compose up --build
 > ```
 >
-> ⚠️ On Windows, prefer using **PowerShell** (not WSL2) to avoid permission issues.  
 > ⏱️ The `node-collect` server may take ~5 minutes to process API data before serving.
 
 ---
