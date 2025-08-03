@@ -99,8 +99,8 @@ Processed data is cached in a MongoDB database and exposed via custom backend AP
 - Selecting a district from the map updates the visualizations below.
 
 <div align="center">
-  <img src="media/img/docs/statistik.png"/>
-  <img src="media/img/docs/statistik_table.png"/>
+  <img src="media/img/docs/statistik_table.png" width="53.5%"/>
+  <img src="media/img/docs/statistik.png" width="40%"/>
 </div>
 
 ---
@@ -196,7 +196,7 @@ To realize the chat via websockes we implemented a subscriber-publisher like pro
 The definition can be seen in the diagram below.
 
 <div align="center">
-  <img src="media/img/docs/chat.png"/>
+  <img src="media/img/docs/richtigerServer%20Diagramm.png"/>
 </div>
 
 ---
