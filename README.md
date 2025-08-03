@@ -156,6 +156,13 @@ Developed by:
 
 ---
 
+## 📜 License
+
+This project is licensed under the **Apache 2.0 License**.  
+Feel free to fork, adapt, or reuse — just give credit. 🤝
+
+---
+
 ## 📦 Running the Project
 
 > **Requirements:**
