@@ -2,9 +2,19 @@
 
 **Corona Web App** is a full-stack web application that presents COVID-19 data for Baden-Württemberg in a clear and interactive way. It combines real-time data visualization, chat-based user interaction, and personalized vaccine offer listings.
 
+
 <div align="center">
-  <img src="media/img/app/home_map.png" width="48%"/>
-  <img src="media/img/app/statistics_graph.png" width="48%"/>
+  <img src="media/img/docs/startseite richtig.png" width="54.2%"/>
+  <img src="media/img/docs/statistik_table.png" width="25.3%"/>
+  <img src="media/img/docs/statistik.png" width="19%"/>
+</div>
+<div align="center">
+  <img src="media/img/docs/chat.png" width="45.5%"/>
+  <img src="media/img/docs/Impffilter.png" width="53.5%"/>
+</div>
+<div align="center">
+  <img src="media/img/docs/Impftermin.png" width="40%"/>
+  <img src="media/img/docs/news.png" width="40%"/>
 </div>
 
 <!-- TOC -->
@@ -169,7 +179,6 @@ Implemented via **Websockets** (instead of MQTT to diversify the tech stack).
 
 <div align="center">
   <img src="media/img/docs/news.png"/>
-  <img src="media/img/docs/Impftermin.png"/>
 </div>
 
 ---
