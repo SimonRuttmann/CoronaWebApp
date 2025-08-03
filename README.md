@@ -11,6 +11,7 @@
 * [🦠 Corona Web App – COVID-19 Info & Interaction Platform for Baden-Württemberg](#-corona-web-app--covid-19-info--interaction-platform-for-baden-württemberg)
   * [🎓 Project & Context](#-project--context)
   * [🧩 Key Features](#-key-features)
+  * [🛠️ Technologies Used](#-technologies-used)
   * [📊 Data Sources](#-data-sources)
   * [📍 Home & Map Overview](#-home--map-overview)
   * [📈 Statistics Dashboard](#-statistics-dashboard)
@@ -20,6 +21,7 @@
   * [📰 Live News Feed](#-live-news-feed)
   * [🧠 Technical Architecture](#-technical-architecture)
   * [🧑‍💻 Teamwork Makes the Dream Work](#-teamwork-makes-the-dream-work)
+  * [📜 License](#-license)
   * [📦 Running the Project](#-running-the-project)
 <!-- TOC -->
 
@@ -59,6 +61,8 @@ The goal was to build a full-stack web platform leveraging multiple real-time AP
 - **REST APIs** – Integration of multiple external data sources
 - **GeocodeAPI** – Location and distance calculations
 - **SVG** – Interactive maps for UI visualization
+
+---
 
 ## 📊 Data Sources
 
